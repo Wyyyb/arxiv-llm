@@ -1,0 +1,8 @@
+torch
+deepspeed
+peft
+flash-attn
+future
+arguments
+consoleprinter
+datasets
