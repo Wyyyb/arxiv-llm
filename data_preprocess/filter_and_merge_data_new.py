@@ -13,7 +13,7 @@ def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=64):
     # 将处理移动到GPU
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("device", device)
-    for i in range(0, len(texts), batch_size):
+    for i in tqdm(range(0, len(texts), batch_size)):
         batch = texts[i:i + batch_size]
         encoded = tokenizer(batch, add_special_tokens=True, padding=True, truncation=True, return_tensors="pt")
 
