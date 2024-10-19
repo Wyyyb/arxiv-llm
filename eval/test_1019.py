@@ -4,10 +4,13 @@ import torch
 
 def generate_introduction(title, abstract, partial_intro):
     # 加载模型和分词器
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
     model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm/model_output/checkpoint-140/"
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(model_path)
-
+    model = model.to(device)
     # 添加特殊token
     special_tokens = ['<|paper_start|>', '<|paper_end|>', '<|cite_start|>', '<|cite_end|>', '<|reference_start|>',
                       '<|reference_end|>']
@@ -18,10 +21,10 @@ def generate_introduction(title, abstract, partial_intro):
     input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
 
     # 编码输入文本
-    inputs = tokenizer(input_text, return_tensors="pt")
+    inputs = tokenizer(input_text, return_tensors="pt").to(device)
 
     # 生成续写的introduction
-    max_new_tokens = 500  # 您可以根据需要调整这个值
+    max_new_tokens = 2500  # 您可以根据需要调整这个值
     output = model.generate(
         inputs.input_ids,
         max_new_tokens=max_new_tokens,
