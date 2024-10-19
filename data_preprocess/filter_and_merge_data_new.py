@@ -17,10 +17,10 @@ def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=64):
         batch = texts[i:i + batch_size]
         encoded = tokenizer(batch, add_special_tokens=True, padding=True, truncation=True, return_tensors="pt")
 
-        # 将编码后的数据移到GPU
         encoded = {k: v.to(device) for k, v in encoded.items()}
 
-        token_counts = encoded.attention_mask.sum(dim=1)
+        # 使用 'input_ids' 来计算token数量
+        token_counts = encoded['input_ids'].ne(tokenizer.pad_token_id).sum(dim=1)
         batch_results = (token_counts <= max_tokens).cpu().tolist()
         results.extend(batch_results)
 
