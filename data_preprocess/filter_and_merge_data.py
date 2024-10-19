@@ -23,13 +23,14 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
     train_data = []
     val_data = []
     exceed_number = 0
-    for file in tqdm(os.listdir(input_dir)):
+    for file in os.listdir(input_dir):
         file_path = os.path.join(input_dir, file)
+        print("Processing", file)
         if not file.endswith(".jsonl"):
             continue
         if file.startswith("train"):
             with open(file_path, "r") as fi:
-                for line in fi.readlines():
+                for line in tqdm(fi.readlines()):
                     curr = json.loads(line)
                     if is_within_token_limit(curr["paper"]):
                         train_data.append(curr)
@@ -37,7 +38,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                         exceed_number += 1
         elif file.startswith("val"):
             with open(file_path, "r") as fi:
-                for line in fi.readlines():
+                for line in tqdm(fi.readlines()):
                     curr = json.loads(line)
                     if is_within_token_limit(curr["paper"]):
                         val_data.append(curr)
