@@ -7,6 +7,10 @@ export MASTER_ADDR=${MLP_WORKER_0_HOST:-${MASTER_ADDR:-127.0.0.1}}
 export MASTER_PORT=${MLP_WORKER_0_PORT:-${MASTER_PORT:-60000}}
 export WORLD_SIZE=$(($GPUS_PER_NODE * $NNODES))
 
+cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
+source /gpfs/public/research/miniconda3/bin/activate
+conda activate cite_rag
+
 torchrun --nproc_per_node $GPUS_PER_NODE \
  --master_addr $MASTER_ADDR \
  --node_rank $NODE_RANK \
@@ -31,3 +35,4 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --logging_steps 1 \
  --overwrite_output_dir \
  --gradient_accumulation_steps 16
+
