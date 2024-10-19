@@ -6,7 +6,7 @@ import time
 import torch
 
 
-def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=64):
+def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=512):
     results = []
     start_time = time.time()
 
