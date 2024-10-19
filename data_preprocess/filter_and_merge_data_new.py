@@ -23,6 +23,7 @@ def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=512):
         token_counts = encoded['input_ids'].ne(tokenizer.pad_token_id).sum(dim=1)
         batch_results = (token_counts <= max_tokens).cpu().tolist()
         results.extend(batch_results)
+        print("curr batch false number", batch_results.count(False))
 
     end_time = time.time()
     return results, end_time - start_time
