@@ -1,4 +1,4 @@
-cd /gpfs/public/research/xy/yubowang/arxiv-llm
+cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
