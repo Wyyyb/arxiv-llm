@@ -15,8 +15,8 @@ deepspeed --include localhost:0,1,2,3,4,5,6,7 --master_port 60000 train.py \
   --per_device_train_batch_size 1 \
   --gradient_checkpointing \
   --learning_rate 1e-5 \
-  --query_max_len 32768 \
-  --passage_max_len 32768 \
+  --query_max_len 16384 \
+  --passage_max_len 16384 \
   --num_train_epochs 1 \
   --logging_steps 1 \
   --overwrite_output_dir \
