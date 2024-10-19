@@ -19,7 +19,7 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  train.py \
  --deepspeed ds_zero3_config.json \
  --output_dir model_output \
- --model_name_or_path Q/gpfs/public/research/xy/yubowang/models/Qwen2.5-7B \
+ --model_name_or_path /gpfs/public/research/xy/yubowang/models/Qwen2.5-7B \
  --save_steps 20 \
  --dataset_name json \
  --dataset_path ../data/train_data_1019.jsonl \
