@@ -41,34 +41,37 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
         if not file.endswith(".jsonl"):
             continue
         tmp = []
+        data = []
         if file.startswith("train"):
             with open(file_path, "r") as fi:
                 for line in fi.readlines():
                     curr = json.loads(line)
+                    data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
-            for each_res in tmp_res:
+            for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
                     continue
-                train_data.append(each_res)
+                train_data.append(data[i])
         elif file.startswith("val"):
             with open(file_path, "r") as fi:
                 for line in fi.readlines():
                     curr = json.loads(line)
+                    data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
-            for each_res in tmp_res:
+            for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
                     continue
-                val_data.append(each_res)
+                val_data.append(data[i])
+        print("exceed num", exceed_number)
+        print("training data num", len(train_data))
+        print("val data num", len(val_data))
 
     train_output_path = os.path.join(output_dir, "train_data_1019.jsonl")
     val_output_path = os.path.join(output_dir, "val_data_1019.jsonl")
-    print("exceed num", exceed_number)
-    print("training data num", len(train_data))
-    print("val data num", len(val_data))
     with open(train_output_path, "w") as fo:
         for each in train_data:
             fo.write(json.dumps(each))
