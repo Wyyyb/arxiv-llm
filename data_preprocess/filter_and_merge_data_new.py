@@ -42,9 +42,9 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
         tmp = []
         if file.startswith("train"):
             with open(file_path, "r") as fi:
-                for line in tqdm(fi.readlines()):
+                for line in fi.readlines():
                     curr = json.loads(line)
-                    tmp.append(curr)
+                    tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
             for each_res in tmp_res:
                 if not each_res:
@@ -53,9 +53,9 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                 train_data.append(each_res)
         elif file.startswith("val"):
             with open(file_path, "r") as fi:
-                for line in tqdm(fi.readlines()):
+                for line in fi.readlines():
                     curr = json.loads(line)
-                    tmp.append(curr)
+                    tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
             for each_res in tmp_res:
                 if not each_res:
