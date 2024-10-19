@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer
 import json
 import os
+from tqdm import tqdm
 
 
 def is_within_token_limit(input_string, max_tokens=15000):
@@ -22,7 +23,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
     train_data = []
     val_data = []
     exceed_number = 0
-    for file in os.listdir(input_dir):
+    for file in tqdm(os.listdir(input_dir)):
         file_path = os.path.join(input_dir, file)
         if not file.endswith(".jsonl"):
             continue
