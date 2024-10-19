@@ -49,6 +49,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                     data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
+            print("len(tmp_res)", tmp_res)
             for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
@@ -61,6 +62,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                     data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
+            print("len(tmp_res)", tmp_res)
             for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
