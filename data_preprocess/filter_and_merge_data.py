@@ -44,6 +44,9 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                         exceed_number += 1
     train_output_path = os.path.join(output_dir, "train_data_1019.jsonl")
     val_output_path = os.path.join(output_dir, "val_data_1019.jsonl")
+    print("exceed num", exceed_number)
+    print("training data num", len(train_data))
+    print("val data num", len(val_data))
     with open(train_output_path, "w") as fo:
         for each in train_data:
             fo.write(json.dumps(each))
