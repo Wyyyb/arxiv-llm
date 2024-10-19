@@ -1,5 +1,6 @@
-#conda init
-#conda activate arxiv-llm
+cd /gpfs/public/research/xy/yubowang/arxiv-llm
+source /gpfs/public/research/miniconda3/bin/activate
+conda activate cite_rag
 
 deepspeed --include localhost:0,1,2,3,4,5,6,7 --master_port 60000 train.py \
   --deepspeed ds_zero3_config.json \
