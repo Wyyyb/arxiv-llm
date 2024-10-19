@@ -26,7 +26,7 @@ def batch_process_gpu(texts, tokenizer, max_tokens=15000, batch_size=512):
         print("curr batch false number", batch_results.count(False))
 
     end_time = time.time()
-    return results, end_time - start_time
+    return results
 
 
 def process_data(input_dir="../data_bk/", output_dir="../data/"):
@@ -49,7 +49,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                     data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
-            print("len(tmp_res)", tmp_res)
+            print("len(tmp_res)", len(tmp_res))
             for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
@@ -62,7 +62,7 @@ def process_data(input_dir="../data_bk/", output_dir="../data/"):
                     data.append(curr)
                     tmp.append(curr["paper"])
             tmp_res = batch_process_gpu(tmp, tokenizer)
-            print("len(tmp_res)", tmp_res)
+            print("len(tmp_res)", len(tmp_res))
             for i, each_res in enumerate(tmp_res):
                 if not each_res:
                     exceed_number += 1
