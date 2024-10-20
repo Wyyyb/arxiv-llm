@@ -14,7 +14,7 @@ CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
   --bf16 \
   --pooling eos \
   --normalize \
-  --per_device_eval_batch_size 128 \
+  --per_device_eval_batch_size 16 \
   --query_max_len 32 \
   --passage_max_len 1024 \
   --dataset_name json \
