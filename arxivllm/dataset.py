@@ -64,6 +64,6 @@ class EncodeDataset(Dataset):
 
     def __getitem__(self, item) -> Tuple[str, str]:
         text = self.encode_data[item]
-        text_id = text['docid']
-        formated_text = text['text']
+        text_id = text['docs_id']
+        formated_text = text['abstract']
         return text_id, formated_text
