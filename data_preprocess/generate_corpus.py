@@ -11,10 +11,14 @@ def generate_corpus(file_path):
             curr = json.loads(line)
             docs_id = curr["id"]
             title = curr["title"]
-            abstract = curr["abstract"].strip()
+            abstract = "<|reference_start|>" + curr["abstract"].strip() + "<|reference_end|>"
             res.append({"docs_id": docs_id, "title": title, "abstract": abstract})
     with open(output_path, "w") as fo:
         for each in res:
+            fo.write(json.dumps(each))
+            fo.write("\n")
+    with open(output_path.replace(".jsonl", "_sample.jsonl"), "w") as fo:
+        for each in res[:100]:
             fo.write(json.dumps(each))
             fo.write("\n")
 
