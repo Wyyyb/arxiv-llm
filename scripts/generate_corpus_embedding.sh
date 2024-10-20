@@ -8,7 +8,7 @@ model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/c
 for s in 0 1
 do
 gpuid=$s
-CUDA_VISIBLE_DEVICES=$gpuid python -m encode.py \
+CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
   --output_dir=temp \
   --model_name_or_path ${model_path} \
   --bf16 \
