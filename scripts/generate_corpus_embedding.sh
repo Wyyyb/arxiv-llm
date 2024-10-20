@@ -4,7 +4,8 @@ conda activate cite_rag
 cd ../arxivllm
 EMBEDDING_OUTPUT_DIR="../embedded_corpus"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
-dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
+# dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
+dataset_path="../corpus_data/meta_data_1020.jsonl"
 model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-152"
 for s in 0
 do
@@ -15,7 +16,7 @@ CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
   --bf16 \
   --pooling eos \
   --normalize \
-  --per_device_eval_batch_size 16 \
+  --per_device_eval_batch_size 32 \
   --query_max_len 32 \
   --passage_max_len 1024 \
   --dataset_name json \
