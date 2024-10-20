@@ -42,3 +42,28 @@ class TrainDataset(Dataset):
         return paper, targets, targets_idx
 
 
+class EncodeDataset(Dataset):
+
+    def __init__(self, data_args: DataArguments):
+        self.data_args = data_args
+        self.encode_data = load_dataset(
+            self.data_args.dataset_name,
+            self.data_args.dataset_config,
+            data_files=self.data_args.dataset_path,
+            split=self.data_args.dataset_split,
+            cache_dir=self.data_args.dataset_cache_dir,
+        )
+        if self.data_args.dataset_number_of_shards > 1:
+            self.encode_data = self.encode_data.shard(
+                num_shards=self.data_args.dataset_number_of_shards,
+                index=self.data_args.dataset_shard_index,
+            )
+
+    def __len__(self):
+        return len(self.encode_data)
+
+    def __getitem__(self, item) -> Tuple[str, str]:
+        text = self.encode_data[item]
+        text_id = text['docid']
+        formated_text = text['text']
+        return text_id, formated_text

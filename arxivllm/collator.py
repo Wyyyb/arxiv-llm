@@ -89,3 +89,27 @@ class TrainCollator:
         return papers_tokenized, targets_tokenized
 
 
+@dataclass
+class EncodeCollator:
+    data_args: DataArguments
+    tokenizer: PreTrainedTokenizer
+
+    def __call__(self, features: List[Tuple[str, str]]):
+        """
+        Collate function for encoding.
+        :param features: list of (id, text) tuples
+        """
+        text_ids = [x[0] for x in features]
+        texts = [x[1] for x in features]
+        max_length = self.data_args.query_max_len if self.data_args.encode_is_query else self.data_args.passage_max_len
+        collated_texts = self.tokenizer(
+            texts,
+            padding=True, 
+            truncation=True,
+            max_length=max_length,
+            return_attention_mask=True,
+            return_token_type_ids=False,
+            add_special_tokens=True,
+            return_tensors='pt',
+        )
+        return text_ids, collated_texts
