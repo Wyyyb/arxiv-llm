@@ -87,7 +87,7 @@ def single_complete_introduction(input_text):
             do_sample=True,
             top_k=50,
             top_p=1,
-            temperature=0,
+            temperature=0.1,
             stopping_criteria=stopping_criteria,
             logits_processor=LogitsProcessorList([hidden_state_capture]),
             output_hidden_states=True,
