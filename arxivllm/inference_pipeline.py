@@ -75,16 +75,8 @@ def single_complete_introduction(input_text):
     stop_token_ids = tokenizer.convert_tokens_to_ids(['<|cite_start|>', '<|paper_end|>'])
     print("stop_token_ids", stop_token_ids)
     eos_token_id = stop_token_ids[0]
-    stopping_criteria = StoppingCriteriaList([CustomStoppingCriteria(stops=stop_token_ids)])
-    hidden_state_capture = HiddenStateCapture(stop_token_ids[0])
-
     # 生成续写的introduction
     max_new_tokens = 2500  # 您可以根据需要调整这个值
-
-    def model_forward(input_ids, attention_mask):
-        outputs = model(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True)
-        return outputs.logits, outputs.hidden_states
-
     with torch.no_grad():
         output = model.generate(
             inputs.input_ids,
@@ -97,7 +89,7 @@ def single_complete_introduction(input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    print("inputs.input_ids", len(inputs.input_ids))
+    print("inputs.input_ids", len(inputs.input_ids[0]))
     print("output_hidden_states", len(output.hidden_states))
     print("output_hidden_states", len(output.hidden_states[-1]))
     print("output_hidden_states", len(output.hidden_states[-1][-1]))
