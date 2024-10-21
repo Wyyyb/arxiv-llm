@@ -8,9 +8,6 @@ mkdir -p ${EMBEDDING_OUTPUT_DIR}
 dataset_path="../corpus_data/meta_data_1020.jsonl"
 model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-152"
 
-#echo "等待一小时后开始传输文件..."
-#sleep 3600
-
 for s in 0
 do
 gpuid=$s
