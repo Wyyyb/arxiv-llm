@@ -9,6 +9,7 @@ import json
 import numpy as np
 import h5py
 import json
+from tqdm import tqdm
 
 
 class CustomStoppingCriteria(StoppingCriteria):
@@ -145,7 +146,7 @@ def load_meta_data():
     meta_data_path = "../corpus_data/meta_data_1020.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
-        for line in fi.readlines():
+        for line in tqdm(fi.readlines()):
             curr = json.loads(line)
             if curr["docs_id"] not in meta_data:
                 meta_data[curr["docs_id"]] = curr
