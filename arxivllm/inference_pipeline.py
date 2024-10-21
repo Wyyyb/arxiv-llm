@@ -73,6 +73,7 @@ def single_complete_introduction(input_text):
         return input_text, None
     stop_token_ids = tokenizer.convert_tokens_to_ids(['<|cite_start|>', '<|paper_end|>'])
     print("stop_token_ids", stop_token_ids)
+    eos_token_id = stop_token_ids[0]
     stopping_criteria = StoppingCriteriaList([CustomStoppingCriteria(stops=stop_token_ids)])
     hidden_state_capture = HiddenStateCapture(stop_token_ids[0])
 
@@ -94,7 +95,9 @@ def single_complete_introduction(input_text):
             top_k=50,
             top_p=1,
             temperature=0.1,
-            stopping_criteria=stopping_criteria,
+            eos_token_id=eos_token_id,
+            # forced_eos_token_id=my_eos_token_id,
+            # stopping_criteria=stopping_criteria,
             # logits_processor=[hidden_state_capture],
             output_hidden_states=True,
             return_dict_in_generate=True
