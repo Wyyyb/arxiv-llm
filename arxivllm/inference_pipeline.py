@@ -139,7 +139,7 @@ def llm_rerank(retrieved_k_results, meta_data):
         if index not in meta_data:
             print("index not found in meta_data", index)
             continue
-        recall_results.append(meta_data[index])
+        recall_results.append(meta_data[index]["abstract"])
     # 假设llm就选第一个
     res = recall_results[0]
     reference = res.replace("<|reference_start|>", "(Reference: ").replace("<|reference_end|>", "<|cite_end|>")
