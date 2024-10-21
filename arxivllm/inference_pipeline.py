@@ -112,10 +112,10 @@ def single_complete_introduction(input_text):
         return generated_text, None
 
     # 获取 <|cite_start|> token 的隐藏状态
-    cite_start_hidden_state = hidden_state_capture.hidden_state
+    # cite_start_hidden_state = hidden_state_capture.hidden_state
     print("new_content", new_content)
-    print("cite_start_hidden_state", cite_start_hidden_state.shape)
-    return new_content, cite_start_hidden_state
+    # print("cite_start_hidden_state", cite_start_hidden_state.shape)
+    return new_content, output.hidden_states[-1][-1][-1]
 
 
 def complete_intro(title, abstract, partial_intro):
