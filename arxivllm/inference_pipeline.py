@@ -72,6 +72,7 @@ def single_complete_introduction(input_text):
     if len(inputs.input_ids[0]) > 15000:
         return input_text, None
     stop_token_ids = tokenizer.convert_tokens_to_ids(['<|cite_start|>', '<|paper_end|>'])
+    print("stop_token_ids", stop_token_ids)
     stopping_criteria = StoppingCriteriaList([CustomStoppingCriteria(stops=stop_token_ids)])
     hidden_state_capture = HiddenStateCapture(stop_token_ids[0])
 
@@ -96,6 +97,7 @@ def single_complete_introduction(input_text):
             stopping_criteria=stopping_criteria,
             # logits_processor=[hidden_state_capture],
             output_hidden_states=True,
+            return_dict_in_generate=True
         )
     print("output_hidden_states", output.hidden_states)
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
