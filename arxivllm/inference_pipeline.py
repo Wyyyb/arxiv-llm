@@ -212,14 +212,17 @@ def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, 
     index = faiss.IndexFlatIP(d)
 
     # 将语料库向量添加到索引中
+    faiss.normalize_L2(encoded_corpus)
     index.add(encoded_corpus)
 
     # 执行搜索
+    faiss.normalize_L2(cite_start_hidden_state)
     distances, indices = index.search(cite_start_hidden_state, top_k)
 
     # 获取对应的 lookup_indices
-    retrieved_indices = [lookup_indices[i] for i in indices[0]]
+    retrieved_indices = [str(lookup_indices[i]) for i in indices[0]]
     print("retrieved_indices", retrieved_indices)
+    print("distances[0]", distances[0])
     # 返回结果
     return list(zip(retrieved_indices, distances[0]))
 
