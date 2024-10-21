@@ -209,10 +209,7 @@ def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, 
 
     # 获取向量维度
     d = encoded_corpus.shape[1]
-
-    # 创建 GPU 索引
-    res = faiss.StandardGpuResources()
-    index = faiss.GpuIndexFlatIP(res, d)
+    index = faiss.IndexFlatIP(d)
 
     # 将语料库向量添加到索引中
     index.add(encoded_corpus)
