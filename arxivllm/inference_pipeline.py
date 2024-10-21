@@ -36,20 +36,16 @@ class HiddenStateCapture(LogitsProcessor):
 
 
 def single_complete_introduction(input_text):
-    num_gpus = torch.cuda.device_count()
-    if num_gpus < 2:
-        print(f"警告：只检测到 {num_gpus} 个 GPU。张量并行需要至少2个GPU。")
-        return None
-
-    print(f"使用 {num_gpus} 个 GPU 进行张量并行")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"使用设备: {device}")
 
     # 加载模型配置
     model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
     config = AutoConfig.from_pretrained(model_path)
 
-    # 初始化空权重的模型
-    with init_empty_weights():
-        model = AutoModelForCausalLM.from_config(config)
+    # 直接加载模型和权重
+    model = AutoModelForCausalLM.from_pretrained(model_path, config=config)
+    model.to(device)  # 将模型移动到 GPU
 
     # 加载分词器
     tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -60,16 +56,9 @@ def single_complete_introduction(input_text):
     tokenizer.add_tokens(special_tokens)
     model.resize_token_embeddings(len(tokenizer))
 
-    # 使用张量并行加载模型
-    model = load_checkpoint_and_dispatch(
-        model,
-        model_path,
-        device_map="auto",
-        no_split_module_classes=["GPTJBlock"]  # 根据您的模型架构调整
-    )
     # 编码输入文本
-    inputs = tokenizer(input_text, return_tensors="pt")
-    if len(inputs.input_ids) > 15000:
+    inputs = tokenizer(input_text, return_tensors="pt").to(device)  # 将输入移动到 GPU
+    if len(inputs.input_ids[0]) > 15000:
         return input_text, None
     stop_token_ids = tokenizer.convert_tokens_to_ids(['<|cite_start|>', '<|paper_end|>'])
     stopping_criteria = StoppingCriteriaList([CustomStoppingCriteria(stops=stop_token_ids)])
