@@ -6,6 +6,7 @@ import faiss
 from transformers import StoppingCriteria, StoppingCriteriaList
 import pickle
 import json
+from joblib import load
 
 
 class CustomStoppingCriteria(StoppingCriteria):
@@ -146,12 +147,23 @@ def load_meta_data():
     return meta_data
 
 
-def load_corpus_base():
+def load_corpus_base_bk():
     corpus_base_path = "../embedded_corpus/corpus.0.pkl"
     with open(corpus_base_path, "rb") as fi:
         data = pickle.load(fi)
     encoded, lookup_indices = data
     return encoded, lookup_indices
+
+
+def load_corpus_base():
+    corpus_base_path = "../embedded_corpus/corpus.0.pkl"
+    try:
+        data = load(corpus_base_path)
+        encoded, lookup_indices = data
+        return encoded, lookup_indices
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        return None, None
 
 
 def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5):
