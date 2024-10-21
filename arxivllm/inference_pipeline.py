@@ -41,13 +41,19 @@ class HiddenStateCapture(LogitsProcessor):
         self.hidden_state = None
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> torch.FloatTensor:
-        if self.hidden_state is None and self.target_token_id in input_ids[0]:
-            # 假设我们能够访问隐藏状态
-            # 注意：这可能需要修改模型的 forward 方法来返回隐藏状态
-            self.hidden_state = kwargs.get('hidden_states', None)
-            if self.hidden_state is not None:
-                self.hidden_state = self.hidden_state[-1][:, -1, :]  # 获取最后一层的最后一个 token 的隐藏状态
+        # 检查是否已经捕获了隐藏状态
+        if self.hidden_state is None:
+            # 检查目标 token 是否在输入中
+            if self.target_token_id in input_ids[0]:
+                # 尝试从 kwargs 获取隐藏状态
+                hidden_states = kwargs.get('hidden_states', None)
+                if hidden_states is not None:
+                    # 假设 hidden_states 是一个元组，其中最后一个元素是最后一层的隐藏状态
+                    last_hidden_state = hidden_states[-1]
+                    # 获取最后一个 token 的隐藏状态
+                    self.hidden_state = last_hidden_state[:, -1, :]
 
+        # 不修改 scores，直接返回
         return scores
 
 
@@ -82,6 +88,11 @@ def single_complete_introduction(input_text):
 
     # 生成续写的introduction
     max_new_tokens = 2500  # 您可以根据需要调整这个值
+
+    def model_forward(input_ids, attention_mask):
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True)
+        return outputs.logits, outputs.hidden_states
+
     with torch.no_grad():
         output = model.generate(
             inputs.input_ids,
@@ -95,9 +106,12 @@ def single_complete_introduction(input_text):
             temperature=0.1,
             stopping_criteria=stopping_criteria,
             logits_processor=[hidden_state_capture],
-            # logits_processor=LogitsProcessorList([hidden_state_capture]),
             output_hidden_states=True,
-            return_dict_in_generate=True
+            return_dict_in_generate=True,
+            output_scores=True,
+            output_attentions=True,
+            # 使用自定义的 forward 函数
+            forward_func=model_forward
         )
 
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
