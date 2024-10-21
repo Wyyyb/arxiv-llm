@@ -93,7 +93,7 @@ def single_complete_introduction(input_text):
             no_repeat_ngram_size=3,
             do_sample=True,
             top_p=0.95,
-            temperature=0.1,
+            temperature=0.6,
             eos_token_id=eos_token_id,
             output_hidden_states=True,
             return_dict_in_generate=True
