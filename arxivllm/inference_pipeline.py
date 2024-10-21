@@ -6,7 +6,9 @@ import faiss
 from transformers import StoppingCriteria, StoppingCriteriaList
 import pickle
 import json
-from joblib import load
+import numpy as np
+import h5py
+import json
 
 
 class CustomStoppingCriteria(StoppingCriteria):
@@ -156,15 +158,37 @@ def load_corpus_base_bk():
 
 
 def load_corpus_base():
-    corpus_base_path = "../embedded_corpus/corpus.0.pkl"
+    # 尝试加载 HDF5 格式
     try:
-        data = load(corpus_base_path)
-        encoded, lookup_indices = data
-        print("load corpus_base successfully")
+        with h5py.File("../embedded_corpus/corpus.0.h5", 'r') as f:
+            encoded = f['encoded'][:]
+            lookup_indices = f['lookup_indices'][:]
         return encoded, lookup_indices
     except Exception as e:
-        print(f"Error loading data: {e}")
-        return None, None
+        print(f"Error loading HDF5: {e}")
+
+    # 如果 HDF5 加载失败，尝试加载 NPZ 格式
+    try:
+        data = np.load("../embedded_corpus/corpus.0.npz")
+        encoded = data['encoded']
+        lookup_indices = data['lookup_indices']
+        return encoded, lookup_indices
+    except Exception as e:
+        print(f"Error loading NPZ: {e}")
+
+    # 如果 NPZ 加载失败，尝试加载 JSON 格式
+    try:
+        with open("../embedded_corpus/corpus.0.json", 'r') as f:
+            data = json.load(f)
+        encoded = np.array(data['encoded'])
+        lookup_indices = np.array(data['lookup_indices'])
+        return encoded, lookup_indices
+    except Exception as e:
+        print(f"Error loading JSON: {e}")
+
+    # 如果所有格式都加载失败
+    print("Failed to load data from all formats")
+    return None, None
 
 
 def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5):
