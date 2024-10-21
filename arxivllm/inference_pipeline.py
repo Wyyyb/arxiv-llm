@@ -99,7 +99,9 @@ def single_complete_introduction(input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    print("output_hidden_states", output.hidden_states[-1][-1].shape)
+    print("output_hidden_states", len(output.hidden_states))
+    print("output_hidden_states", len(output.hidden_states[-1]))
+    print("output_hidden_states", len(output.hidden_states[-1][-1]))
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     # 提取生成的新内容
@@ -218,9 +220,8 @@ def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, 
     # 执行搜索
     faiss.normalize_L2(cite_start_hidden_state)
     distances, indices = index.search(cite_start_hidden_state, top_k)
-
     # 获取对应的 lookup_indices
-    retrieved_indices = [str(lookup_indices[i]) for i in indices[0]]
+    retrieved_indices = [str(lookup_indices[i], 'ascii') for i in indices[0]]
     print("retrieved_indices", retrieved_indices)
     print("distances[0]", distances[0])
     # 返回结果
