@@ -96,6 +96,16 @@ def single_complete_introduction(input_text):
     print("output.sequences[0]", len(output.sequences[0]), output.sequences[0])
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
+    new_input = tokenizer(generated_text, return_tensors="pt").to(device)
+    with torch.no_grad():
+        new_output = model(
+            new_input.input_ids,
+            attention_mask=new_input.attention_mask,
+            output_hidden_states=True,
+            return_dict=True
+        )
+    cite_rep = new_output.hidden_states[-1][:, -1, :]
+
     # 提取生成的新内容
     # new_content = generated_text[len(input_text):]
     new_content = generated_text
@@ -103,7 +113,8 @@ def single_complete_introduction(input_text):
         return generated_text, None
 
     print("new_content", new_content)
-    return new_content, output.hidden_states[-1][-1][-1]
+    # return new_content, output.hidden_states[-1][-1][-1]
+    return new_content, cite_rep
 
 
 def complete_intro(title, abstract, partial_intro):
