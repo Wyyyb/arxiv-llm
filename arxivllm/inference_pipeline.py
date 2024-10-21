@@ -97,6 +97,7 @@ def single_complete_introduction(input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
+    print("inputs.input_ids", len(inputs.input_ids))
     print("output_hidden_states", len(output.hidden_states))
     print("output_hidden_states", len(output.hidden_states[-1]))
     print("output_hidden_states", len(output.hidden_states[-1][-1]))
