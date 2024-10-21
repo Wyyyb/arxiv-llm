@@ -148,7 +148,7 @@ def load_meta_data():
 
 def load_corpus_base():
     corpus_base_path = "../embedded_corpus/corpus.0.pkl"
-    with open(corpus_base_path, "r") as fi:
+    with open(corpus_base_path, "rb") as fi:
         data = pickle.load(fi)
     encoded, lookup_indices = data
     return encoded, lookup_indices
