@@ -195,6 +195,7 @@ def load_corpus_base():
 
 
 def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5):
+    print("Retrieving reference")
     # 确保输入是numpy数组
     if isinstance(encoded_corpus, torch.Tensor):
         encoded_corpus = encoded_corpus.cpu().numpy()
@@ -220,7 +221,7 @@ def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, 
 
     # 获取对应的 lookup_indices
     retrieved_indices = [lookup_indices[i] for i in indices[0]]
-
+    print("retrieved_indices", retrieved_indices)
     # 返回结果
     return list(zip(retrieved_indices, distances[0]))
 
