@@ -24,7 +24,7 @@ class CustomStoppingCriteria(StoppingCriteria):
         return False
 
 
-class HiddenStateCapture(LogitsProcessor):
+class HiddenStateCaptureBK(LogitsProcessor):
     def __init__(self, target_token_id):
         self.target_token_id = target_token_id
         self.hidden_state = None
@@ -32,6 +32,22 @@ class HiddenStateCapture(LogitsProcessor):
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, cur_len) -> torch.FloatTensor:
         if input_ids[0][-1] == self.target_token_id and self.hidden_state is None:
             self.hidden_state = input_ids.hidden_states[-1][:, -1, :]
+        return scores
+
+
+class HiddenStateCapture(LogitsProcessor):
+    def __init__(self, target_token_id):
+        self.target_token_id = target_token_id
+        self.hidden_state = None
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> torch.FloatTensor:
+        if self.hidden_state is None and self.target_token_id in input_ids[0]:
+            # 假设我们能够访问隐藏状态
+            # 注意：这可能需要修改模型的 forward 方法来返回隐藏状态
+            self.hidden_state = kwargs.get('hidden_states', None)
+            if self.hidden_state is not None:
+                self.hidden_state = self.hidden_state[-1][:, -1, :]  # 获取最后一层的最后一个 token 的隐藏状态
+
         return scores
 
 
@@ -78,7 +94,8 @@ def single_complete_introduction(input_text):
             top_p=1,
             temperature=0.1,
             stopping_criteria=stopping_criteria,
-            logits_processor=LogitsProcessorList([hidden_state_capture]),
+            logits_processor=[hidden_state_capture],
+            # logits_processor=LogitsProcessorList([hidden_state_capture]),
             output_hidden_states=True,
             return_dict_in_generate=True
         )
