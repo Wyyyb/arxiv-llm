@@ -11,7 +11,7 @@ cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-output_dir="../model_output/test_1020"
+output_dir="../model_output/test_1021"
 
 torchrun --nproc_per_node $GPUS_PER_NODE \
  --master_addr $MASTER_ADDR \
@@ -22,7 +22,7 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --deepspeed ds_zero3_config.json \
  --output_dir ${output_dir} \
  --model_name_or_path /gpfs/public/research/xy/yubowang/models/Qwen2.5-7B \
- --save_steps 20 \
+ --save_steps 200 \
  --dataset_name json \
  --dataset_path ../data/train_data_1019.jsonl \
  --bf16 \
@@ -36,5 +36,5 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --num_train_epochs 1 \
  --logging_steps 1 \
  --overwrite_output_dir \
- --gradient_accumulation_steps 16
+ --gradient_accumulation_steps 1
 
