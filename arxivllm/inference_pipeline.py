@@ -42,7 +42,7 @@ def single_complete_introduction(input_text):
     print(f"使用 {num_gpus} 个 GPU 进行张量并行")
 
     # 加载模型配置
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm/model_output/checkpoint-140/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
     config = AutoConfig.from_pretrained(model_path)
 
     # 初始化空权重的模型
@@ -160,6 +160,7 @@ def load_corpus_base():
     try:
         data = load(corpus_base_path)
         encoded, lookup_indices = data
+        print("load corpus_base successfully")
         return encoded, lookup_indices
     except Exception as e:
         print(f"Error loading data: {e}")
