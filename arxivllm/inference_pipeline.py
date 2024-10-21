@@ -24,17 +24,6 @@ class CustomStoppingCriteria(StoppingCriteria):
         return False
 
 
-class HiddenStateCaptureBK(LogitsProcessor):
-    def __init__(self, target_token_id):
-        self.target_token_id = target_token_id
-        self.hidden_state = None
-
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, cur_len) -> torch.FloatTensor:
-        if input_ids[0][-1] == self.target_token_id and self.hidden_state is None:
-            self.hidden_state = input_ids.hidden_states[-1][:, -1, :]
-        return scores
-
-
 class HiddenStateCapture(LogitsProcessor):
     def __init__(self, target_token_id):
         self.target_token_id = target_token_id
@@ -107,13 +96,8 @@ def single_complete_introduction(input_text):
             stopping_criteria=stopping_criteria,
             logits_processor=[hidden_state_capture],
             output_hidden_states=True,
-            return_dict_in_generate=True,
-            output_scores=True,
-            output_attentions=True,
-            # 使用自定义的 forward 函数
-            forward_func=model_forward
         )
-
+    print("output_hidden_states", output.hidden_states)
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     # 提取生成的新内容
