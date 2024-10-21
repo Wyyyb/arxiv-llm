@@ -12,7 +12,7 @@ for s in 0
 do
 gpuid=$s
 CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
-  --output_dir=temp \
+  --output_dir temp \
   --model_name_or_path ${model_path} \
   --bf16 \
   --pooling eos \

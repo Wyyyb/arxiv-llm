@@ -60,8 +60,7 @@ class ArxivLLM(nn.Module):
 
             target = torch.arange(scores.size(0), device=scores.device, dtype=torch.long)
             target = target * (p_reps.size(0) // q_reps.size(0))
-            print("scores", scores)
-
+            logging.info(f"contrastive loss: {scores}")
             loss = self.compute_loss(scores / self.temperature, target)
             loss += gen_loss
             if self.is_ddp:
