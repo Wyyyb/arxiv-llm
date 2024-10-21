@@ -90,8 +90,6 @@ def single_complete_introduction(input_text):
             inputs.input_ids,
             attention_mask=inputs.attention_mask,
             max_new_tokens=max_new_tokens,
-            num_return_sequences=1,
-            no_repeat_ngram_size=3,
             do_sample=True,
             top_p=0.95,
             temperature=0.6,
