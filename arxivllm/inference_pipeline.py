@@ -102,7 +102,7 @@ def single_complete_introduction(input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    print("output_hidden_states", output.hidden_states[-1][-1])
+    print("output_hidden_states", output.hidden_states[-1][-1].shape)
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     # 提取生成的新内容
