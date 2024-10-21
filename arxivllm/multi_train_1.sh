@@ -11,7 +11,7 @@ cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-output_dir="../model_output/test_1022"
+output_dir="../model_output/test_1023_weighted"
 
 torchrun --nproc_per_node $GPUS_PER_NODE \
  --master_addr $MASTER_ADDR \
