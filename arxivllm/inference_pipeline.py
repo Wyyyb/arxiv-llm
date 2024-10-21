@@ -94,7 +94,7 @@ def single_complete_introduction(input_text):
             top_p=1,
             temperature=0.1,
             stopping_criteria=stopping_criteria,
-            logits_processor=[hidden_state_capture],
+            # logits_processor=[hidden_state_capture],
             output_hidden_states=True,
         )
     print("output_hidden_states", output.hidden_states)
