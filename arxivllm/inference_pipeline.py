@@ -102,7 +102,7 @@ def single_complete_introduction(input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    print("output_hidden_states", output.hidden_states)
+    print("output_hidden_states", output.hidden_states[-1][:, -1, :])
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     # 提取生成的新内容
@@ -121,7 +121,8 @@ def single_complete_introduction(input_text):
 def complete_intro(title, abstract, partial_intro):
     encoded_corpus, lookup_indices = load_corpus_base()
     meta_data = load_meta_data()
-    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    input_text = f"<|paper_start|>{partial_intro}"
     input_text, cite_start_hidden_state = single_complete_introduction(input_text)
     while cite_start_hidden_state:
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5)
