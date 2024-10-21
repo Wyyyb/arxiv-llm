@@ -96,9 +96,6 @@ def single_complete_introduction(input_text):
             top_p=1,
             temperature=0.1,
             eos_token_id=eos_token_id,
-            # forced_eos_token_id=my_eos_token_id,
-            # stopping_criteria=stopping_criteria,
-            # logits_processor=[hidden_state_capture],
             output_hidden_states=True,
             return_dict_in_generate=True
         )
@@ -111,10 +108,7 @@ def single_complete_introduction(input_text):
     if new_content.endswith("<|paper_end|>"):
         return generated_text, None
 
-    # 获取 <|cite_start|> token 的隐藏状态
-    # cite_start_hidden_state = hidden_state_capture.hidden_state
     print("new_content", new_content)
-    # print("cite_start_hidden_state", cite_start_hidden_state.shape)
     return new_content, output.hidden_states[-1][-1][-1]
 
 
@@ -124,7 +118,7 @@ def complete_intro(title, abstract, partial_intro):
     # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
     input_text = f"<|paper_start|>{partial_intro}"
     input_text, cite_start_hidden_state = single_complete_introduction(input_text)
-    while cite_start_hidden_state:
+    while cite_start_hidden_state is not None:
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5)
         reference = llm_rerank(retrieved_k_results, meta_data)
         input_text = input_text + reference
