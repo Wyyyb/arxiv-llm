@@ -9,7 +9,8 @@ sta_record = {"main tex not found": 0,
               "intro and related work not found": 0,
               "arxiv id not found in metadata": 0,
               "bibtex not found": 0,
-              "satisfied data number": 0}
+              "satisfied data number": 0,
+              "total paper number": 0}
 
 
 def single_paper_process(paper_dir):
@@ -154,15 +155,20 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
             curr_paper["abstract"] = curr_meta["abstract"]
             curr_paper["arxiv_id"] = k
             curr_paper = post_process(curr_paper, meta_data, title_map)
+            if "intro" not in curr_paper and "related_work" not in curr_paper:
+                sta_record["intro and related work not found"] += 1
+                continue
             curr_arxiv_base[k] = curr_paper
             if curr_paper["satisfied_data"]:
                 count += 1
                 sta_record["satisfied data number"] += 1
             else:
                 unqualified_count += 1
+                sta_record["less than four citations found"] += 1
         if not curr_arxiv_base:
             continue
         length = len(temp_arxiv_base)
+        sta_record["total paper number"] += length
         output_path = os.path.join(arxiv_base_output_dir, sub_dir + f"_{str(length)}_{str(count)}_arxiv_base.json")
         with open(output_path, "w") as fo:
             fo.write(json.dumps(curr_arxiv_base, indent=2))
@@ -176,12 +182,12 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
 
 def main():
     # latex_dir = "/Users/MyDisk/2024/git/cite_rag_bk/local/"
-    latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
-    output_dir = "../local/arxiv_base_1024_sample"
-    # latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
-    # output_dir = "../local/arxiv_base_1022"
+    # latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
+    # output_dir = "../local/arxiv_base_1024_sample"
+    latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
+    output_dir = "../local/arxiv_base_1024"
     os.makedirs(output_dir, exist_ok=True)
-    construct(latex_dir, output_dir, failed_record_path="../local/failed_record_1022.json",
+    construct(latex_dir, output_dir, failed_record_path="../local/failed_record_1024.json",
               sta_file_path="../local/global_sta_record.json")
 
 

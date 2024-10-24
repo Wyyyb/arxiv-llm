@@ -99,7 +99,7 @@ def handle_input_commands(content, base_dir, depth=0, max_depth=10):
                     print(f"Warning: Error processing {input_path}: {str(e)}")
                     continue
 
-        print(f"Warning: Could not find input file: {input_file}")
+        # print(f"Warning: Could not find input file: {input_file}")
         return match.group(0)
 
     # 处理标准的 \input{} 命令
