@@ -17,7 +17,7 @@ def single_paper_process(paper_dir):
     global sta_record
     main_tex = find_main_tex_file(paper_dir)
     if not main_tex:
-        print("main text not found in", paper_dir)
+        # print("main text not found in", paper_dir)
         sta_record["main tex not found"] += 1
         return None
     content = ""

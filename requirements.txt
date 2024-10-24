@@ -8,4 +8,4 @@ consoleprinter
 datasets
 faiss-gpu
 numpy==1.23.5
-
+chardet

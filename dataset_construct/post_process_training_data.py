@@ -61,9 +61,9 @@ def post_process(curr_paper, meta_data, title_map):
         else:
             semantic_scholar_res = request_semantic(title)
             if not semantic_scholar_res:
-                print("arxiv id", arxiv_id)
-                print("unmatched title:", title)
-                print("bib_item", bib_item)
+                # print("arxiv id", arxiv_id)
+                # print("unmatched title:", title)
+                # print("bib_item", bib_item)
                 intro = intro.replace(cite_value, "")
                 continue
             else:
