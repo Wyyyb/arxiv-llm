@@ -70,7 +70,7 @@ def remove_figures_and_tables(content):
 
 def build_arxiv_base(input_dir):
     arxiv_base = defaultdict(dict)
-    for paper_dir in os.listdir(input_dir):
+    for paper_dir in tqdm(os.listdir(input_dir)):
         # if "1608." not in paper_dir:
         #     continue
         full_path = os.path.join(input_dir, paper_dir)
@@ -123,10 +123,11 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
         if not os.path.isdir(curr_dir):
             # print("not a dir", curr_dir)
             continue
+        print("building", curr_dir)
         temp_arxiv_base = build_arxiv_base(curr_dir)
         curr_arxiv_base = {}
         print("Processing", curr_dir)
-        for k, v in temp_arxiv_base.items():
+        for k, v in tqdm(temp_arxiv_base.items()):
             curr_paper = {}
             if k not in meta_data:
                 add_message(k, "arxiv id not found in metadata")
