@@ -24,6 +24,7 @@ END_INTRO_PATTERN = re.compile(r'\\n(?:\\section|\\chapter|\d+\.|II\.)|\\Z', re.
 
 
 def extract_intro(content):
+    print("extract_intro, content length", len(content))
     intro_content = None
     min_start_pos = len(content)  # 记录最早出现的介绍部分
 
