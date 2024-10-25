@@ -189,10 +189,10 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path, semantic
 
 def main():
     # latex_dir = "/Users/MyDisk/2024/git/cite_rag_bk/local/"
-    latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
-    output_dir = "../local/arxiv_base_1024_sample"
-    # latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
-    # output_dir = "../local/arxiv_base_1024"
+    # latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
+    # output_dir = "../local/arxiv_base_1024_sample"
+    latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
+    output_dir = "../local/arxiv_base_1024"
     os.makedirs("../local/", exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
     construct(latex_dir, output_dir, failed_record_path="../local/failed_record_1024.json",
