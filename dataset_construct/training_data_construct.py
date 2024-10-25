@@ -76,6 +76,7 @@ def build_arxiv_base(input_dir):
         full_path = os.path.join(input_dir, paper_dir)
         if os.path.isdir(full_path):
             try:
+                print("building single paper", full_path)
                 paper_data = single_paper_process(full_path)
             except Exception as e:
                 print("Error processing", e, full_path)
