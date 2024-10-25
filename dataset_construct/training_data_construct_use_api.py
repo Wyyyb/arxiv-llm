@@ -122,9 +122,9 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path, semantic
         else:
             failed_record[arxiv_id].append(m)
 
-    count = 0
-    unqualified_count = 0
     for sub_dir in os.listdir(latex_dir):
+        count = 0
+        unqualified_count = 0
         curr_dir = os.path.join(latex_dir, sub_dir)
         if not os.path.isdir(curr_dir):
             # print("not a dir", curr_dir)
@@ -184,8 +184,8 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path, semantic
             fo.write(json.dumps(failed_record, indent=2))
         with open(sta_file_path, "w") as fo:
             fo.write(json.dumps(sta_record, indent=2))
-    print("qualified count", count)
-    print("unqualified count", unqualified_count)
+        print("qualified count", count)
+        print("unqualified count", unqualified_count)
 
 
 def main():
