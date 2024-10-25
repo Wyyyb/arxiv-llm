@@ -1,45 +1,48 @@
 import re
 from collections import defaultdict, OrderedDict
 
-
-def extract_intro(content):
-    intro_patterns = [
+# 在模块级别预编译所有正则表达式
+INTRO_PATTERNS = [
+    re.compile(pattern, re.DOTALL | re.IGNORECASE) for pattern in [
         # LaTeX 命令模式 (section/chapter 带或不带星号)
         r'\\(?:section|subsection|chapter)\*?{(?:Introduction|INTRODUCTION)}',
-
         # 编号模式
         r'(?:1|I)\.\s+(?:Introduction|INTRODUCTION)',
-
         # noindent 模式
         r'\\noindent\s*\\textbf{(?:Introduction|INTRODUCTION)}',
-
         # Introduction 与其他词组合的 LaTeX 命令模式
         r'\\(?:section|chapter)\*?{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}',
-
         # Introduction 与其他词组合的编号模式
         r'(?:1|I)\.\s+(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)',
-
         # Introduction 与其他词组合的 noindent 模式
         r'\\noindent\s*\\textbf{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}'
     ]
+]
 
-    # 组合所有模式
-    combined_pattern = '|'.join(f'({pattern})' for pattern in intro_patterns)
+# 预编译结束模式
+END_INTRO_PATTERN = re.compile(r'\\n(?:\\section|\\chapter|\d+\.|II\.)|\\Z', re.DOTALL | re.IGNORECASE)
 
-    # 搜索介绍部分，使用非贪婪匹配并包含所有字符（包括换行）
-    intro_match = re.search(f'({combined_pattern})(.*?)(?=\\n(?:\\\\section|\\\\chapter|\\d+\\.|II\\.)|\\Z)',
-                            content, re.DOTALL | re.IGNORECASE)
 
-    if intro_match:
-        intro_title = intro_match.group(1)
-        intro_content = intro_match.group(len(intro_patterns) + 2).strip()
+def extract_intro(content):
+    intro_content = None
+    min_start_pos = len(content)  # 记录最早出现的介绍部分
 
-        if intro_content:
-            # 清理介绍内容
-            intro_content = clean_intro_content(intro_content)
-            return intro_content
+    # 对每个模式进行搜索
+    for pattern in INTRO_PATTERNS:
+        match = pattern.search(content)
+        if match:
+            start_pos = match.start()
+            if start_pos < min_start_pos:
+                # 找到介绍标题后，搜索结束位置
+                title_end = match.end()
+                end_match = END_INTRO_PATTERN.search(content, title_end)
+                if end_match:
+                    intro_text = content[title_end:end_match.start()].strip()
+                    if intro_text:
+                        intro_content = clean_intro_content(intro_text)
+                        min_start_pos = start_pos
 
-    return None
+    return intro_content
 
 
 def clean_intro_content(content):
@@ -78,69 +81,140 @@ def clean_title(title):
     return title
 
 
-def extract_related_work(content):
-    primary_patterns = [
-        # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+# 预编译所有正则表达式
+PRIMARY_PATTERNS = [
+    re.compile(pattern, re.DOTALL | re.IGNORECASE) for pattern in [
         r'\\(?:section|subsection|chapter)\*?{(?:Related Works?|Previous Work|Prior Research)}',
-
-        # 编号模式
         r'(?:2|II)\.\s+(?:Related Works?|Previous Work|Prior Research)',
-
-        # noindent 模式
         r'\\noindent\s*\\textbf{(?:Related Works?|Previous Work|Prior Research)}'
     ]
+]
 
-    secondary_patterns = [
-        # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+SECONDARY_PATTERNS = [
+    re.compile(pattern, re.DOTALL | re.IGNORECASE) for pattern in [
         r'\\(?:section|subsection|chapter)\*?{(?:Background|State of the Art|Literature Review)}',
-
-        # 编号模式
         r'(?:2|II)\.\s+(?:Background|State of the Art|Literature Review)',
-
-        # noindent 模式
         r'\\noindent\s*\\textbf{(?:Background|State of the Art|Literature Review)}'
     ]
+]
 
+# 预编译其他常用模式
+END_RW_PATTERN = re.compile(r'\\n(\\section|\\chapter|\d+\.|[IV]+\.|\begin{|\end{document})', re.DOTALL | re.IGNORECASE)
+SUBSECTION_PATTERN = re.compile(r'\\subsection{[^}]+}')
+PARAGRAPH_PATTERN = re.compile(r'\n\n(.+?)\n\n', re.DOTALL)
+
+# 预定义关键词集合
+PRIMARY_KEYWORDS = {'related work', 'previous work', 'prior research'}
+SECONDARY_KEYWORDS = {'background', 'state of the art', 'literature review'}
+
+
+def extract_related_work(content):
     def search_patterns(patterns, text):
-        combined_pattern = '|'.join(f'({pattern})' for pattern in patterns)
-        match = re.search(
-            f'({combined_pattern})(.+?)\\n(\\\\section|\\\\chapter|\\d+\\.|[IV]+\\.|\\\\begin{{|\\\\end{{document}})',
-            text,
-            re.DOTALL | re.IGNORECASE
-        )
-        if match:
-            this_title = match.group(1)
-            this_content = match.group(len(patterns) + 2).strip()
-            return this_title, this_content
+        for pattern in patterns:
+            match = pattern.search(text)
+            if match:
+                # 找到标题后搜索结束位置
+                title_end = match.end()
+                end_match = END_RW_PATTERN.search(text, title_end)
+                if end_match:
+                    return match.group(0), text[title_end:end_match.start()].strip()
         return None, None
 
     # 首先搜索主要模式
-    title, related_work_content = search_patterns(primary_patterns, content)
+    title, related_work_content = search_patterns(PRIMARY_PATTERNS, content)
 
     # 如果没有找到，搜索次要模式
     if not related_work_content:
-        title, related_work_content = search_patterns(secondary_patterns, content)
+        title, related_work_content = search_patterns(SECONDARY_PATTERNS, content)
 
     if related_work_content:
         # 处理可能的子节
-        subsections = re.split(r'\\subsection{[^}]+}', related_work_content)
+        subsections = SUBSECTION_PATTERN.split(related_work_content)
         if len(subsections) > 1:
             related_work_content = '\n\n'.join(subsections)
-
         return related_work_content.strip()
 
     # 如果没有找到明确的部分，尝试查找可能包含相关工作内容的段落
-    potential_paragraphs = re.findall(r'\n\n(.+?)\n\n', content, re.DOTALL)
+    potential_paragraphs = PARAGRAPH_PATTERN.findall(content)
+
+    # 检查主要关键词
     for paragraph in potential_paragraphs:
-        if any(keyword in paragraph.lower() for keyword in ['related work', 'previous work', 'prior research']):
+        paragraph_lower = paragraph.lower()
+        if any(keyword in paragraph_lower for keyword in PRIMARY_KEYWORDS):
             return paragraph.strip()
 
-    # 如果仍然没有找到，尝试查找次要关键词
+    # 检查次要关键词
     for paragraph in potential_paragraphs:
-        if any(keyword in paragraph.lower() for keyword in ['background', 'state of the art', 'literature review']):
+        paragraph_lower = paragraph.lower()
+        if any(keyword in paragraph_lower for keyword in SECONDARY_KEYWORDS):
             return paragraph.strip()
 
     return None
+
+
+# def extract_related_work(content):
+#     primary_patterns = [
+#         # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+#         r'\\(?:section|subsection|chapter)\*?{(?:Related Works?|Previous Work|Prior Research)}',
+# 
+#         # 编号模式
+#         r'(?:2|II)\.\s+(?:Related Works?|Previous Work|Prior Research)',
+# 
+#         # noindent 模式
+#         r'\\noindent\s*\\textbf{(?:Related Works?|Previous Work|Prior Research)}'
+#     ]
+# 
+#     secondary_patterns = [
+#         # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+#         r'\\(?:section|subsection|chapter)\*?{(?:Background|State of the Art|Literature Review)}',
+# 
+#         # 编号模式
+#         r'(?:2|II)\.\s+(?:Background|State of the Art|Literature Review)',
+# 
+#         # noindent 模式
+#         r'\\noindent\s*\\textbf{(?:Background|State of the Art|Literature Review)}'
+#     ]
+# 
+#     def search_patterns(patterns, text):
+#         combined_pattern = '|'.join(f'({pattern})' for pattern in patterns)
+#         match = re.search(
+#             f'({combined_pattern})(.+?)\\n(\\\\section|\\\\chapter|\\d+\\.|[IV]+\\.|\\\\begin{{|\\\\end{{document}})',
+#             text,
+#             re.DOTALL | re.IGNORECASE
+#         )
+#         if match:
+#             this_title = match.group(1)
+#             this_content = match.group(len(patterns) + 2).strip()
+#             return this_title, this_content
+#         return None, None
+# 
+#     # 首先搜索主要模式
+#     title, related_work_content = search_patterns(primary_patterns, content)
+# 
+#     # 如果没有找到，搜索次要模式
+#     if not related_work_content:
+#         title, related_work_content = search_patterns(secondary_patterns, content)
+# 
+#     if related_work_content:
+#         # 处理可能的子节
+#         subsections = re.split(r'\\subsection{[^}]+}', related_work_content)
+#         if len(subsections) > 1:
+#             related_work_content = '\n\n'.join(subsections)
+# 
+#         return related_work_content.strip()
+# 
+#     # 如果没有找到明确的部分，尝试查找可能包含相关工作内容的段落
+#     potential_paragraphs = re.findall(r'\n\n(.+?)\n\n', content, re.DOTALL)
+#     for paragraph in potential_paragraphs:
+#         if any(keyword in paragraph.lower() for keyword in ['related work', 'previous work', 'prior research']):
+#             return paragraph.strip()
+# 
+#     # 如果仍然没有找到，尝试查找次要关键词
+#     for paragraph in potential_paragraphs:
+#         if any(keyword in paragraph.lower() for keyword in ['background', 'state of the art', 'literature review']):
+#             return paragraph.strip()
+# 
+#     return None
 
 
 def extract_citation_keys(latex_text):
