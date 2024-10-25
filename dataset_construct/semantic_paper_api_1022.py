@@ -2,27 +2,36 @@ import requests
 import time
 
 
-def get_paper_info(title):
+def get_paper_info(title, api_key):
     base_url = "https://api.semanticscholar.org/graph/v1/paper/search/match"
     params = {
         "query": title,
         "fields": "title,url,abstract"
     }
 
-    try:
-        response = requests.get(base_url, params=params)
-        response.raise_for_status()  # 如果请求失败，这将引发一个异常
+    headers = {
+        "x-api-key": api_key
+    }
 
+    try:
+        start = time.time()
+        response = requests.get(base_url, params=params, headers=headers)
+        response.raise_for_status()
+        cost = float(time.time() - start)
+        print("requesting semantic scholar api cost:", cost)
+        if cost < 1:
+            print("will sleeping...", 1 - cost)
+            time.sleep(1-cost)
         data = response.json()
 
-        # 检查是否有匹配的论文
         if data:
+            data = data["data"][0]
             return {
-                "paperId": data.get("paperId"),
-                "title": data.get("title"),
-                "abstract": data.get("abstract"),
-                "url": data.get("url"),
-                "matchScore": data.get("matchScore")
+                "paperId": data.get("paperId", None),
+                "title": data.get("title", None),
+                "abstract": data.get("abstract", None),
+                "url": data.get("url", None),
+                "matchScore": data.get("matchScore", None)
             }
         else:
             return None
@@ -34,13 +43,13 @@ def get_paper_info(title):
             print(f"HTTP error occurred: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-
     return None
 
 
+API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
 # 使用示例
 paper_title = "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark"
-info = get_paper_info(paper_title)
+info = get_paper_info(paper_title, API_KEY)
 
 if info:
     print(f"Paper ID: {info['paperId']}")

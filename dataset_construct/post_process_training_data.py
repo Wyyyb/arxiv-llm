@@ -24,9 +24,8 @@ def update_semantic_meta_data(semantic_meta_data, semantic_meta_data_path):
             fo.write("\n")
 
 
-def post_process(curr_paper, meta_data, title_map):
+def post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path, semantic_scholar_cache):
     semantic_meta_data_path = "../corpus_data/semantic_meta_data_1022.jsonl"
-    semantic_meta_data, semantic_title_map = load_semantic_meta_data(semantic_meta_data_path)
     arxiv_id = curr_paper["arxiv_id"]
     if "intro" not in curr_paper and "related_work" not in curr_paper:
         curr_paper["satisfied_data"] = False
@@ -47,6 +46,7 @@ def post_process(curr_paper, meta_data, title_map):
             continue
         bib_item = curr_paper["bib"][cite_key]
         if "title" in bib_item and bib_item["title"] != "Unknown":
+            ori_title = bib_item["title"]
             title = bib_item["title"]
             title = clean_title(title)
             title = title.lower()
@@ -56,14 +56,10 @@ def post_process(curr_paper, meta_data, title_map):
         if title in title_map:
             cite_arxiv_id = title_map[title][0]
             abstract = meta_data[cite_arxiv_id]["abstract"]
-        elif title in semantic_title_map:
-            abstract = semantic_title_map[title]["abstract"]
         else:
-            semantic_scholar_res = request_semantic(title)
+            semantic_scholar_res = request_semantic(ori_title, semantic_scholar_cache_path,
+                                                    semantic_scholar_cache)
             if not semantic_scholar_res:
-                # print("arxiv id", arxiv_id)
-                # print("unmatched title:", title)
-                # print("bib_item", bib_item)
                 intro = intro.replace(cite_value, "")
                 continue
             else:
@@ -71,10 +67,7 @@ def post_process(curr_paper, meta_data, title_map):
                 print("semantic scholar newly recall title:", title)
                 intro = intro.replace(cite_value, "")
                 abstract = semantic_scholar_res["abstract"]
-                bias = semantic_scholar_res["bias"]
-                semantic_meta_data.append(semantic_scholar_res)
-                semantic_title_map[bias] = semantic_scholar_res
-                update_semantic_meta_data(semantic_meta_data, semantic_meta_data_path)
+
         # 当出现multi_cite的时候，只保留第一个合格的citation
         if cite_value not in intro:
             continue
@@ -97,14 +90,25 @@ def post_process(curr_paper, meta_data, title_map):
     return curr_paper
 
 
-def request_semantic(title):
+def request_semantic(title, semantic_scholar_cache_path, semantic_scholar_cache):
     return None
-    paper_info = get_paper_info(title)
+    SC_API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
+    if title in semantic_scholar_cache:
+        paper_info = semantic_scholar_cache[title]
+    else:
+        paper_info = get_paper_info(title, SC_API_KEY)
+        semantic_scholar_cache[title] = paper_info
+    if len(semantic_scholar_cache) % 100 == 0:
+        with open(semantic_scholar_cache_path, "w") as fo:
+            fo.write(json.dumps(semantic_scholar_cache))
     if paper_info is None:
         return None
     if "matchScore" not in paper_info or paper_info["matchScore"] is None:
         return None
     if paper_info["matchScore"] < 30:
+        print("score less than 30", title, paper_info["title"])
+        return None
+    if paper_info["abstract"] is None or len(paper_info["abstract"]) < 50:
         return None
     else:
         abstract = paper_info["abstract"]

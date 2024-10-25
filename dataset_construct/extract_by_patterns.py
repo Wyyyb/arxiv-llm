@@ -4,79 +4,23 @@ from collections import defaultdict, OrderedDict
 
 def extract_intro(content):
     intro_patterns = [
-        r'\\section{Introduction}',
-        r'\\section{INTRODUCTION}',
-        r'\\section\*{Introduction}',
-        r'\\section\*{INTRODUCTION}',
-        r'\\subsection{Introduction}',
-        r'\\subsection{INTRODUCTION}',
-        r'\\subsection\*{Introduction}',
-        r'\\subsection\*{INTRODUCTION}',
-        r'\\chapter{Introduction}',
-        r'\\chapter{INTRODUCTION}',
-        r'\\chapter\*{Introduction}',
-        r'\\chapter\*{INTRODUCTION}',
-        r'1\.\s+Introduction',
-        r'1\.\s+INTRODUCTION',
-        r'I\.\s+Introduction',
-        r'I\.\s+INTRODUCTION',
-        r'\\noindent\s*\\textbf{Introduction}',
-        r'\\noindent\s*\\textbf{INTRODUCTION}',
-        # newly added
-        r'\\section{Background and Introduction}',
-        r'\\section\*{Background and Introduction}',
-        r'\\chapter{Background and Introduction}',
-        r'\\chapter\*{Background and Introduction}',
-        r'1\.\s+Background and Introduction',
-        r'I\.\s+Background and Introduction',
-        r'\\noindent\s*\\textbf{Background and Introduction}',
-        r'\\section{Background \& Introduction}',
-        r'\\section\*{Background \& Introduction}',
-        r'\\chapter{Background \& Introduction}',
-        r'\\chapter\*{Background \& Introduction}',
-        r'1\.\s+Background \& Introduction',
-        r'I\.\s+Background \& Introduction',
-        r'\\noindent\s*\\textbf{Background \& Introduction}',
-        r'\\section{Introduction and Background}',
-        r'\\section\*{Introduction and Background}',
-        r'\\chapter{Introduction and Background}',
-        r'\\chapter\*{Introduction and Background}',
-        r'1\.\s+Introduction and Background',
-        r'I\.\s+Introduction and Background',
-        r'\\noindent\s*\\textbf{Introduction and Background}',
-        r'\\section{Introduction \& Background}',
-        r'\\section\*{Introduction \& Background}',
-        r'\\chapter{Introduction \& Background}',
-        r'\\chapter\*{Introduction \& Background}',
-        r'1\.\s+Introduction \& Background',
-        r'I\.\s+Introduction \& Background',
-        r'\\noindent\s*\\textbf{Introduction \& Background}',
-        # add more
-        r'\\section{.+?\s+(?:and|&)\s+Introduction}',
-        r'\\section\*{.+?\s+(?:and|&)\s+Introduction}',
-        r'\\chapter{.+?\s+(?:and|&)\s+Introduction}',
-        r'\\chapter\*{.+?\s+(?:and|&)\s+Introduction}',
-        r'1\.\s+.+?\s+(?:and|&)\s+Introduction',
-        r'I\.\s+.+?\s+(?:and|&)\s+Introduction',
-        r'\\noindent\s*\\textbf{.+?\s+(?:and|&)\s+Introduction}',
+        # LaTeX 命令模式 (section/chapter 带或不带星号)
+        r'\\(?:section|subsection|chapter)\*?{(?:Introduction|INTRODUCTION)}',
 
-        # Introduction 在前的模式
-        r'\\section{Introduction\s+(?:and|&)\s+.+?}',
-        r'\\section\*{Introduction\s+(?:and|&)\s+.+?}',
-        r'\\chapter{Introduction\s+(?:and|&)\s+.+?}',
-        r'\\chapter\*{Introduction\s+(?:and|&)\s+.+?}',
-        r'1\.\s+Introduction\s+(?:and|&)\s+.+?',
-        r'I\.\s+Introduction\s+(?:and|&)\s+.+?',
-        r'\\noindent\s*\\textbf{Introduction\s+(?:and|&)\s+.+?}',
+        # 编号模式
+        r'(?:1|I)\.\s+(?:Introduction|INTRODUCTION)',
 
-        # 单独的 Introduction
-        r'\\section{Introduction}',
-        r'\\section\*{Introduction}',
-        r'\\chapter{Introduction}',
-        r'\\chapter\*{Introduction}',
-        r'1\.\s+Introduction',
-        r'I\.\s+Introduction',
-        r'\\noindent\s*\\textbf{Introduction}'
+        # noindent 模式
+        r'\\noindent\s*\\textbf{(?:Introduction|INTRODUCTION)}',
+
+        # Introduction 与其他词组合的 LaTeX 命令模式
+        r'\\(?:section|chapter)\*?{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}',
+
+        # Introduction 与其他词组合的编号模式
+        r'(?:1|I)\.\s+(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)',
+
+        # Introduction 与其他词组合的 noindent 模式
+        r'\\noindent\s*\\textbf{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}'
     ]
 
     # 组合所有模式
@@ -136,72 +80,25 @@ def clean_title(title):
 
 def extract_related_work(content):
     primary_patterns = [
-        r'\\section{Related Work}',
-        r'\\section{Related Works}',
-        r'\\section{Previous Work}',
-        r'\\section{Prior Research}',
-        r'\\section\*{Related Work}',
-        r'\\section\*{Related Works}',
-        r'\\section\*{Previous Work}',
-        r'\\section\*{Prior Research}',
-        r'\\subsection{Related Work}',
-        r'\\subsection{Related Works}',
-        r'\\subsection{Previous Work}',
-        r'\\subsection{Prior Research}',
-        r'\\subsection\*{Related Work}',
-        r'\\subsection\*{Related Works}',
-        r'\\subsection\*{Previous Work}',
-        r'\\subsection\*{Prior Research}',
-        r'\\chapter{Related Work}',
-        r'\\chapter{Related Works}',
-        r'\\chapter{Previous Work}',
-        r'\\chapter{Prior Research}',
-        r'\\chapter\*{Related Work}',
-        r'\\chapter\*{Related Works}',
-        r'\\chapter\*{Previous Work}',
-        r'\\chapter\*{Prior Research}',
-        r'2\.\s+Related Work',
-        r'2\.\s+Related Works',
-        r'2\.\s+Previous Work',
-        r'2\.\s+Prior Research',
-        r'II\.\s+Related Work',
-        r'II\.\s+Related Works',
-        r'II\.\s+Previous Work',
-        r'II\.\s+Prior Research',
-        r'\\noindent\s*\\textbf{Related Work}',
-        r'\\noindent\s*\\textbf{Related Works}',
-        r'\\noindent\s*\\textbf{Previous Work}',
-        r'\\noindent\s*\\textbf{Prior Research}'
+        # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+        r'\\(?:section|subsection|chapter)\*?{(?:Related Works?|Previous Work|Prior Research)}',
+
+        # 编号模式
+        r'(?:2|II)\.\s+(?:Related Works?|Previous Work|Prior Research)',
+
+        # noindent 模式
+        r'\\noindent\s*\\textbf{(?:Related Works?|Previous Work|Prior Research)}'
     ]
 
     secondary_patterns = [
-        r'\\section{Background}',
-        r'\\section{State of the Art}',
-        r'\\section{Literature Review}',
-        r'\\section\*{Background}',
-        r'\\section\*{State of the Art}',
-        r'\\section\*{Literature Review}',
-        r'\\subsection{Background}',
-        r'\\subsection{State of the Art}',
-        r'\\subsection{Literature Review}',
-        r'\\subsection\*{Background}',
-        r'\\subsection\*{State of the Art}',
-        r'\\subsection\*{Literature Review}',
-        r'\\chapter{Background}',
-        r'\\chapter{State of the Art}',
-        r'\\chapter{Literature Review}',
-        r'\\chapter\*{Background}',
-        r'\\chapter\*{State of the Art}',
-        r'\\chapter\*{Literature Review}',
-        r'2\.\s+Background',
-        r'2\.\s+State of the Art',
-        r'2\.\s+Literature Review',
-        r'II\.\s+Background',
-        r'II\.\s+State of the Art',
-        r'II\.\s+Literature Review',
-        r'\\noindent\s*\\textbf{Background}',
-        r'\\noindent\s*\\textbf{State of the Art}',
-        r'\\noindent\s*\\textbf{Literature Review}'
+        # LaTeX 命令模式 (section/subsection/chapter 带或不带星号)
+        r'\\(?:section|subsection|chapter)\*?{(?:Background|State of the Art|Literature Review)}',
+
+        # 编号模式
+        r'(?:2|II)\.\s+(?:Background|State of the Art|Literature Review)',
+
+        # noindent 模式
+        r'\\noindent\s*\\textbf{(?:Background|State of the Art|Literature Review)}'
     ]
 
     def search_patterns(patterns, text):

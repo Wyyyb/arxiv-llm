@@ -34,10 +34,11 @@ def read_file_safely(file_path):
             return raw_data.decode(encoding, errors='replace')
 
 
-def handle_input_commands_bk(content, base_dir, depth=0, max_depth=10):
+def handle_input_commands(content, base_dir, depth=0, max_depth=10):
     def replace_input(match):
         if depth >= max_depth:
             print(f"Warning: Maximum recursion depth ({max_depth}) reached. Stopping recursion.")
+            print("paper_dir", base_dir)
             return match.group(0)
 
         input_file = match.group(1)
@@ -47,15 +48,23 @@ def handle_input_commands_bk(content, base_dir, depth=0, max_depth=10):
 
         if os.path.exists(input_path):
             file_content = read_file_safely(input_path)
-            return handle_input_commands_bk(file_content, os.path.dirname(input_path), depth + 1, max_depth)
+            return handle_input_commands(file_content, os.path.dirname(input_path), depth + 1, max_depth)
         else:
             return match.group(0)
 
     content = re.sub(r'\\input{(.+?)}', replace_input, content)
+    # 处理标准的 \input{} 命令
+    content = re.sub(r'\\input\s*{(.+?)}', replace_input, content)
+
+    # 处理不带花括号的 \input 命令
+    content = re.sub(r'\\input\s+([^\s{}\n]+)', replace_input, content)
+
+    # 处理 \include{} 命令（类似于 \input）
+    content = re.sub(r'\\include\s*{(.+?)}', replace_input, content)
     return content
 
 
-def handle_input_commands(content, base_dir, depth=0, max_depth=10):
+def handle_input_commands_bk(content, base_dir, depth=0, max_depth=10):
     def replace_input(match):
         if depth >= max_depth:
             print(f"Warning: Maximum recursion depth ({max_depth}) reached. Stopping recursion.")
@@ -73,22 +82,13 @@ def handle_input_commands(content, base_dir, depth=0, max_depth=10):
             os.path.join(base_dir, input_file + '.latex')
         ]
 
-        # 如果输入的是绝对路径，也添加到可能的路径列表中
-        if os.path.isabs(input_file):
-            possible_paths.extend([
-                input_file,
-                input_file + '.tex',
-                input_file + '.ltx',
-                input_file + '.latex'
-            ])
-
         # 尝试所有可能的路径
         for input_path in possible_paths:
             if os.path.exists(input_path) and os.path.isfile(input_path):
                 try:
                     file_content = read_file_safely(input_path)
                     # 递归处理新文件中的 \input 命令
-                    processed_content = handle_input_commands(
+                    processed_content = handle_input_commands_bk(
                         file_content,
                         os.path.dirname(input_path),
                         depth + 1,

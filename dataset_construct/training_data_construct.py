@@ -95,8 +95,13 @@ def load_meta_data(meta_data_path):
     return meta_data
 
 
-def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
+def construct(latex_dir, output_dir, failed_record_path, sta_file_path, semantic_scholar_cache_path):
     global sta_record
+    if os.path.exists(semantic_scholar_cache_path):
+        with open(semantic_scholar_cache_path, "r") as fi:
+            semantic_scholar_cache = json.load(fi)
+    else:
+        semantic_scholar_cache = {}
     arxiv_base_output_dir = output_dir
     meta_data = load_meta_data("../corpus_data/meta_data_1022.jsonl")
     title_map = {}
@@ -155,7 +160,8 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
             # curr_paper["abstract"] = v["abstract"]
             curr_paper["abstract"] = curr_meta["abstract"]
             curr_paper["arxiv_id"] = k
-            curr_paper = post_process(curr_paper, meta_data, title_map)
+            curr_paper = post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path,
+                                      semantic_scholar_cache)
             if "intro" not in curr_paper and "related_work" not in curr_paper:
                 sta_record["intro and related work not found"] += 1
                 continue
@@ -183,14 +189,15 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path):
 
 def main():
     # latex_dir = "/Users/MyDisk/2024/git/cite_rag_bk/local/"
-    # latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
-    # output_dir = "../local/arxiv_base_1024_sample"
-    latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
-    output_dir = "../local/arxiv_base_1024"
+    latex_dir = "/Users/MyDisk/2024/git/arxiv-llm/local/latex_sample_1024/"
+    output_dir = "../local/arxiv_base_1024_sample"
+    # latex_dir = "/data/yubowang/arxiv-latex-filtered_1014"
+    # output_dir = "../local/arxiv_base_1024"
     os.makedirs("../local/", exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
     construct(latex_dir, output_dir, failed_record_path="../local/failed_record_1024.json",
-              sta_file_path="../local/global_sta_record.json")
+              sta_file_path="../local/global_sta_record.json",
+              semantic_scholar_cache_path="../local/semantic_scholar_cache.json")
 
 
 main()
