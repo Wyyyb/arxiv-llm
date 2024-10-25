@@ -34,7 +34,7 @@ def read_file_safely(file_path):
             return raw_data.decode(encoding, errors='replace')
 
 
-def handle_input_commands(content, base_dir, depth=0, max_depth=10):
+def handle_input_commands(content, base_dir, depth=0, max_depth=6):
     def replace_input(match):
         if depth >= max_depth:
             print(f"Warning: Maximum recursion depth ({max_depth}) reached. Stopping recursion.")
