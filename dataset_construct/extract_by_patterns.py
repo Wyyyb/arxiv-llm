@@ -99,7 +99,8 @@ SECONDARY_PATTERNS = [
 ]
 
 # 预编译其他常用模式
-END_RW_PATTERN = re.compile(r'\\n(\\section|\\chapter|\d+\.|[IV]+\.|\begin{|\end{document})', re.DOTALL | re.IGNORECASE)
+
+END_RW_PATTERN = re.compile(r'\n(\\section|\\chapter|\d+\.|[IV]+\.|\\\\begin{|\\end{document})', re.DOTALL | re.IGNORECASE)
 SUBSECTION_PATTERN = re.compile(r'\\subsection{[^}]+}')
 PARAGRAPH_PATTERN = re.compile(r'\n\n(.+?)\n\n', re.DOTALL)
 
