@@ -34,7 +34,40 @@ def read_file_safely(file_path):
             return raw_data.decode(encoding, errors='replace')
 
 
-def handle_input_commands(content, base_dir, depth=0, max_depth=6):
+def handle_input_commands(content, base_dir, processed_files=None):
+    if processed_files is None:
+        processed_files = set()
+
+    def replace_input(match):
+        input_file = match.group(1)
+        input_path = os.path.join(base_dir, input_file)
+        if not input_path.endswith('.tex'):
+            input_path += '.tex'
+
+        # 获取规范化的绝对路径
+        input_path = os.path.abspath(input_path)
+
+        # 检查文件是否已经处理过
+        if input_path in processed_files:
+            print(f"Circular input detected: {input_path}, skipping...")
+            return ""  # 或返回一些提示注释
+
+        if os.path.exists(input_path):
+            processed_files.add(input_path)
+            file_content = read_file_safely(input_path)
+            return handle_input_commands(file_content, os.path.dirname(input_path), processed_files)
+        else:
+            print(f"File not found: {input_path}")
+            return match.group(0)
+
+    content = re.sub(r'\\input\s*{(.+?)}', replace_input, content)
+    content = re.sub(r'\\input\s+([^\s{}\n]+)', replace_input, content)
+    content = re.sub(r'\\include\s*{(.+?)}', replace_input, content)
+
+    return content
+
+
+def handle_input_commands_bbk(content, base_dir, depth=0, max_depth=6):
     def replace_input(match):
         if depth >= max_depth:
             print(f"Warning: Maximum recursion depth ({max_depth}) reached. Stopping recursion.")
