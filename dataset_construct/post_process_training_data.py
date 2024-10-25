@@ -24,7 +24,8 @@ def update_semantic_meta_data(semantic_meta_data, semantic_meta_data_path):
             fo.write("\n")
 
 
-def post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path, semantic_scholar_cache):
+def post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path, semantic_scholar_cache,
+                 use_api):
     semantic_meta_data_path = "../corpus_data/semantic_meta_data_1022.jsonl"
     arxiv_id = curr_paper["arxiv_id"]
     if "intro" not in curr_paper and "related_work" not in curr_paper:
@@ -58,7 +59,7 @@ def post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path, 
             abstract = meta_data[cite_arxiv_id]["abstract"]
         else:
             semantic_scholar_res = request_semantic(ori_title, semantic_scholar_cache_path,
-                                                    semantic_scholar_cache)
+                                                    semantic_scholar_cache, use_api)
             if not semantic_scholar_res:
                 intro = intro.replace(cite_value, "")
                 continue
@@ -90,8 +91,13 @@ def post_process(curr_paper, meta_data, title_map, semantic_scholar_cache_path, 
     return curr_paper
 
 
-def request_semantic(title, semantic_scholar_cache_path, semantic_scholar_cache):
-    return None
+def request_semantic(title, semantic_scholar_cache_path, semantic_scholar_cache, use_api=False):
+    if not use_api:
+        if title in semantic_scholar_cache:
+            paper_info = semantic_scholar_cache[title]
+            return paper_info
+        else:
+            return None
     SC_API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
     if title in semantic_scholar_cache:
         paper_info = semantic_scholar_cache[title]

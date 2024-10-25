@@ -4,23 +4,76 @@ from collections import defaultdict, OrderedDict
 # 在模块级别预编译所有正则表达式
 INTRO_PATTERNS = [
     re.compile(pattern, re.DOTALL | re.IGNORECASE) for pattern in [
-        # LaTeX 命令模式 (section/chapter 带或不带星号)
-        r'\\(?:section|subsection|chapter)\*?{(?:Introduction|INTRODUCTION)}',
-        # 编号模式
-        r'(?:1|I)\.\s+(?:Introduction|INTRODUCTION)',
-        # noindent 模式
-        r'\\noindent\s*\\textbf{(?:Introduction|INTRODUCTION)}',
-        # Introduction 与其他词组合的 LaTeX 命令模式
-        r'\\(?:section|chapter)\*?{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}',
-        # Introduction 与其他词组合的编号模式
-        r'(?:1|I)\.\s+(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)',
-        # Introduction 与其他词组合的 noindent 模式
-        r'\\noindent\s*\\textbf{(?:.+?\s+(?:and|&)\s+Introduction|Introduction\s+(?:and|&)\s+.+?)}'
+        # 单独的 Introduction 模式
+        r'\\section{Introduction}',
+        r'\\section\*{Introduction}',
+        r'\\subsection{Introduction}',
+        r'\\subsection\*{Introduction}',
+        r'\\chapter{Introduction}',
+        r'\\chapter\*{Introduction}',
+        r'1\.\s+Introduction',
+        r'I\.\s+Introduction',
+        r'\\noindent\s*\\textbf{Introduction}',
+
+        # Background and Introduction 模式
+        r'\\section{Background and Introduction}',
+        r'\\section\*{Background and Introduction}',
+        r'\\chapter{Background and Introduction}',
+        r'\\chapter\*{Background and Introduction}',
+        r'1\.\s+Background and Introduction',
+        r'I\.\s+Background and Introduction',
+        r'\\noindent\s*\\textbf{Background and Introduction}',
+
+        # Background & Introduction 模式
+        r'\\section{Background & Introduction}',
+        r'\\section\*{Background & Introduction}',
+        r'\\chapter{Background & Introduction}',
+        r'\\chapter\*{Background & Introduction}',
+        r'1\.\s+Background & Introduction',
+        r'I\.\s+Background & Introduction',
+        r'\\noindent\s*\\textbf{Background & Introduction}',
+
+        # Introduction and Background 模式
+        r'\\section{Introduction and Background}',
+        r'\\section\*{Introduction and Background}',
+        r'\\chapter{Introduction and Background}',
+        r'\\chapter\*{Introduction and Background}',
+        r'1\.\s+Introduction and Background',
+        r'I\.\s+Introduction and Background',
+        r'\\noindent\s*\\textbf{Introduction and Background}',
+
+        # Introduction & Background 模式
+        r'\\section{Introduction & Background}',
+        r'\\section\*{Introduction & Background}',
+        r'\\chapter{Introduction & Background}',
+        r'\\chapter\*{Introduction & Background}',
+        r'1\.\s+Introduction & Background',
+        r'I\.\s+Introduction & Background',
+        r'\\noindent\s*\\textbf{Introduction & Background}',
+
+        # 通用组合模式 (其他词 + Introduction)
+        r'\\section{.+?\s+(?:and|&)\s+Introduction}',
+        r'\\section\*{.+?\s+(?:and|&)\s+Introduction}',
+        r'\\chapter{.+?\s+(?:and|&)\s+Introduction}',
+        r'\\chapter\*{.+?\s+(?:and|&)\s+Introduction}',
+        r'1\.\s+.+?\s+(?:and|&)\s+Introduction',
+        r'I\.\s+.+?\s+(?:and|&)\s+Introduction',
+        r'\\noindent\s*\\textbf{.+?\s+(?:and|&)\s+Introduction}',
+
+        # Introduction + 其他词模式
+        r'\\section{Introduction\s+(?:and|&)\s+.+?}',
+        r'\\section\*{Introduction\s+(?:and|&)\s+.+?}',
+        r'\\chapter{Introduction\s+(?:and|&)\s+.+?}',
+        r'\\chapter\*{Introduction\s+(?:and|&)\s+.+?}',
+        r'1\.\s+Introduction\s+(?:and|&)\s+.+?',
+        r'I\.\s+Introduction\s+(?:and|&)\s+.+?',
+        r'\\noindent\s*\\textbf{Introduction\s+(?:and|&)\s+.+?}'
     ]
 ]
 
 # 预编译结束模式
-END_INTRO_PATTERN = re.compile(r'\\n(?:\\section|\\chapter|\d+\.|II\.)|\\Z', re.DOTALL | re.IGNORECASE)
+# END_INTRO_PATTERN = re.compile(r'\\n(?:\\section|\\chapter|\d+\.|II\.)|\\Z', re.DOTALL | re.IGNORECASE)
+END_INTRO_PATTERN = re.compile(r'(?:\n\s*\\(?:section|chapter)|\n\s*(?:\d+\.|II\.))|\\Z', re.DOTALL | re.IGNORECASE)
 
 
 def extract_intro(content):
@@ -101,7 +154,9 @@ SECONDARY_PATTERNS = [
 
 # 预编译其他常用模式
 
-END_RW_PATTERN = re.compile(r'\n(\\section|\\chapter|\d+\.|[IV]+\.|\\\\begin{|\\end{document})', re.DOTALL | re.IGNORECASE)
+
+END_RW_PATTERN = re.compile(r'(?:\n\s*\\(?:section|chapter|paragraph)|\n\s*'
+                            r'(?:\d+\.|[IVX]+\.)|\\begin{|\\end{document})|\\Z', re.DOTALL | re.IGNORECASE)
 SUBSECTION_PATTERN = re.compile(r'\\subsection{[^}]+}')
 PARAGRAPH_PATTERN = re.compile(r'\n\n(.+?)\n\n', re.DOTALL)
 
