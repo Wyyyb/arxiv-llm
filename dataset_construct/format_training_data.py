@@ -182,8 +182,9 @@ def split_by_cite_tokens(text):
 
 
 def format_data(input_dir, output_path):
-    tokenizer = AutoTokenizer.from_pretrained("/gpfs/public/research/xy/yubowang/models/Qwen2.5-7B")
+    # tokenizer = AutoTokenizer.from_pretrained("/gpfs/public/research/xy/yubowang/models/Qwen2.5-7B")
     # tokenizer = AutoTokenizer.from_pretrained("../local/Qwen2.5-7B")
+    tokenizer = AutoTokenizer.from_pretrained("/data/yubowang/models/qwen2.5-1.5b/")
     special_tokens = ['<|paper_start|>', '<|paper_end|>', '<|cite_start|>', '<|cite_end|>',
                       '<|reference_start|>', '<|reference_end|>']
     res_train = []
