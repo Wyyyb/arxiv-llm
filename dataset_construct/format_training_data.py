@@ -208,13 +208,18 @@ def format_data(input_dir, output_path):
                 if not curr_res:
                     continue
                 res_train.append(curr_res)
-    check_res_token_num(res_val, tokenizer)
+    print("original val data num:", len(res_val))
+    res_val = check_res_token_num(res_val, tokenizer)
+    print("final val data num:", len(res_val))
     save_res(res_val, output_path.replace("train_data", "val_data"))
-    check_res_token_num(res_train, tokenizer)
+    print("original train data num:", len(res_train))
+    res_train = check_res_token_num(res_train, tokenizer)
+    print("final train data num:", len(res_train))
     save_res(res_train, output_path)
 
 
 def check_res_token_num(res, tokenizer):
+    total_token = 0
     text_list = []
     id_list = []
     batch_size = 256
@@ -227,8 +232,10 @@ def check_res_token_num(res, tokenizer):
         token_num_list = batch_compute_tokens(tokenizer, batch)
         for j, token_num in enumerate(token_num_list):
             if token_num > 16100:
-                curr_id = id_list[j + i * batch_size]
+                curr_id = id_list[j + i]
                 wrong_data_id.append(curr_id)
+            else:
+                total_token += token_num
     result = []
     for i, each in enumerate(res):
         if i in wrong_data_id:
@@ -236,6 +243,8 @@ def check_res_token_num(res, tokenizer):
             print("wrong data", each["arxiv_id"])
             continue
         result.append(each)
+    print("total token number:", total_token)
+    print("average token number:", total_token // len(result))
     return result
 
 

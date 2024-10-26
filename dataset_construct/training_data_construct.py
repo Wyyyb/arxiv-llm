@@ -123,6 +123,8 @@ def construct(latex_dir, output_dir, failed_record_path, sta_file_path, semantic
             failed_record[arxiv_id].append(m)
 
     for sub_dir in os.listdir(latex_dir):
+        if "2410" not in sub_dir:
+            continue
         count = 0
         unqualified_count = 0
         curr_dir = os.path.join(latex_dir, sub_dir)
