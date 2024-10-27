@@ -30,3 +30,5 @@ do
     --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.pkl &  # 添加 & 实现并行
 done
 wait  # 等待所有进程完成
+
+sleep 7200
