@@ -25,7 +25,7 @@ do
     --passage_max_len 1024 \
     --dataset_name json \
     --dataset_path ${dataset_path} \
-    --dataset_number_of_shards 8 \  # 总分片数改为8
+    --dataset_number_of_shards 8 \
     --dataset_shard_index ${s} \
     --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.pkl &  # 添加 & 实现并行
 done
