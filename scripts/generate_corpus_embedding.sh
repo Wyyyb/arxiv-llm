@@ -8,7 +8,8 @@ mkdir -p ${EMBEDDING_OUTPUT_DIR}
 # dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
 dataset_path="../corpus_data/meta_data_1022.jsonl"
 model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/unweighted_1027/checkpoint-600/"
-cp tokenizer_files/*.json ${model_path}
+
+cp ../tokenizer_files/*.json ${model_path}
 
 for s in 1
 do
