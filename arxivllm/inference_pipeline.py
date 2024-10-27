@@ -10,64 +10,11 @@ import numpy as np
 import h5py
 import json
 from tqdm import tqdm
+import os
+import glob
 
 
-class CustomStoppingCriteria(StoppingCriteria):
-    def __init__(self, stops = [], encounters=1):
-        super().__init__()
-        self.stops = [stop if isinstance(stop, list) else [stop] for stop in stops]
-        self.encounters = encounters
-
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
-        for stop in self.stops:
-            if torch.all((stop == input_ids[0][-len(stop):])).item():
-                return True
-        return False
-
-
-class HiddenStateCapture(LogitsProcessor):
-    def __init__(self, target_token_id):
-        self.target_token_id = target_token_id
-        self.hidden_state = None
-
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> torch.FloatTensor:
-        # 检查是否已经捕获了隐藏状态
-        if self.hidden_state is None:
-            # 检查目标 token 是否在输入中
-            if self.target_token_id in input_ids[0]:
-                # 尝试从 kwargs 获取隐藏状态
-                hidden_states = kwargs.get('hidden_states', None)
-                if hidden_states is not None:
-                    # 假设 hidden_states 是一个元组，其中最后一个元素是最后一层的隐藏状态
-                    last_hidden_state = hidden_states[-1]
-                    # 获取最后一个 token 的隐藏状态
-                    self.hidden_state = last_hidden_state[:, -1, :]
-
-        # 不修改 scores，直接返回
-        return scores
-
-
-def single_complete_introduction(input_text):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"使用设备: {device}")
-
-    # 加载模型配置
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
-    config = AutoConfig.from_pretrained(model_path)
-
-    # 直接加载模型和权重
-    model = AutoModelForCausalLM.from_pretrained(model_path, config=config)
-    model.to(device)  # 将模型移动到 GPU
-
-    # 加载分词器
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
-    # 添加特殊token
-    special_tokens = ['<|paper_start|>', '<|paper_end|>', '<|cite_start|>', '<|cite_end|>', '<|reference_start|>',
-                      '<|reference_end|>']
-    tokenizer.add_tokens(special_tokens)
-    model.resize_token_embeddings(len(tokenizer))
-
+def single_complete_introduction(model, tokenizer, device, input_text):
     # 编码输入文本
     inputs = tokenizer(input_text, return_tensors="pt").to(device)  # 将输入移动到 GPU
     if len(inputs.input_ids[0]) > 15000:
@@ -118,18 +65,41 @@ def single_complete_introduction(input_text):
 
 
 def complete_intro(title, abstract, partial_intro):
-    encoded_corpus, lookup_indices = load_corpus_base()
+    embedded_corpus_path = "../embedded_corpus/multi_1027/"
+    encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
     meta_data = load_meta_data()
-    # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
-    input_text = f"<|paper_start|>{partial_intro}"
-    input_text, cite_start_hidden_state = single_complete_introduction(input_text)
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model, tokenizer = load_model(model_path, device)
+    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    # input_text = f"<|paper_start|>{partial_intro}"
+    input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     while cite_start_hidden_state is not None:
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5)
         reference = llm_rerank(retrieved_k_results, meta_data)
         input_text = input_text + reference
-        input_text, cite_start_hidden_state = single_complete_introduction(input_text)
+        input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     print("generated result", input_text)
     return input_text
+
+
+def load_model(model_path, device):
+    # 加载模型配置
+    config = AutoConfig.from_pretrained(model_path)
+
+    # 直接加载模型和权重
+    model = AutoModelForCausalLM.from_pretrained(model_path, config=config)
+    model.to(device)  # 将模型移动到 GPU
+
+    # 加载分词器
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+    # 添加特殊token
+    special_tokens = ['<|paper_start|>', '<|paper_end|>', '<|cite_start|>', '<|cite_end|>', '<|reference_start|>',
+                      '<|reference_end|>']
+    tokenizer.add_tokens(special_tokens)
+    model.resize_token_embeddings(len(tokenizer))
+    return model, tokenizer
 
 
 def llm_rerank(retrieved_k_results, meta_data):
@@ -166,7 +136,7 @@ def load_corpus_base_bk():
     return encoded, lookup_indices
 
 
-def load_corpus_base():
+def load_corpus_base_bk():
     # 尝试加载 HDF5 格式
     try:
         with h5py.File("../embedded_corpus/corpus.0.h5", 'r') as f:
@@ -176,28 +146,42 @@ def load_corpus_base():
     except Exception as e:
         print(f"Error loading HDF5: {e}")
 
-    # 如果 HDF5 加载失败，尝试加载 NPZ 格式
-    try:
-        data = np.load("../embedded_corpus/corpus.0.npz")
-        encoded = data['encoded']
-        lookup_indices = data['lookup_indices']
-        return encoded, lookup_indices
-    except Exception as e:
-        print(f"Error loading NPZ: {e}")
-
-    # 如果 NPZ 加载失败，尝试加载 JSON 格式
-    try:
-        with open("../embedded_corpus/corpus.0.json", 'r') as f:
-            data = json.load(f)
-        encoded = np.array(data['encoded'])
-        lookup_indices = np.array(data['lookup_indices'])
-        return encoded, lookup_indices
-    except Exception as e:
-        print(f"Error loading JSON: {e}")
-
     # 如果所有格式都加载失败
     print("Failed to load data from all formats")
     return None, None
+
+
+def load_corpus_base(corpus_dir="../embedded_corpus/multi_1027/"):
+    encoded_list = []
+    lookup_indices_list = []
+
+    # 获取目录下所有的.h5文件
+    h5_files = sorted(glob.glob(os.path.join(corpus_dir, "*.h5")))
+
+    if not h5_files:
+        raise FileNotFoundError(f"No .h5 files found in {corpus_dir}")
+
+    print(f"Found {len(h5_files)} files to load")
+
+    # 依次读取每个文件
+    for file_path in h5_files:
+        try:
+            with h5py.File(file_path, 'r') as f:
+                encoded_list.append(f['encoded'][:])
+                lookup_indices_list.append(f['lookup_indices'][:])
+            print(f"Successfully loaded {file_path}")
+        except Exception as e:
+            print(f"Error loading {file_path}: {e}")
+            continue
+
+    # 合并所有数据
+    if encoded_list and lookup_indices_list:
+        encoded = np.concatenate(encoded_list, axis=0)
+        lookup_indices = np.concatenate(lookup_indices_list, axis=0)
+        print(f"Combined shape - encoded: {encoded.shape}, lookup_indices: {lookup_indices.shape}")
+        return encoded, lookup_indices
+    else:
+        raise ValueError("No data was successfully loaded")
 
 
 def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5):

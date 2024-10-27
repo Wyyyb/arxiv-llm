@@ -20,7 +20,7 @@ do
     --bf16 \
     --pooling eos \
     --normalize \
-    --per_device_eval_batch_size 64 \
+    --per_device_eval_batch_size 32 \
     --query_max_len 32 \
     --passage_max_len 1024 \
     --dataset_name json \
