@@ -59,7 +59,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     if "<|paper_end|>" in new_content:
         return generated_text, None
 
-    print("new_content", new_content)
+    print("---------------new_content:\n", new_content)
     # return new_content, output.hidden_states[-1][-1][-1]
     return new_content, cite_rep
 
@@ -69,7 +69,8 @@ def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_in
     meta_data = load_meta_data()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
-    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: {partial_intro}"
     # input_text = f"<|paper_start|>{partial_intro}"
     input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     while cite_start_hidden_state is not None:
@@ -111,8 +112,8 @@ def llm_rerank(retrieved_k_results, meta_data):
         recall_results.append(meta_data[index]["abstract"])
         titles.append(meta_data[index]["title"])
     # 假设llm就选第一个
-    res = recall_results[0]
-    title = titles[0]
+    res = recall_results[1]
+    title = titles[1]
     res = "(Reference: " + title + ": " + res
     reference = res.replace("<|reference_start|>", "").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
