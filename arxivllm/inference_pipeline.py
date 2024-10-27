@@ -67,7 +67,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
 def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro):
     encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
     meta_data = load_meta_data()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
     input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
     # input_text = f"<|paper_start|>{partial_intro}"
@@ -102,21 +102,25 @@ def load_model(model_path, device):
 
 def llm_rerank(retrieved_k_results, meta_data):
     recall_results = []
+    titles = []
     for each in retrieved_k_results:
         index, distance = each
         if index not in meta_data:
             print("index not found in meta_data", index)
             continue
         recall_results.append(meta_data[index]["abstract"])
+        titles.append(meta_data[index]["title"])
     # 假设llm就选第一个
     res = recall_results[0]
+    title = titles[0]
+    res = title + ": " + res
     reference = res.replace("<|reference_start|>", "(Reference: ").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
     return reference
 
 
 def load_meta_data():
-    meta_data_path = "../corpus_data/meta_data_1020.jsonl"
+    meta_data_path = "../corpus_data/meta_data_1022.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
         for line in tqdm(fi.readlines()):
@@ -124,14 +128,6 @@ def load_meta_data():
             if curr["docs_id"] not in meta_data:
                 meta_data[curr["docs_id"]] = curr
     return meta_data
-
-
-def load_corpus_base_bk():
-    corpus_base_path = "../embedded_corpus/corpus.0.pkl"
-    with open(corpus_base_path, "rb") as fi:
-        data = pickle.load(fi)
-    encoded, lookup_indices = data
-    return encoded, lookup_indices
 
 
 def load_corpus_base_bk():
