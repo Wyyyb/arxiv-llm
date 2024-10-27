@@ -112,7 +112,8 @@ def main():
         pickle.dump((encoded, lookup_indices), f)
 
     try:
-        with h5py.File(data_args.encode_output_path, 'w') as f:
+        h5_path = data_args.encode_output_path.replace('.pkl', '.h5')
+        with h5py.File(h5_path, 'w') as f:
             f.create_dataset('encoded', data=encoded)
             f.create_dataset('lookup_indices', data=lookup_indices)
     except Exception as e:
