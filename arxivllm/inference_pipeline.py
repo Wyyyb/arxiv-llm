@@ -56,7 +56,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     # 提取生成的新内容
     # new_content = generated_text[len(input_text):]
     new_content = generated_text
-    if new_content.endswith("<|paper_end|>"):
+    if "<|paper_end|>" in new_content:
         return generated_text, None
 
     print("new_content", new_content)
@@ -64,11 +64,9 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     return new_content, cite_rep
 
 
-def complete_intro(title, abstract, partial_intro):
-    embedded_corpus_path = "../embedded_corpus/multi_1027/"
+def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro):
     encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
     meta_data = load_meta_data()
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
     input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
@@ -219,7 +217,11 @@ def test():
     title = "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark"
     abstract = "In the age of large-scale language models, benchmarks like the Massive Multitask Language Understanding (MMLU) have been pivotal in pushing the boundaries of what AI can achieve in language comprehension and reasoning across diverse domains. However, as models continue to improve, their performance on these benchmarks has begun to plateau, making it increasingly difficult to discern differences in model capabilities. This paper introduces MMLU-Pro, an enhanced dataset designed to extend the mostly knowledge-driven MMLU benchmark by integrating more challenging, reasoning-focused questions and expanding the choice set from four to ten options. Additionally, MMLU-Pro eliminates the trivial and noisy questions in MMLU. Our experimental results show that MMLU-Pro not only raises the challenge, causing a significant drop in accuracy by 16% to 33% compared to MMLU but also demonstrates greater stability under varying prompts. With 24 different prompt styles tested, the sensitivity of model scores to prompt variations decreased from 4-5% in MMLU to just 2% in MMLU-Pro. Additionally, we found that models utilizing Chain of Thought (CoT) reasoning achieved better performance on MMLU-Pro compared to direct answering, which is in stark contrast to the findings on the original MMLU, indicating that MMLU-Pro includes more complex reasoning questions. Our assessments confirm that MMLU-Pro is a more discriminative benchmark to better track progress in the field."
     partial_intro = "In recent years, advancements in large language models (LLMs) have significantly transformed the field of natural language processing (NLP)."
-    result = complete_intro(title, abstract, partial_intro)
+    # embedded_corpus_path = "../embedded_corpus/multi_1027/"
+    # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
+    embedded_corpus_path = "../embedded_corpus/1022/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/unweighted_1027/checkpoint-600/"
+    result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
 
 
 test()
