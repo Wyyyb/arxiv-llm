@@ -1,7 +1,7 @@
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-cd ../arxivllm
+cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
 EMBEDDING_OUTPUT_DIR="../embedded_corpus/1027/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
   --bf16 \
   --pooling eos \
   --normalize \
-  --per_device_eval_batch_size 64 \
+  --per_device_eval_batch_size 32 \
   --query_max_len 32 \
   --passage_max_len 1024 \
   --dataset_name json \

@@ -1,7 +1,7 @@
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-cd ../arxivllm
+cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
 EMBEDDING_OUTPUT_DIR="../embedded_corpus/multi_1027/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}

@@ -3,6 +3,7 @@ import os
 import pickle
 import sys
 from contextlib import nullcontext
+import h5py
 
 import numpy as np
 from tqdm import tqdm
@@ -109,6 +110,13 @@ def main():
 
     with open(data_args.encode_output_path, 'wb') as f:
         pickle.dump((encoded, lookup_indices), f)
+
+    try:
+        with h5py.File(data_args.encode_output_path, 'w') as f:
+            f.create_dataset('encoded', data=encoded)
+            f.create_dataset('lookup_indices', data=lookup_indices)
+    except Exception as e:
+        print(f"Failed to save encoded data to HDF5: {e}")
 
 
 if __name__ == "__main__":
