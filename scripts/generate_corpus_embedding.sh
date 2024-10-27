@@ -5,10 +5,11 @@ cd ../arxivllm
 EMBEDDING_OUTPUT_DIR="../embedded_corpus"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
 # dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
-dataset_path="../corpus_data/meta_data_1020.jsonl"
-model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-152"
+dataset_path="../corpus_data/meta_data_1022.jsonl"
+model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1026/"
 
-for s in 0
+for s in 1
+echo $s
 do
 gpuid=$s
 CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
