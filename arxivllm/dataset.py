@@ -32,13 +32,17 @@ class TrainDataset(Dataset):
     def __len__(self):
         return len(self.train_data)
 
-    def __getitem__(self, item) -> Tuple[str, List[str]]:
+    def __getitem__(self, item):
         group = self.train_data[item]
 
         paper = group['paper']
         targets = group['targets']
-        targets_idx = group['targets_idx']
-
+        if "targets_idx" in group:
+            targets_idx = group['targets_idx']
+        elif "targets_id" in group:
+            targets_idx = group['targets_id']
+        else:
+            targets_idx = None
         return paper, targets, targets_idx
 
 
