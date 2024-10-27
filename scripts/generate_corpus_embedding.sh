@@ -9,7 +9,7 @@ dataset_path="../corpus_data/meta_data_1022.jsonl"
 model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/unweighted_1027/checkpoint-600/"
 
 for s in 1
-echo $s
+echo ${s}
 do
 gpuid=$s
 CUDA_VISIBLE_DEVICES=$gpuid python -m encode \
