@@ -61,7 +61,7 @@ class ArxivLLM(nn.Module):
             target = torch.arange(scores.size(0), device=scores.device, dtype=torch.long)
             target = target * (p_reps.size(0) // q_reps.size(0))
             logging.info(f"contrastive loss: {scores}")
-            loss = self.compute_loss(scores / self.temperature, target) * 5
+            loss = self.compute_loss(scores / self.temperature, target)
             loss += gen_loss
             if self.is_ddp:
                 loss = loss * self.world_size  # counter average weight reduction
