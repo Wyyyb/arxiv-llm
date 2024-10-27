@@ -20,14 +20,14 @@ do
     --bf16 \
     --pooling eos \
     --normalize \
-    --per_device_eval_batch_size 32 \
+    --per_device_eval_batch_size 16 \
     --query_max_len 32 \
     --passage_max_len 1024 \
     --dataset_name json \
     --dataset_path ${dataset_path} \
     --dataset_number_of_shards 8 \
     --dataset_shard_index ${s} \
-    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.pkl &  # 添加 & 实现并行
+    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.h5 &  # 添加 & 实现并行
 done
 wait  # 等待所有进程完成
 
