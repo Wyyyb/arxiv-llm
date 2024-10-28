@@ -141,24 +141,8 @@ def extract_related_work_new(tex_content):
     if start_pos == -1:
         return ""  # 没找到related work部分
 
-    # 找到section内容的开始位置
+    # 直接从标题后开始
     content_start = start_pos + len(start_header)
-
-    # 跳过可能的label
-    while content_start < len(tex_content):
-        # 跳过空白字符
-        while content_start < len(tex_content) and tex_content[content_start].isspace():
-            content_start += 1
-
-        # 检查是否是label
-        if content_start < len(tex_content) and tex_content[content_start:].startswith('\\label{'):
-            label_end = tex_content.find('}', content_start)
-            if label_end != -1:
-                content_start = label_end + 1
-            else:
-                break
-        else:
-            break
 
     # 寻找下一个section作为结束位置
     next_section_markers = [
@@ -177,24 +161,7 @@ def extract_related_work_new(tex_content):
     # 提取内容
     content = tex_content[content_start:end_pos].strip()
 
-    # 处理可能的注释
-    cleaned_lines = []
-    for line in content.split('\n'):
-        # 去除行内注释
-        comment_pos = line.find('%')
-        if comment_pos != -1:
-            # 检查%是否在数学环境或命令中
-            is_comment = True
-            for i in range(comment_pos):
-                if line[i] == '\\':
-                    is_comment = not is_comment
-            if is_comment:
-                line = line[:comment_pos]
-
-        if line.strip():
-            cleaned_lines.append(line)
-
-    return '\n'.join(cleaned_lines)
+    return content
 
 
 def extract_intro(pattern_list, content):
