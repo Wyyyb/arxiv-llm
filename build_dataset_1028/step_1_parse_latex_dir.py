@@ -5,6 +5,7 @@ from typing import Dict, List, Set
 from pathlib import Path
 from tqdm import tqdm
 import json
+import shutil
 
 
 class LatexProcessor:
@@ -121,14 +122,15 @@ class LatexProcessor:
         else:
             print(f"No {extension} files found to merge")
 
-    def process_folder(self) -> None:
+    def process_folder(self):
         """Main function to process the latex folder"""
         # Find all main tex files
         global step_1_log
         main_files = self.find_main_files()
         if not main_files:
             step_1_log["no_tex_file_number"].append(self.input_dir)
-            raise Exception("Could not find any tex file with \\documentclass")
+            return None
+            # raise Exception("Could not find any tex file with \\documentclass")
 
         # Process each file
         file_contents: Dict[str, str] = {}
@@ -146,12 +148,14 @@ class LatexProcessor:
         # Merge bibliography files
         self.merge_files_by_extension(".bib", "reference.bib")
         self.merge_files_by_extension(".bbl", "reference.bbl")
+        return True
 
 
-def process_latex_project(input_dir: str, output_dir: str) -> None:
+def process_latex_project(input_dir: str, output_dir: str):
     """Wrapper function for easy use"""
     processor = LatexProcessor(input_dir, output_dir)
-    processor.process_folder()
+    result = processor.process_folder()
+    return result
 
 
 def unit_test():
@@ -173,7 +177,10 @@ def run_on_darth_server(input_dir, output_dir):
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
                 target_dir_path = os.path.join(output_dir, sub_dir, paper_dir)
                 os.makedirs(target_dir_path, exist_ok=True)
-                process_latex_project(paper_dir_path, target_dir_path)
+                res = process_latex_project(paper_dir_path, target_dir_path)
+                if res is None:
+                    print("removing", target_dir_path)
+                    shutil.rmtree(target_dir_path)
     log_file = "step_1_log.json"
     with open(log_file, "w") as fo:
         fo.write(json.dumps(step_1_log, indent=2))
