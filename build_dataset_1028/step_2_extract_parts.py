@@ -113,7 +113,7 @@ def extract_by_patterns(pattern_type):
 
 def extract_intro(pattern_list, content):
     intro_patterns, end_intro_patterns = pattern_list
-    print("extract_intro, content length", len(content))
+    # print("extract_intro, content length", len(content))
     intro_content = None
     min_start_pos = len(content)  # 记录最早出现的介绍部分
 
