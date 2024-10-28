@@ -41,8 +41,8 @@ def count_meta_data_paper(input_path):
 
 
 # count_paper_number("/data/yubowang/arxiv-latex-filtered_1014")
-# count_paper_number("/data/yubowang/arxiv_plain_latex_data_1028")
-count_meta_data_paper("../corpus_data/meta_data_1022.jsonl")
+count_paper_number("/data/yubowang/arxiv_plain_latex_data_1028")
+# count_meta_data_paper("../corpus_data/meta_data_1022.jsonl")
 
 
 
