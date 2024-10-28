@@ -419,15 +419,15 @@ def run_on_darth_server(input_dir, output_log_path):
     return
 
 
-task = r"^0"
+# task = r"^0"
 task = r"^1[0-6]"
-task = r"^1[78]"
-task = r"^19"
-task = r"^20"
-task = r"^21"
-task = r"^22"
-task = r"^23"
-task = r"^24"
+# task = r"^1[78]"
+# task = r"^19"
+# task = r"^20"
+# task = r"^21"
+# task = r"^22"
+# task = r"^23"
+# task = r"^24"
 # os.makedirs("../local_1028", exist_ok=True)
 run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028", "step_2_log.json")
 
