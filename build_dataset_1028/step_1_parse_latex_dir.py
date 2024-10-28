@@ -177,4 +177,4 @@ def run_on_darth_server(input_dir, output_dir):
 if __name__ == "__main__":
     input_dir_path = "/data/yubowang/arxiv-latex-filtered_1014"
     output_dir_path = "/data/yubowang/arxiv_plain_latex_data_1028"
-
+    run_on_darth_server(input_dir_path, output_dir_path)
