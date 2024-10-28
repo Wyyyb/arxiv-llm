@@ -4,3 +4,4 @@ arxivllm/__pycache__
 data_bk/
 corpus_data/
 dataset_construct/__pycache__
+local*/

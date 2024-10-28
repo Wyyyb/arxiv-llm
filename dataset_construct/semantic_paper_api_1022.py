@@ -48,7 +48,7 @@ def get_paper_info(title, api_key):
 
 API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
 # 使用示例
-paper_title = "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark"
+paper_title = "{DjiNN} and tonic: {DNN} as a service and its implications for future warehouse scale computers. "
 info = get_paper_info(paper_title, API_KEY)
 
 if info:
