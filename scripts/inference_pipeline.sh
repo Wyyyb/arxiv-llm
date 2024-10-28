@@ -5,7 +5,7 @@ export CUDA_VISIBLE_DEVICES=1
 
 cd ../arxivllm
 
-python inference_pipeline_bk.py
+python inference_pipeline.py
 
 
 
