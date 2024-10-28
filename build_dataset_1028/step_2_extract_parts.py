@@ -111,6 +111,92 @@ def extract_by_patterns(pattern_type):
         return None
 
 
+def extract_related_work_new(tex_content):
+    # 可能的related work section标题变体
+    related_headers = [
+        r'\section{Related Work}',
+        r'\section{Related Works}',
+        r'\section{RELATED WORK}',
+        r'\section{RELATED WORKS}',
+        r'\section{Previous Work}',
+        r'\section{Background and Related Work}',
+        r'\section*{Related Work}',
+        r'\section*{Related Works}',
+        r'\section*{RELATED WORK}',
+        r'\section*{RELATED WORKS}',
+        r'\section{Background}',
+        r'\section*{Background}'
+    ]
+
+    # 找到related work部分的开始
+    start_pos = -1
+    start_header = ''
+    for header in related_headers:
+        pos = tex_content.find(header)
+        if pos != -1:
+            if start_pos == -1 or pos < start_pos:
+                start_pos = pos
+                start_header = header
+
+    if start_pos == -1:
+        return ""  # 没找到related work部分
+
+    # 找到section内容的开始位置
+    content_start = start_pos + len(start_header)
+
+    # 跳过可能的label
+    while content_start < len(tex_content):
+        # 跳过空白字符
+        while content_start < len(tex_content) and tex_content[content_start].isspace():
+            content_start += 1
+
+        # 检查是否是label
+        if content_start < len(tex_content) and tex_content[content_start:].startswith('\\label{'):
+            label_end = tex_content.find('}', content_start)
+            if label_end != -1:
+                content_start = label_end + 1
+            else:
+                break
+        else:
+            break
+
+    # 寻找下一个section作为结束位置
+    next_section_markers = [
+        r'\section{',
+        r'\section*{',
+        r'\chapter{',
+        r'\chapter*{'
+    ]
+
+    end_pos = len(tex_content)
+    for marker in next_section_markers:
+        pos = tex_content.find(marker, content_start)
+        if pos != -1 and pos < end_pos:
+            end_pos = pos
+
+    # 提取内容
+    content = tex_content[content_start:end_pos].strip()
+
+    # 处理可能的注释
+    cleaned_lines = []
+    for line in content.split('\n'):
+        # 去除行内注释
+        comment_pos = line.find('%')
+        if comment_pos != -1:
+            # 检查%是否在数学环境或命令中
+            is_comment = True
+            for i in range(comment_pos):
+                if line[i] == '\\':
+                    is_comment = not is_comment
+            if is_comment:
+                line = line[:comment_pos]
+
+        if line.strip():
+            cleaned_lines.append(line)
+
+    return '\n'.join(cleaned_lines)
+
+
 def extract_intro(pattern_list, content):
     intro_patterns, end_intro_patterns = pattern_list
     # print("extract_intro, content length", len(content))
@@ -317,7 +403,7 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
         content = fi.read()
     title = extract_title(content)
     intro = extract_intro(intro_patterns, content)
-    related_work = extract_related_work(related_work_patterns, content)
+    related_work = extract_related_work_new(content)
     bib_items = extract_bib_citations(content)
     bbl_items = extract_bbl_items(content)
     if os.path.exists(os.path.join(paper_dir_path, "reference.bbl")):
