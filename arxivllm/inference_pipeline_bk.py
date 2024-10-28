@@ -113,7 +113,7 @@ def llm_rerank(retrieved_k_results, meta_data):
         titles.append(meta_data[index]["title"])
     # 假设llm就选第一个
     res = recall_results[1]
-    title = titles[1]
+    title = titles[0]
     res = "(Reference: " + title + ": " + res
     reference = res.replace("<|reference_start|>", "").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
