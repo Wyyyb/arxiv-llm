@@ -29,6 +29,9 @@ class LatexProcessor:
             except Exception as e:
                 print(f"Warning: Could not read {file_path}", e)
                 return ""
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}", e)
+            return ""
 
     def write_file(self, file_path: str, content: str) -> None:
         """Write content to file"""
@@ -143,6 +146,8 @@ class LatexProcessor:
 
         # Write the processed content to output directory
         output_tex_path = os.path.join(self.output_dir, "full.tex")
+        if len(file_contents[longest_file]) < 100:
+            return None
         self.write_file(output_tex_path, file_contents[longest_file])
 
         # Merge bibliography files
