@@ -1,7 +1,7 @@
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=1
 
 cd ../arxivllm
 

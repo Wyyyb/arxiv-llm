@@ -23,7 +23,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     print("stop_token_ids", stop_token_ids)
     eos_token_id = stop_token_ids[0]
     # 生成续写的introduction
-    max_new_tokens = 2500  # 您可以根据需要调整这个值
+    max_new_tokens = 2500
     with torch.no_grad():
         output = model.generate(
             inputs.input_ids,
@@ -67,7 +67,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
 def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro):
     encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
     meta_data = load_meta_data()
-    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
     # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
     input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: {partial_intro}"
