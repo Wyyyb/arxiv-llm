@@ -4,6 +4,7 @@ import shutil
 from typing import Dict, List, Set
 from pathlib import Path
 from tqdm import tqdm
+import json
 
 
 class LatexProcessor:
@@ -123,8 +124,10 @@ class LatexProcessor:
     def process_folder(self) -> None:
         """Main function to process the latex folder"""
         # Find all main tex files
+        global step_1_log
         main_files = self.find_main_files()
         if not main_files:
+            step_1_log["no_tex_file_number"].append(self.input_dir)
             raise Exception("Could not find any tex file with \\documentclass")
 
         # Process each file
@@ -171,10 +174,15 @@ def run_on_darth_server(input_dir, output_dir):
                 target_dir_path = os.path.join(output_dir, sub_dir, paper_dir)
                 os.makedirs(target_dir_path, exist_ok=True)
                 process_latex_project(paper_dir_path, target_dir_path)
+    log_file = "step_1_log.json"
+    with open(log_file, "w") as fo:
+        fo.write(json.dumps(step_1_log, indent=2))
 
 
 # unit_test()
 if __name__ == "__main__":
+    step_1_log = {"no_tex_file_number": []}
     input_dir_path = "/data/yubowang/arxiv-latex-filtered_1014"
     output_dir_path = "/data/yubowang/arxiv_plain_latex_data_1028"
     run_on_darth_server(input_dir_path, output_dir_path)
+    print("no tex file number:", len(step_1_log))
