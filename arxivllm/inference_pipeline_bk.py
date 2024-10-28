@@ -69,7 +69,7 @@ def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_in
     meta_data = load_meta_data()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
-    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
+    input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: {partial_intro}"
     # input_text = f"Introduction: {partial_intro}"
     # input_text = f"<|paper_start|>{partial_intro}"
     input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
