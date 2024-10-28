@@ -311,7 +311,7 @@ def extract_bib_citations(bib_content):
 
 
 def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
-    message = {"no_intro": [], "no_related_work": [], "no_bib_citations": []}
+    message = {"no_intro_no_rw": [], "no_intro": [], "no_related_work": [], "no_bib_citations": []}
     arxiv_id = paper_dir_path.split("/")[-1]
     with open(os.path.join(paper_dir_path, "full.tex"), "r") as fi:
         content = fi.read()
@@ -374,8 +374,8 @@ def run_on_darth_server(input_dir, output_log_path):
     return
 
 
-os.makedirs("../local_1028", exist_ok=True)
-run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028", "../local_1028/step_2_log.json")
+# os.makedirs("../local_1028", exist_ok=True)
+run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028", "step_2_log.json")
 
 
 
