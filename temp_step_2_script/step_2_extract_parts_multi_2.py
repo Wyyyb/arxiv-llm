@@ -406,7 +406,7 @@ def run_on_darth_server(input_dir, output_log_path):
     intro_patterns = extract_by_patterns("intro")
     related_work_patterns = extract_by_patterns("related_work")
     for sub_dir in os.listdir(input_dir):
-        if bool(re.match(task, sub_dir)):
+        if not bool(re.match(task, sub_dir)):
             continue
         print("Processing", sub_dir)
         if os.path.isdir(os.path.join(input_dir, sub_dir)):
