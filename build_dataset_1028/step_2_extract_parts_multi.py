@@ -437,7 +437,7 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
     return message
 
 
-def process_paper_dir(paper_dir, sub_dir, input_dir, intro_patterns, related_work_patterns, shared_dict):
+def process_paper_dir(paper_dir, sub_dir, input_dir, intro_patterns, related_work_patterns, shared_dict, lock):
     if not paper_dir.startswith(sub_dir):
         print("skip", paper_dir)
         return
@@ -445,14 +445,14 @@ def process_paper_dir(paper_dir, sub_dir, input_dir, intro_patterns, related_wor
     paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
     message = extract_parts(intro_patterns, related_work_patterns, paper_dir_path)
 
-    # 更新共享字典
-    for k, v in message.items():
-        with shared_dict.get_lock():
+    # 使用锁来保护共享字典的更新
+    with lock:
+        for k, v in message.items():
             shared_dict[k].extend(v)
 
 
 def run_on_darth_server(input_dir, output_log_path, num_processes=8):
-    # 创建进程间共享的字典
+    # 创建进程间共享的字典和锁
     manager = Manager()
     shared_dict = manager.dict({
         "no_intro_no_rw": manager.list([]),
@@ -460,6 +460,7 @@ def run_on_darth_server(input_dir, output_log_path, num_processes=8):
         "no_related_work": manager.list([]),
         "no_bib_citations": manager.list([])
     })
+    lock = manager.Lock()
 
     intro_patterns = extract_by_patterns("intro")
     related_work_patterns = extract_by_patterns("related_work")
@@ -480,7 +481,8 @@ def run_on_darth_server(input_dir, output_log_path, num_processes=8):
                 input_dir=input_dir,
                 intro_patterns=intro_patterns,
                 related_work_patterns=related_work_patterns,
-                shared_dict=shared_dict
+                shared_dict=shared_dict,
+                lock=lock
             )
 
             # 使用tqdm显示进度
