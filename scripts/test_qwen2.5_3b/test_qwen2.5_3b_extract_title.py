@@ -88,6 +88,8 @@ if __name__ == "__main__":
 
     # 打印结果
     for i, (text, title) in enumerate(zip(test_samples, titles)):
+        if i > 10:
+            continue
         print(f"\nInput {i + 1}:")
         print(f"BibItem: {text}")
         print(f"Extracted Title: {title}")
