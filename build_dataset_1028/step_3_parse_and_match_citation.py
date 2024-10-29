@@ -57,6 +57,10 @@ def extract_citations(text):
 def extract_bibitem_key(bibitem):
     import re
 
+    # 首先处理掉%注释和换行的情况
+    # 将%后面的换行替换为空字符串
+    bibitem = re.sub(r'%\s*\n\s*', '', bibitem)
+
     # 支持多种bibitem格式的pattern
     patterns = [
         r'\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}',  # 标准bibitem
