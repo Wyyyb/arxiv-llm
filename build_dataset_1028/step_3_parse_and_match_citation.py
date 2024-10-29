@@ -4,7 +4,7 @@ import json
 from tqdm import tqdm
 
 
-valid_step_3_count = 0
+invalid_step_2_count = 0
 
 
 def extract_citations(text):
@@ -87,13 +87,14 @@ def extract_bib_item(bib_item):
 
 
 def collect_bib_info(paper_dir_path):
-    print("paper_dir_path", paper_dir_path)
-    global valid_step_3_count
+    # print("paper_dir_path", paper_dir_path)
+    global invalid_step_2_count
     bib_failed_items = []
     step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
     step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
-        print("step 2 file not found", step_2_res_path)
+        # print("step 2 file not found", step_2_res_path)
+        invalid_step_2_count += 1
         return []
     if os.path.exists(step_3_res_path):
         print("step 3 file found, skip it")
@@ -104,6 +105,9 @@ def collect_bib_info(paper_dir_path):
         curr = json.load(fi)
     arxiv_id = curr["arxiv_id"]
     print("Processing", arxiv_id)
+    if curr["intro"] == "":
+        invalid_step_2_count += 1
+        return []
     intro = "Introduction\n" + curr["intro"]
     related_work = curr["related_work"]
     if related_work and related_work != "":
@@ -145,6 +149,7 @@ def collect_bib_info(paper_dir_path):
 
 
 def run_on_darth_server(input_dir, output_failed_item_path):
+    global invalid_step_2_count
     failed_items = []
     for sub_dir in os.listdir(input_dir):
         print("Processing", sub_dir)
@@ -153,11 +158,12 @@ def run_on_darth_server(input_dir, output_failed_item_path):
                 if not paper_dir.startswith(sub_dir):
                     print("skip", paper_dir)
                     continue
-                curr = collect_bib_info(paper_dir)
+                curr = collect_bib_info(os.path.join(input_dir, sub_dir, paper_dir))
                 failed_items += curr
     i = 0
     batch_size = 100000
     print("failed item number: ", len(failed_items))
+    print("invalid_step_2_count", invalid_step_2_count)
     while i < len(failed_items):
         if i + batch_size > len(failed_items):
             end = len(failed_items)
