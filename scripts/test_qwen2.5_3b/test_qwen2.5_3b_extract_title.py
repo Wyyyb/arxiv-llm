@@ -21,7 +21,7 @@ def extract_titles_from_bibitems(text_list):
     for text in text_list:
         prompt = create_prompt_for_bibitem(text)
         prompts.append(prompt)
-
+    prompts = prompts * 100
     # 批量生成
     start = time.time()
     outputs = llm.generate(prompts, sampling_params)
