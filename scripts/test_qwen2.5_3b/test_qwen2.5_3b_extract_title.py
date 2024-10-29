@@ -4,7 +4,9 @@ import time
 
 def extract_titles_from_bibitems(text_list):
     # 初始化模型 (可以根据需要选择不同的模型)
-    llm = LLM(model="/gpfs/public/research/xy/yubowang/models/Qwen2.5-3B")
+    llm = LLM(model="/gpfs/public/research/xy/yubowang/models/Qwen2.5-3B",
+              gpu_memory_utilization=0.6,
+              tensor_parallel_size=1)
 
     # 设置生成参数
     sampling_params = SamplingParams(
