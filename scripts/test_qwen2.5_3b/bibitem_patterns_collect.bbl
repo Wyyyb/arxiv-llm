@@ -9,6 +9,10 @@
 \newblock
 
 
+\bibitem{chang}
+C-H. Chang, C-N. Hsu, S-C. Lui, Automatic information extraction from semi-structured web pages by pattern discovery, Decision Support System 35 (2003) 129--147.
+
+
 \bibitem{LiuZJLM10}
 R.~Liu, W.~Zhang, L.~Jiao, F.~Liu, and J.~Ma, ``A sphere-dominance based
   preference immune-inspired algorithm for dynamic multi-objective
@@ -18,12 +22,6 @@ R.~Liu, W.~Zhang, L.~Jiao, F.~Liu, and J.~Ma, ``A sphere-dominance based
 
 \bibitem{On_Line}  
 	M.~Kemal, F.~Iov, R.~Olsen, T.~Le Fevre, and C.~Apostolopoulos, \emph{ On-line Configuration of Network Emulator for Intelligent Energy System Testbed Applications}.\hskip 1em plus 0.5em minus 0.4em\relax2015 IEEE Africon, Sep, 2015. PP 1-4, Addis Ababa, Ethiopia.
-	
-
-\bibitem{arkin1998behavior}
-R.~C. Arkin.
-\newblock {\em {B}ehavior-based {R}obotics}.
-\newblock MIT press, 1998.
 
 
 \bibitem{tagme}
@@ -45,15 +43,33 @@ Duff, I., Erisman, A., Reid, J.: Direct Methods for Sparse Matrices.
 \newblock Oxford Science Publications. Clarendon Press, Oxford (1986)
 
 
-\bibitem{chang}
-C-H. Chang, C-N. Hsu, S-C. Lui, Automatic information extraction from semi-structured web pages by pattern discovery, Decision Support System 35 (2003) 129--147.
+\bibitem{largescale_fewshot_3}
+A.~Li, T.~Luo, Z.~Lu, T.~Xiang, and L.~Wang, ``Large-scale few-shot learning:
+  Knowledge transfer with class hierarchy,'' in \emph{Proceedings of the IEEE
+  Conference on Computer Vision and Pattern Recognition (CVPR)}, 2019.
+
+
+@article{barr95,
+  title        = {Designing and reporting on computational experiments with heuristic methods},
+  author       = {Richard S. Barr and Bruce L. Golden and James P. Kelly and Mauricio G. C. Resende  and William R. {Stewart Jr.}},
+  year         = 1995,
+  month        = {Sep.},
+  journal      = {Journal of Heuristics},
+  volume       = 1,
+  number       = 1,
+  pages        = {9--32},
+  optkey       = {},
+  optnote      = {},
+  optannote    = {}
+}
 
 
 \bibitem{t3}
 J. Wang , F.H. Lochovsky, Data extraction and label assignment for web databases, Proceedings of the 12th international conference on World Wide Web, May 20--24, 2003, pp. 187--196.
 
 
-\bibitem{largescale_fewshot_3}
-A.~Li, T.~Luo, Z.~Lu, T.~Xiang, and L.~Wang, ``Large-scale few-shot learning:
-  Knowledge transfer with class hierarchy,'' in \emph{Proceedings of the IEEE
-  Conference on Computer Vision and Pattern Recognition (CVPR)}, 2019.
+\bibitem{arkin1998behavior}
+R.~C. Arkin.
+\newblock {\em {B}ehavior-based {R}obotics}.
+\newblock MIT press, 1998.
+
