@@ -67,7 +67,7 @@ def extract_bibitem_key(bibitem):
     patterns = [
         # 更宽松的bibitem匹配模式，允许方括号内包含任意字符（包括嵌套的花括号）
         r'\\bibitem\s*(?:\[(?:[^\[\]]|\{[^}]*\})*\])?\s*\{([^}]+)\}',  # 标准bibitem
-        r'\\bibitemdeclare\s*\{[^}]+\}\s*\{([^}]+)\}'  # bibitemdeclare格式
+        r'\\bibitemdeclare\s*\{[^}]*\}\s*\{([^}]+)\}'  # bibitemdeclare格式
     ]
 
     # 尝试每种pattern
