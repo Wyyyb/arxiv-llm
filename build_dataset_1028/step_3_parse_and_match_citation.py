@@ -93,7 +93,7 @@ def collect_bib_info(paper_dir_path):
     step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
         return []
-    if not os.path.exists(step_3_res_path):
+    if os.path.exists(step_3_res_path):
         with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
             bib_failed_items = json.load(fi)
         return bib_failed_items
@@ -113,8 +113,8 @@ def collect_bib_info(paper_dir_path):
     for each in curr["bib_items"]:
         citation_key, title = extract_bib_item(each)
         if citation_key not in cited_keys_in_intro:
-            print("citation_key", citation_key)
-            print("cited_keys_in_intro", cited_keys_in_intro)
+            # print("citation_key", citation_key)
+            # print("cited_keys_in_intro", cited_keys_in_intro)
             continue
         if title is None:
             continue
@@ -123,8 +123,8 @@ def collect_bib_info(paper_dir_path):
     for each in curr["bbl_items"]:
         citation_key = extract_bibitem_key(each)
         if citation_key not in cited_keys_in_intro:
-            print("citation_key", citation_key)
-            print("cited_keys_in_intro", cited_keys_in_intro)
+            # print("citation_key", citation_key)
+            # print("cited_keys_in_intro", cited_keys_in_intro)
             continue
         if citation_key in bib_info:
             continue
