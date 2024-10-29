@@ -105,7 +105,7 @@ def collect_bib_info(paper_dir_path):
         curr = json.load(fi)
     arxiv_id = curr["arxiv_id"]
     print("Processing", arxiv_id)
-    if curr["intro"] == "":
+    if curr["intro"] is None or curr["intro"] == "":
         invalid_step_2_count += 1
         return []
     intro = "Introduction\n" + curr["intro"]
