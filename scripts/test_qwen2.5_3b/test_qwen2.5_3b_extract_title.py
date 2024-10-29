@@ -31,7 +31,7 @@ def extract_titles_from_bibitems(text_list):
     titles = []
     for output in outputs:
         # 清理生成的文本
-        title = output.text.strip()
+        title = output.outputs[0].text
         # 如果生成的文本包含多行，只取第一行
         title = title.split('\n')[0]
         titles.append(title)
