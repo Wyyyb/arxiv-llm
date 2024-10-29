@@ -66,7 +66,7 @@ def extract_bibitem_key(bibitem):
     # 支持多种bibitem格式的pattern，包括处理复杂的可选参数
     patterns = [
         # 更宽松的bibitem匹配模式，允许方括号内包含任意字符（包括嵌套的花括号）
-        r'\\bibitem\s*(?:\[(?:[^\[\]]|\{[^}]*\})*\])?\s*\{([^}]+)\}',  # 标准bibitem
+        r'\\bibitem\s*(?:\[(?:[^\[\]]|\{(?:[^{}]|\{[^{}]*\})*\})*\])?\s*\{([^}]+)\}',
         r'\\bibitemdeclare\s*\{[^}]*\}\s*\{([^}]+)\}',  # bibitemdeclare格式
         r'\\bibitemstart\s*\{([^}]+)\}'  # bibitemstart格式
     ]
@@ -77,8 +77,11 @@ def extract_bibitem_key(bibitem):
         if match:
             key = match.group(1).strip()
             return key
-
-    print("----------Failed to extract bibitem key:", bibitem)
+    key, title = extract_bib_item(bibitem)
+    if key and title:
+        return key
+    if not bibitem.startswith("\\bibitem{} "):
+        print("----------Failed to extract bibitem key:", bibitem)
     return None
 
 
