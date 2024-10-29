@@ -63,10 +63,10 @@ def extract_bibitem_key(bibitem):
     # 处理多余的空格
     bibitem = re.sub(r'\s+', ' ', bibitem)
 
-    # 支持多种bibitem格式的pattern
+    # 支持多种bibitem格式的pattern，包括处理复杂的可选参数
     patterns = [
-        # 更宽松的bibitem匹配模式，允许保护命令和额外空格
-        r'\\bibitem\s*(?:\[[^\]]*\])?\s*\{([^}]+)\}',  # 标准bibitem
+        # 更宽松的bibitem匹配模式，允许方括号内包含任意字符（包括嵌套的花括号）
+        r'\\bibitem\s*(?:\[(?:[^\[\]]|\{[^}]*\})*\])?\s*\{([^}]+)\}',  # 标准bibitem
         r'\\bibitemdeclare\s*\{[^}]+\}\s*\{([^}]+)\}'  # bibitemdeclare格式
     ]
 
@@ -77,7 +77,7 @@ def extract_bibitem_key(bibitem):
             key = match.group(1).strip()
             return key
 
-    print("----------Failed to extract bibitem key", bibitem)
+    print("----------Failed to extract bibitem key:", bibitem)
     return None
 
 
