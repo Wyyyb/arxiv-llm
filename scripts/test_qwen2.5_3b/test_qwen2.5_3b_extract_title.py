@@ -13,7 +13,7 @@ def extract_titles_from_bibitems(text_list):
         temperature=0.1,  # 降低随机性，使输出更确定
         top_p=0.95,
         max_tokens=100,  # 根据预期title长度调整
-        stop_sequences=["\n"]  # 在换行处停止生成
+        stop=["\n"]  # 在换行处停止生成
     )
 
     # 构建prompts
