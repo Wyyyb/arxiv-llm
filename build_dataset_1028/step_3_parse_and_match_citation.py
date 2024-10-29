@@ -92,7 +92,7 @@ def collect_bib_info(paper_dir_path):
     step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
     step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
-        return None
+        return []
     if not os.path.exists(step_3_res_path):
         with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
             bib_failed_items = json.load(fi)
