@@ -58,20 +58,24 @@ def extract_bibitem_key(bibitem):
     import re
 
     # 首先处理掉%注释和换行的情况
-    # 将%后面的换行替换为空字符串
     bibitem = re.sub(r'%\s*\n\s*', '', bibitem)
+
+    # 处理多余的空格
+    bibitem = re.sub(r'\s+', ' ', bibitem)
 
     # 支持多种bibitem格式的pattern
     patterns = [
-        r'\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}',  # 标准bibitem
-        r'\\bibitemdeclare\{[^}]+\}\{([^}]+)\}'  # bibitemdeclare格式
+        # 更宽松的bibitem匹配模式，允许保护命令和额外空格
+        r'\\bibitem\s*(?:\[[^\]]*\])?\s*\{([^}]+)\}',  # 标准bibitem
+        r'\\bibitemdeclare\s*\{[^}]+\}\s*\{([^}]+)\}'  # bibitemdeclare格式
     ]
 
     # 尝试每种pattern
     for pattern in patterns:
         match = re.search(pattern, bibitem)
         if match:
-            return match.group(1)
+            key = match.group(1).strip()
+            return key
 
     print("----------Failed to extract bibitem key", bibitem)
     return None
