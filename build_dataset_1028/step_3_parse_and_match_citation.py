@@ -55,13 +55,20 @@ def extract_citations(text):
 
 
 def extract_bibitem_key(bibitem):
-    # Pattern to match citation key in bibitem
-    # Handles both \bibitem{key} and \bibitem[...]{key} formats
-    pattern = r'\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}'
+    import re
 
-    match = re.search(pattern, bibitem)
-    if match:
-        return match.group(1)
+    # 支持多种bibitem格式的pattern
+    patterns = [
+        r'\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}',  # 标准bibitem
+        r'\\bibitemdeclare\{[^}]+\}\{([^}]+)\}'  # bibitemdeclare格式
+    ]
+
+    # 尝试每种pattern
+    for pattern in patterns:
+        match = re.search(pattern, bibitem)
+        if match:
+            return match.group(1)
+
     print("----------Failed to extract bibitem key", bibitem)
     return None
 
