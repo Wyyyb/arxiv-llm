@@ -100,6 +100,7 @@ def collect_bib_info(paper_dir_path):
     with open(step_2_res_path, "r") as fi:
         curr = json.load(fi)
     arxiv_id = curr["arxiv_id"]
+    print("Processing", arxiv_id)
     intro = "Introduction\n" + curr["intro"]
     related_work = curr["related_work"]
     if related_work and related_work != "":
