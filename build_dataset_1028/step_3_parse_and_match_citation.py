@@ -1,6 +1,7 @@
 import re
 import os
 import json
+from tqdm import tqdm
 
 
 valid_step_3_count = 0
@@ -54,8 +55,6 @@ def extract_citations(text):
 
 
 def extract_bibitem_key(bibitem):
-    import re
-
     # Pattern to match citation key in bibitem
     # Handles both \bibitem{key} and \bibitem[...]{key} formats
     pattern = r'\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}'
@@ -89,9 +88,15 @@ def extract_bib_item(bib_item):
 
 def collect_bib_info(paper_dir_path):
     global valid_step_3_count
+    bib_failed_items = []
     step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
+    step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
         return None
+    if not os.path.exists(step_3_res_path):
+        with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
+            bib_failed_items = json.load(fi)
+        return bib_failed_items
     with open(step_2_res_path, "r") as fi:
         curr = json.load(fi)
     arxiv_id = curr["arxiv_id"]
@@ -100,12 +105,66 @@ def collect_bib_info(paper_dir_path):
     if related_work and related_work != "":
         intro = intro + "\nRelated Work\n" + related_work
     intro, citations = extract_citations(intro)
+    cited_keys_in_intro = []
+    for k, v in citations.items():
+        if v not in cited_keys_in_intro:
+            cited_keys_in_intro.append(v)
     bib_info = {}
     for each in curr["bib_items"]:
         citation_key, title = extract_bib_item(each)
+        if citation_key not in cited_keys_in_intro:
+            continue
+        if title is None:
+            continue
+        bib_info[citation_key] = [each, 0]
+
+    for each in curr["bbl_items"]:
+        citation_key = extract_bibitem_key(each)
+        if citation_key not in cited_keys_in_intro:
+            continue
+        if citation_key in bib_info:
+            continue
+        bib_info[citation_key] = [each, 1]
+        item = [arxiv_id, citation_key, each]
+        bib_failed_items.append(item)
+
+    step_3_info = {"full_intro": intro, "bib_info": bib_info}
+    with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "w") as fo:
+        fo.write(json.dumps(bib_failed_items, indent=2))
+    with open(step_3_res_path, "w") as fo:
+        fo.write(json.dumps(step_3_info, indent=2))
+    return bib_failed_items
 
 
+def run_on_darth_server(input_dir, output_failed_item_path):
+    failed_items = []
+    for sub_dir in os.listdir(input_dir):
+        print("Processing", sub_dir)
+        if os.path.isdir(os.path.join(input_dir, sub_dir)):
+            for paper_dir in tqdm(os.listdir(os.path.join(input_dir, sub_dir))):
+                if not paper_dir.startswith(sub_dir):
+                    print("skip", paper_dir)
+                    continue
+                curr = collect_bib_info(paper_dir)
+                failed_items += curr
+    i = 0
+    batch_size = 100000
+    print("failed item number: ", len(failed_items))
+    while i < len(failed_items):
+        if i + batch_size > len(failed_items):
+            end = len(failed_items)
+        else:
+            end = i + batch_size
+        curr_batch = failed_items[i: end]
+        with open(os.path.join(output_failed_item_path, f"failed_items_batch_{str(i // batch_size)}.json")) as fo:
+            fo.write(json.dumps(curr_batch))
+        i += batch_size
 
+
+if __name__ == "__main__":
+    input_darth_dir = "/data/yubowang/arxiv_plain_latex_data_1028"
+    output_darth_dir = "/data/yubowang/arxiv-llm/qwen_extract_title_data"
+    run_on_darth_server(input_darth_dir, output_darth_dir)
 
 
 
