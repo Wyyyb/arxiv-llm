@@ -1,0 +1,59 @@
+\bibitem[\protect\citeauthoryear{Furedi, Lazebnik, Seress, Ustimenko, and
+  Woldar}{Furedi et~al\mbox{.}}{1995}]%
+        {furedi1995}
+{Z. Furedi}, {F. Lazebnik}, {A. Seress}, {V.~A. Ustimenko}, {and} {A.~J
+  Woldar}. 1995.
+\newblock \showarticletitle{Graphs of prescribed girth and bi-degree}.
+\newblock {\em Journal of Combinatorial Theory, Series B\/} {64}, 2 (1995),
+  228--239.
+\newblock
+
+
+\bibitem{LiuZJLM10}
+R.~Liu, W.~Zhang, L.~Jiao, F.~Liu, and J.~Ma, ``A sphere-dominance based
+  preference immune-inspired algorithm for dynamic multi-objective
+  optimization,'' in \emph{GECCO'10: Proc. of the 2010 Genetic and Evolutionary
+  Computation Conference}, 2010, pp. 423--430.
+
+
+\bibitem{On_Line}  
+	M.~Kemal, F.~Iov, R.~Olsen, T.~Le Fevre, and C.~Apostolopoulos, \emph{ On-line Configuration of Network Emulator for Intelligent Energy System Testbed Applications}.\hskip 1em plus 0.5em minus 0.4em\relax2015 IEEE Africon, Sep, 2015. PP 1-4, Addis Ababa, Ethiopia.
+	
+
+\bibitem{arkin1998behavior}
+R.~C. Arkin.
+\newblock {\em {B}ehavior-based {R}obotics}.
+\newblock MIT press, 1998.
+
+
+\bibitem{tagme}
+P.~Ferragina and U.~Scaiella.
+\newblock Tagme: on-the-fly annotation of short text fragments (by wikipedia entities).
+\newblock In {\em CIKM}, pp 1625--1628, 2010.
+
+
+\bibitem[Vanschoren et~al.(2014)Vanschoren, van Rijn, Bischl, and
+  Torgo]{Vanschoren2014}
+J.~Vanschoren, J.~N. van Rijn, B.~Bischl, and L.~Torgo.
+\newblock {OpenML: networked science in machine learning}.
+\newblock \emph{ACM SIGKDD Explorations Newsletter}, 15\penalty0 (2):\penalty0
+  49--60, 2014.
+
+
+\bibitem{Duff86a}
+Duff, I., Erisman, A., Reid, J.: Direct Methods for Sparse Matrices.
+\newblock Oxford Science Publications. Clarendon Press, Oxford (1986)
+
+
+\bibitem{chang}
+C-H. Chang, C-N. Hsu, S-C. Lui, Automatic information extraction from semi-structured web pages by pattern discovery, Decision Support System 35 (2003) 129--147.
+
+
+\bibitem{t3}
+J. Wang , F.H. Lochovsky, Data extraction and label assignment for web databases, Proceedings of the 12th international conference on World Wide Web, May 20--24, 2003, pp. 187--196.
+
+
+\bibitem{largescale_fewshot_3}
+A.~Li, T.~Luo, Z.~Lu, T.~Xiang, and L.~Wang, ``Large-scale few-shot learning:
+  Knowledge transfer with class hierarchy,'' in \emph{Proceedings of the IEEE
+  Conference on Computer Vision and Pattern Recognition (CVPR)}, 2019.
