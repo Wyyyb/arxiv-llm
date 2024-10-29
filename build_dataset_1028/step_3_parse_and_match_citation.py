@@ -87,13 +87,16 @@ def extract_bib_item(bib_item):
 
 
 def collect_bib_info(paper_dir_path):
+    print("paper_dir_path", paper_dir_path)
     global valid_step_3_count
     bib_failed_items = []
     step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
     step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
+        print("step 2 file not found")
         return []
     if os.path.exists(step_3_res_path):
+        print("step 3 file found, skip it")
         with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
             bib_failed_items = json.load(fi)
         return bib_failed_items
