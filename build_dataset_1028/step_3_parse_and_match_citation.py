@@ -145,6 +145,8 @@ def collect_bib_info(paper_dir_path):
 
     for each in curr["bbl_items"]:
         citation_key = extract_bibitem_key(each)
+        if not citation_key:
+            continue
         if citation_key not in cited_keys_in_intro:
             # print("citation_key", citation_key)
             # print("cited_keys_in_intro", cited_keys_in_intro)
@@ -154,6 +156,8 @@ def collect_bib_info(paper_dir_path):
         bib_info[citation_key] = [each, 1]
         item = [arxiv_id, citation_key, each]
         bib_failed_items.append(item)
+    if not bib_info:
+        return []
 
     step_3_info = {"full_intro": intro, "bib_info": bib_info}
     with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "w") as fo:
