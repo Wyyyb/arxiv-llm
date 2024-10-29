@@ -111,11 +111,11 @@ def collect_bib_info(paper_dir_path):
         # print("step 2 file not found", step_2_res_path)
         invalid_step_2_count += 1
         return []
-    if os.path.exists(step_3_res_path):
-        # print("step 3 file found, skip it")
-        with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
-            bib_failed_items = json.load(fi)
-        return bib_failed_items
+    # if os.path.exists(step_3_res_path):
+    #     # print("step 3 file found, skip it")
+    #     with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
+    #         bib_failed_items = json.load(fi)
+    #     return bib_failed_items
     with open(step_2_res_path, "r") as fi:
         curr = json.load(fi)
     arxiv_id = curr["arxiv_id"]
