@@ -93,7 +93,7 @@ def collect_bib_info(paper_dir_path):
     step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
     step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
     if not os.path.exists(step_2_res_path):
-        print("step 2 file not found")
+        print("step 2 file not found", step_2_res_path)
         return []
     if os.path.exists(step_3_res_path):
         print("step 3 file found, skip it")
