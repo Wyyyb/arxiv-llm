@@ -113,6 +113,8 @@ def collect_bib_info(paper_dir_path):
     for each in curr["bib_items"]:
         citation_key, title = extract_bib_item(each)
         if citation_key not in cited_keys_in_intro:
+            print("citation_key", citation_key)
+            print("cited_keys_in_intro", cited_keys_in_intro)
             continue
         if title is None:
             continue
@@ -121,6 +123,8 @@ def collect_bib_info(paper_dir_path):
     for each in curr["bbl_items"]:
         citation_key = extract_bibitem_key(each)
         if citation_key not in cited_keys_in_intro:
+            print("citation_key", citation_key)
+            print("cited_keys_in_intro", cited_keys_in_intro)
             continue
         if citation_key in bib_info:
             continue
