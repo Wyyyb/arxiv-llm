@@ -78,7 +78,8 @@ def read_bibitems_from_file(file_path):
 
 
 def inference_batch(llm, sampling_params, batch_file_path):
-    output_path = batch_file_path.replace("failed_items", "qwen_res")
+    output_path = batch_file_path.replace("failed_items", "qwen_res").\
+        replace("qwen_extract_title_data_1031", "qwen_extract_res_1031")
     if os.path.exists(output_path):
         print("already exists, skip it", output_path)
         return
