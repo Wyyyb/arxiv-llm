@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
@@ -28,3 +27,4 @@ time.sleep(36000)
 del tensor
 torch.cuda.empty_cache()
 EOF
+
