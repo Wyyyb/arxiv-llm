@@ -120,7 +120,7 @@ def run_on_01(failed_items_dir):
 
 # 使用示例
 if __name__ == "__main__":
-    run_on_01("../qwen_extract_title_data")
+    run_on_01("../qwen_extract_title_data_1031")
 
 
 

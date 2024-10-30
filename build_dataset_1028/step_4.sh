@@ -1,10 +1,6 @@
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-cd /gpfs/public/research/xy/yubowang/arxiv-llm
-rm -rf qwen_extract_title_data
-unzip qwen_extract_title_data.zip
-
 cd /gpfs/public/research/xy/yubowang/arxiv-llm/build_dataset_1028
 
 
