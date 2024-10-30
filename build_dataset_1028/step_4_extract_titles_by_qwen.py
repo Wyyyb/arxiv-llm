@@ -85,7 +85,7 @@ def inference_batch(llm, sampling_params, batch_file_path):
         return None
     res = []
     for i in range(len(title_res)):
-        res.append([ori_data[i][0], ori_data[i][1], title_res[i]])
+        res.append([ori_data[i][0], ori_data[i][1], ori_data[i][2], title_res[i]])
     output_path = batch_file_path.replace("failed_items", "qwen_res")
     with open(output_path, "w") as fo:
         fo.write(json.dumps(res))
@@ -99,10 +99,10 @@ def run_on_01(failed_items_dir):
 
     # 设置生成参数
     sampling_params = SamplingParams(
-        temperature=0.1,  # 降低随机性，使输出更确定
+        temperature=0.1,
         top_p=0.95,
-        max_tokens=120,  # 根据预期title长度调整
-        stop=["\n"]  # 在换行处停止生成
+        max_tokens=120,
+        stop=["\n"]
     )
     for file in tqdm(os.listdir(failed_items_dir)):
         if not file.endswith(".json"):
