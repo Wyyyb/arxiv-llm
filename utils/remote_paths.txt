@@ -8,11 +8,3 @@
 /data/yubowang/arxiv_plain_latex_data_1028/2309/2309.00696
 /data/yubowang/arxiv_plain_latex_data_1028/1205/1205.0085
 /data/yubowang/arxiv_plain_latex_data_1028/1205/1205.0879
-
-
-
-
-
-
-
-

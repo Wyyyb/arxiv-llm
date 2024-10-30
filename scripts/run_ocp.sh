@@ -21,7 +21,7 @@ tensor = torch.zeros(size, device='cuda')
 # 持续10小时 (36000秒)
 print(f"Allocated {100}MB GPU memory")
 print("Will hold for 10 hours")
-time.sleep(36000)
+time.sleep(72000)
 
 # 释放内存
 del tensor

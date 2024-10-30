@@ -3,7 +3,7 @@
 # 配置参数
 REMOTE_USER="yubo"
 REMOTE_HOST="darth.cs.uwaterloo.ca"
-OUTPUT_PATH="../local_1028/samples_1028/"  # 本地输出路径
+OUTPUT_PATH="../local_1028/samples_1028"  # 本地输出路径
 
 # 存储远程路径的文件
 PATHS_FILE="remote_paths.txt"
