@@ -193,7 +193,7 @@ def run_on_darth_server(input_dir, output_failed_item_path):
         else:
             end = i + batch_size
         curr_batch = failed_items[i: end]
-        with open(os.path.join(output_failed_item_path, f"failed_items_batch_{str(i // batch_size)}.json")) as fo:
+        with open(os.path.join(output_failed_item_path, f"failed_items_batch_{str(i // batch_size)}.json"), "w") as fo:
             fo.write(json.dumps(curr_batch))
         i += batch_size
 
