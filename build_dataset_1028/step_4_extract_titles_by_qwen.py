@@ -78,6 +78,10 @@ def read_bibitems_from_file(file_path):
 
 
 def inference_batch(llm, sampling_params, batch_file_path):
+    output_path = batch_file_path.replace("failed_items", "qwen_res")
+    if os.path.exists(output_path):
+        print("already exists, skip it", output_path)
+        return
     bibitems, ori_data = read_bibitems_from_file(batch_file_path)
     title_res = extract_titles_from_bibitems(llm, sampling_params, bibitems)
     if len(title_res) != len(bibitems):
@@ -86,7 +90,6 @@ def inference_batch(llm, sampling_params, batch_file_path):
     res = []
     for i in range(len(title_res)):
         res.append([ori_data[i][0], ori_data[i][1], ori_data[i][2], title_res[i]])
-    output_path = batch_file_path.replace("failed_items", "qwen_res")
     with open(output_path, "w") as fo:
         fo.write(json.dumps(res))
 
