@@ -1,8 +1,11 @@
 #!/bin/bash
 
 
-input_dir="/data/yubowang/arxiv-llm/qwen_extract_title_data"
-output_dir="/data/yubowang/data_trans_1030/qwen_extract_title_data"
+#input_dir="/data/yubowang/arxiv-llm/qwen_extract_title_data"
+#output_dir="/data/yubowang/data_trans_1030/qwen_extract_title_data"
+
+input_dir="/gpfs/public/research/xy/yubowang/arxiv-llm/data_trans_1030/qwen_extract_res_1031"
+output_dir="/gpfs/public/research/xy/yubowang/arxiv-llm/data_trans_1030/qwen_result_title_1031"
 
 # Create output directory if it doesn't exist
 mkdir -p "$output_dir"
