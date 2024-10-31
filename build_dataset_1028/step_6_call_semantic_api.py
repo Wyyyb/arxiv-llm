@@ -95,7 +95,7 @@ def get_paper_info(title, api_key):
 
 
 if __name__ == "__main__":
-    call_semantic_api("../local_1031/semantic_data_1031.json", "../local_1031/semantic_data_1101.json")
+    call_semantic_api("../local_1031/semantic_data_1030.json", "../local_1031/semantic_data_1101.json")
 
 
 
