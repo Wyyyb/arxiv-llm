@@ -46,6 +46,11 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     bib_info = {}
     valid_cite_count = 0
     for cite_token, citation_key in step_3_info["citation_map"].items():
+        if citation_key not in step_3_info["bib_info"]:
+            curr = {"citation_key": citation_key, "title": None, "abstract": None,
+                    "message": "citation key extract wrong in step 3", "ori_bib_text": None}
+            bib_info[cite_token] = curr
+            continue
         ori_bib_item = step_3_info["bib_info"][citation_key]
         if citation_key in step_3_info["bib_info"] and step_3_info["bib_info"][citation_key][1] == 0:
             bibitem = step_3_info["bib_info"][citation_key][0]
