@@ -45,7 +45,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     abstract = meta_id_map[arxiv_id]["abstract"]
     bib_info = {}
     valid_cite_count = 0
-    for cite_token, citation_key in step_3_info["citation_map"]:
+    for cite_token, citation_key in step_3_info["citation_map"].items():
         ori_bib_item = step_3_info["bib_info"][citation_key]
         if citation_key in step_3_info["bib_info"] and step_3_info["bib_info"][citation_key][1] == 0:
             bibitem = step_3_info["bib_info"][citation_key][0]
