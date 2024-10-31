@@ -8,6 +8,7 @@ valid_data_num = 0.0
 step_3_wrong = 0.0
 invalid_step_5 = 0.0
 total_valid_cite_num = 0.0
+total_cite_num = 0.0
 
 
 def extract_bib_item(bib_item):
@@ -48,7 +49,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     abstract = meta_id_map[arxiv_id]["abstract"]
     bib_info = {}
     valid_cite_count = 0
-    global step_3_wrong, total_valid_cite_num
+    global step_3_wrong, total_valid_cite_num, total_cite_num
     for cite_token, citation_key in step_3_info["citation_map"].items():
         if citation_key not in step_3_info["bib_info"]:
             curr = {"citation_key": citation_key, "title": None, "abstract": None,
@@ -69,10 +70,11 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
             message = "paper not in arxiv: " + str(cite_title)
             if cite_title not in semantic_data:
                 semantic_data[cite_title] = None
-            elif cite_title in semantic_data and semantic_data[cite_title] is not None:
-                cite_abstract = semantic_data[cite_title]
-                message = "success, find paper in semantic data: " + str(cite_title)
-                valid_cite_count += 1
+            elif cite_title in semantic_data:
+                cite_abstract = get_abs_from_semantic(semantic_data, cite_title)
+                if cite_abstract:
+                    message = "success, find paper in semantic data: " + str(cite_title)
+                    valid_cite_count += 1
         else:
             message = "success"
             valid_cite_count += 1
@@ -84,12 +86,22 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     global valid_data_num, invalid_step_5
     total_valid_cite_num += valid_cite_count
     if valid_cite_count >= 4:
+        total_cite_num += len(step_3_info["citation_map"])
         valid_data_num += 1
     else:
         invalid_step_5 += 1
     with open(step_5_info_path, "w") as fo:
         fo.write(json.dumps(step_5_data))
     return step_5_data, semantic_data
+
+
+def get_abs_from_semantic(semantic_data, cite_title):
+    item = semantic_data[cite_title]
+    if "matchScore" in item and item["matchScore"] >= 30:
+        abstract = item.get("abstract", None)
+        if abstract and len(abstract) > 10:
+            return abstract
+    return None
 
 
 def find_abs_from_metadata(metadata, title):
@@ -226,6 +238,8 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
         print("step_3_wrong number: ", step_3_wrong)
         print("total_valid_cite_num: ", total_valid_cite_num)
         print("average valid paper cite num: ", total_valid_cite_num / valid_data_num)
+        print("total_cite_num: ", total_cite_num)
+        print("average cite num in valid data: ", total_cite_num / valid_data_num)
         # print("step_5_data_example: \n", step_5_full_data[-1])
     print("total semantic data number: ", len(semantic_data))
     with open(semantic_data_path, "w") as fo:
