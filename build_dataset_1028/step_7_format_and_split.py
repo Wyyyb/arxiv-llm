@@ -219,6 +219,7 @@ def run_on_darth_server(input_dir):
     special_tokens = ['<|paper_start|>', '<|paper_end|>', '<|cite_start|>', '<|cite_end|>',
                       '<|reference_start|>', '<|reference_end|>']
     tokenizer.add_tokens(special_tokens)
+    total_data_num = 0
     for sub_dir in os.listdir(input_dir):
         print("Processing", sub_dir)
         if os.path.isdir(os.path.join(input_dir, sub_dir)):
@@ -228,6 +229,7 @@ def run_on_darth_server(input_dir):
                     continue
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
                 result = single_process_data(paper_dir_path, tokenizer, False)
+                total_data_num += 1
                 if result is None:
                     continue
                 with open(os.path.join(paper_dir_path, "step_7_info.json"), "w") as fo:
@@ -237,6 +239,7 @@ def run_on_darth_server(input_dir):
                     valid_data_num += 1
         print("total_token_num", total_token_num)
         print("valid_data_num", valid_data_num)
+        print("total_data_num", total_data_num)
         print("average token number per data", total_token_num / valid_data_num)
 
 
