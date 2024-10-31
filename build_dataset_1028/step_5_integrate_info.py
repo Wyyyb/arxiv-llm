@@ -97,7 +97,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
 
 def get_abs_from_semantic(semantic_data, cite_title):
     item = semantic_data[cite_title]
-    if "matchScore" in item and item["matchScore"] >= 30:
+    if item and "matchScore" in item and item["matchScore"] >= 30:
         abstract = item.get("abstract", None)
         if abstract and len(abstract) > 10:
             return abstract
