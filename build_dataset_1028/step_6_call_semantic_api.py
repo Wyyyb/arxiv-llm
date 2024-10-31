@@ -1,4 +1,5 @@
-from dataset_construct.semantic_paper_api_1022 import *
+import requests
+import time
 import json
 import os
 from tqdm import tqdm
@@ -29,6 +30,50 @@ def load_semantic_data(data_path):
     for title, abstract in data.items():
         to_search_data.append(title.strip())
     return to_search_data
+
+
+def get_paper_info(title, api_key):
+    base_url = "https://api.semanticscholar.org/graph/v1/paper/search/match"
+    params = {
+        "query": title,
+        "fields": "title,url,abstract"
+    }
+
+    headers = {
+        "x-api-key": api_key
+    }
+
+    try:
+        start = time.time()
+        response = requests.get(base_url, params=params, headers=headers)
+        response.raise_for_status()
+        cost = float(time.time() - start)
+        print("requesting semantic scholar api cost:", cost)
+        if cost < 1:
+            print("will sleeping...", 1 - cost)
+            time.sleep(1-cost)
+        data = response.json()
+
+        if data:
+            data = data["data"][0]
+            return {
+                "paperId": data.get("paperId", None),
+                "title": data.get("title", None),
+                "abstract": data.get("abstract", None),
+                "url": data.get("url", None),
+                "matchScore": data.get("matchScore", None)
+            }
+        else:
+            return None
+
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            print("Title match not found")
+        else:
+            print(f"HTTP error occurred: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    return None
 
 
 if __name__ == "__main__":
