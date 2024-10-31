@@ -78,6 +78,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
     title = step_5_data.get('title', None)
     abstract = step_5_data.get('abstract', None)
     intro = step_5_data.get('full_intro', None)
+    if len(intro) > 32000:
+        intro = intro[:32000]
     bib_info = step_5_data.get('bib_info', None)
     if not (title and abstract and intro and bib_info):
         return None
@@ -152,6 +154,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
         else:
             next_seg = segments[next_seg_id]
         next_seg_token_num = batch_compute_tokens(tokenizer, [next_seg])[0]
+        if next_seg_token_num > 10000:
+            break
         if curr_length + next_seg_token_num < 16000:
             curr_length += next_seg_token_num
             curr_segs.append(segments[next_seg_id])
