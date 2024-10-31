@@ -12,6 +12,7 @@ def call_semantic_api(input_path, output_path):
     success_count = 0
     fail_count = 0
     low_score_count = 0
+    total_count = 0
     if os.path.exists(output_path):
         with open(output_path, "r") as fi:
             res_data = json.load(fi)
@@ -26,10 +27,13 @@ def call_semantic_api(input_path, output_path):
             low_score_count += 1
         elif "matchScore" in curr_res and float(curr_res["matchScore"]) >= 30:
             success_count += 1
+        else:
+            print("unsupported curr res:", curr_res)
+        total_count += 1
         res_data[each] = curr_res
         if len(res_data) % 10 == 0:
-            print(f"statistic: \nsuccess_count: {success_count}\nlow_score_count:"
-                  f" {low_score_count}\nfailed_count: {fail_count}")
+            print(f"statistic: \ntotal_count: {total_count}\nsuccess_count: "
+                  f"{success_count}\nlow_score_count: {low_score_count}\nfailed_count: {fail_count}")
             with open(output_path, "w") as fo:
                 fo.write(json.dumps(res_data))
 
