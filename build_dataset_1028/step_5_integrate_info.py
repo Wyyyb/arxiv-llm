@@ -5,6 +5,7 @@ import re
 
 
 valid_data_num = 0
+step_3_wrong = 0
 
 
 def extract_bib_item(bib_item):
@@ -45,11 +46,13 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     abstract = meta_id_map[arxiv_id]["abstract"]
     bib_info = {}
     valid_cite_count = 0
+    global step_3_wrong
     for cite_token, citation_key in step_3_info["citation_map"].items():
         if citation_key not in step_3_info["bib_info"]:
             curr = {"citation_key": citation_key, "title": None, "abstract": None,
                     "message": "citation key extract wrong in step 3", "ori_bib_text": None}
             bib_info[cite_token] = curr
+            step_3_wrong += 1
             continue
         ori_bib_item = step_3_info["bib_info"][citation_key]
         if citation_key in step_3_info["bib_info"] and step_3_info["bib_info"][citation_key][1] == 0:
@@ -213,6 +216,7 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
                                                                    metadata, meta_id_map, qwen_data)
                 step_5_full_data.append(curr_step_5_info)
         print("total valid number: ", valid_data_num)
+        print("step_3_wrong number: ",step_3_wrong)
         print("step_5_data_example: \n", step_5_full_data[-1])
     print("total semantic data number: ", len(semantic_data))
     with open(semantic_data_path, "w") as fo:
