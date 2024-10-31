@@ -21,7 +21,7 @@ def call_semantic_api(input_path, output_path):
             curr_res = get_paper_info(each, api_key)
         else:
             curr_res = res_data[each]
-        if curr_res is None:
+        if curr_res is None or "message" in res_data[each]:
             fail_count += 1
         elif "matchScore" in curr_res and float(curr_res["matchScore"]) < 30:
             low_score_count += 1
