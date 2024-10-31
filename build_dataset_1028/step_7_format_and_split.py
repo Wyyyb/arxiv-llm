@@ -221,6 +221,8 @@ def run_on_darth_server(input_dir):
                     continue
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
                 result = single_process_data(paper_dir_path, tokenizer, False)
+                if result is None:
+                    continue
                 with open(os.path.join(paper_dir_path, "step_7_info.json"), "w") as fo:
                     fo.write(json.dumps(result))
                 for each in result:
