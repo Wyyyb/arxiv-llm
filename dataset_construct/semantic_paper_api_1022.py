@@ -20,7 +20,7 @@ def get_paper_info(title, api_key):
         print("requesting semantic scholar api cost:", cost)
         if cost < 2:
             print("will sleeping...", 2 - cost)
-            time.sleep(1-cost)
+            time.sleep(2-cost)
         data = response.json()
 
         if data:
