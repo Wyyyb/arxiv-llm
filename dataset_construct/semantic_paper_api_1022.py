@@ -36,14 +36,13 @@ def get_paper_info(title, api_key):
             return None
 
     except requests.exceptions.HTTPError as e:
-        time.sleep(1)
         if e.response.status_code == 404:
             print("Title match not found")
         else:
             print(f"HTTP error occurred: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-        time.sleep(1)
+    time.sleep(1)
     return None
 
 
