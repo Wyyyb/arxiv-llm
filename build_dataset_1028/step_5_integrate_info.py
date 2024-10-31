@@ -4,9 +4,10 @@ from tqdm import tqdm
 import re
 
 
-valid_data_num = 0
-step_3_wrong = 0
-invalid_step_5 = 0
+valid_data_num = 0.0
+step_3_wrong = 0.0
+invalid_step_5 = 0.0
+total_valid_cite_num = 0.0
 
 
 def extract_bib_item(bib_item):
@@ -47,7 +48,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     abstract = meta_id_map[arxiv_id]["abstract"]
     bib_info = {}
     valid_cite_count = 0
-    global step_3_wrong
+    global step_3_wrong, total_valid_cite_num
     for cite_token, citation_key in step_3_info["citation_map"].items():
         if citation_key not in step_3_info["bib_info"]:
             curr = {"citation_key": citation_key, "title": None, "abstract": None,
@@ -81,6 +82,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     step_5_data = {"arxiv_id": arxiv_id, "title": title, "abstract": abstract,
                    "full_intro": step_3_info["full_intro"], "bib_info": bib_info}
     global valid_data_num, invalid_step_5
+    total_valid_cite_num += valid_cite_count
     if valid_cite_count >= 4:
         valid_data_num += 1
     else:
@@ -222,6 +224,8 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
         print("total valid number: ", valid_data_num)
         print("total invalid step 5 number: ", invalid_step_5)
         print("step_3_wrong number: ", step_3_wrong)
+        print("total_valid_cite_num: ", total_valid_cite_num)
+        print("average valid paper cite num: ", total_valid_cite_num / valid_data_num)
         # print("step_5_data_example: \n", step_5_full_data[-1])
     print("total semantic data number: ", len(semantic_data))
     with open(semantic_data_path, "w") as fo:
@@ -238,7 +242,7 @@ def run_on_darth():
     step_5_output_path = "../local_1031/step_5_integration_1031.jsonl"
     metadata_path = "../corpus_data/meta_data_1022.jsonl"
     qwen_data_path = "../local_1031/qwen_extract_title_data_1031"
-    semantic_data_path = "../local_1031/semantic_data_1031.json"
+    semantic_data_path = "../local_1031/semantic_data_1030.json"
     step_5_integrate(input_dir, step_5_output_path, metadata_path, qwen_data_path, semantic_data_path)
 
 
