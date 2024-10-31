@@ -17,7 +17,11 @@ def call_semantic_api(input_path, output_path):
         with open(output_path, "r") as fi:
             res_data = json.load(fi)
     for each in tqdm(to_search_data):
-        if each not in res_data or "message" in res_data[each]:
+        if each not in res_data:
+            curr_res = get_paper_info(each, api_key)
+        elif res_data[each] is None:
+            curr_res = res_data[each]
+        elif "message" in res_data[each]:
             curr_res = get_paper_info(each, api_key)
         else:
             curr_res = res_data[each]
