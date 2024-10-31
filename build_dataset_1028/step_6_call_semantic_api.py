@@ -35,7 +35,7 @@ def call_semantic_api(input_path, output_path):
             print("unsupported curr res:", curr_res)
         total_count += 1
         res_data[each] = curr_res
-        if len(res_data) % 10 == 0:
+        if len(res_data) % 1000 == 0:
             print(f"statistic: \ntotal_count: {total_count}\nsuccess_count: "
                   f"{success_count}\nlow_score_count: {low_score_count}\nfailed_count: {fail_count}")
             with open(output_path, "w") as fo:
@@ -70,7 +70,8 @@ def get_paper_info(title, api_key):
         print("requesting semantic scholar api cost:", cost)
         if cost < 2:
             print("will sleeping...", 2 - cost)
-            time.sleep(2-cost)
+            # time.sleep(2-cost)
+        time.sleep(1.2)
         data = response.json()
 
         if data:
@@ -88,13 +89,13 @@ def get_paper_info(title, api_key):
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
             print("Title match not found")
-            time.sleep(2)
+            time.sleep(1.2)
             return None
         else:
             print(f"HTTP error occurred: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-    time.sleep(2)
+    time.sleep(1.2)
     return {"message": "client 429 error, try later"}
 
 
