@@ -155,7 +155,7 @@ def load_metadata(metadata_path):
             curr = json.loads(line)
             if "abstract" not in curr or "title" not in curr:
                 print("Error loading metadata, no abstract found:\n", curr)
-            abstract = curr.get('abstract').repalce("<|reference_start|>", "").replace("<|reference_end|>", "")
+            abstract = curr.get('abstract').replace("<|reference_start|>", "").replace("<|reference_end|>", "")
             cleaned_title = clean_title(curr["title"])
             if cleaned_title not in metadata:
                 metadata[cleaned_title] = abstract
@@ -206,6 +206,7 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
                                                                    metadata, meta_id_map, qwen_data)
                 step_5_full_data.append(curr_step_5_info)
         print("total valid number: ", valid_data_num)
+        print("step_5_data_example: \n", step_5_full_data[-1])
     print("total semantic data number: ", len(semantic_data))
     with open(semantic_data_path, "w") as fo:
         fo.write(json.dumps(semantic_data))
