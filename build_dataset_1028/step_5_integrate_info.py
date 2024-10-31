@@ -6,6 +6,7 @@ import re
 
 valid_data_num = 0
 step_3_wrong = 0
+invalid_step_5 = 0
 
 
 def extract_bib_item(bib_item):
@@ -79,9 +80,11 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
         bib_info[cite_token] = curr
     step_5_data = {"arxiv_id": arxiv_id, "title": title, "abstract": abstract,
                    "full_intro": step_3_info["full_intro"], "bib_info": bib_info}
-    global valid_data_num
+    global valid_data_num, invalid_step_5
     if valid_cite_count >= 4:
         valid_data_num += 1
+    else:
+        invalid_step_5 += 1
     with open(step_5_info_path, "w") as fo:
         fo.write(json.dumps(step_5_data))
     return step_5_data, semantic_data
@@ -203,7 +206,7 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
     step_5_full_data = []
     metadata, meta_id_map = load_metadata(metadata_path)
     qwen_data = load_qwen_data(qwen_data_path)
-    global valid_data_num
+    global valid_data_num, invalid_step_5
     for sub_dir in os.listdir(input_dir):
         print("Processing", sub_dir)
         if os.path.isdir(os.path.join(input_dir, sub_dir)):
@@ -214,10 +217,12 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
                 curr_step_5_info, semantic_data = integrate_single(paper_dir_path, semantic_data,
                                                                    metadata, meta_id_map, qwen_data)
-                step_5_full_data.append(curr_step_5_info)
+                if curr_step_5_info is not None:
+                    step_5_full_data.append(curr_step_5_info)
         print("total valid number: ", valid_data_num)
-        print("step_3_wrong number: ",step_3_wrong)
-        print("step_5_data_example: \n", step_5_full_data[-1])
+        print("total invalid step 5 number: ", invalid_step_5)
+        print("step_3_wrong number: ", step_3_wrong)
+        # print("step_5_data_example: \n", step_5_full_data[-1])
     print("total semantic data number: ", len(semantic_data))
     with open(semantic_data_path, "w") as fo:
         fo.write(json.dumps(semantic_data))
