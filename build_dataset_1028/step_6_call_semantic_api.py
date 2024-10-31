@@ -17,10 +17,10 @@ def call_semantic_api(input_path, output_path):
         with open(output_path, "r") as fi:
             res_data = json.load(fi)
     for each in tqdm(to_search_data):
-        if each in res_data:
-            curr_res = res_data[each]
-        else:
+        if each not in res_data or "message" in res_data[each]:
             curr_res = get_paper_info(each, api_key)
+        else:
+            curr_res = res_data[each]
         if curr_res is None:
             fail_count += 1
         elif "matchScore" in curr_res and float(curr_res["matchScore"]) < 30:
@@ -84,12 +84,14 @@ def get_paper_info(title, api_key):
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
             print("Title match not found")
+            time.sleep(2)
+            return None
         else:
             print(f"HTTP error occurred: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
     time.sleep(2)
-    return None
+    return {"message": "client 429 error, try later"}
 
 
 if __name__ == "__main__":
