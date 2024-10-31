@@ -166,12 +166,14 @@ def load_metadata(metadata_path):
 
 def load_qwen_data(qwen_data_path):
     qwen_data = {}
+    total_count = 0
     print("loading qwen data")
     for file in tqdm(os.listdir(qwen_data_path)):
         if not file.endswith(".json"):
             continue
         with open(os.path.join(qwen_data_path, file), "r") as fi:
             curr_batch = json.load(fi)
+            total_count += len(curr_batch)
             for each in curr_batch:
                 arxiv_id = each[0]
                 citation_key = each[1]
@@ -181,7 +183,7 @@ def load_qwen_data(qwen_data_path):
                 if citation_key not in qwen_data[arxiv_id]:
                     qwen_data[arxiv_id][citation_key] = title
     print("load qwen data number: ", len(qwen_data))
-    print("example: ", qwen_data[1234])
+    print("total count: ", total_count)
     return qwen_data
 
 
