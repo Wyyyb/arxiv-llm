@@ -113,6 +113,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                 else:
                     invalid_cite_tokens.append(seg)
         else:  # do not use multi cite for initial setting
+            # print("use_multi_cite = False")
             if seg.startswith("<|multi_cite_") and seg.endswith("|>"):
                 if seg not in bib_info:
                     invalid_cite_tokens.append(seg)
@@ -121,8 +122,10 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                 abstract = info["abstract"]
                 if abstract and len(abstract) > 10:
                     multi_cite_index = seg.split("_")[2]
+                    # print("seg", seg, "multi_cite_index", multi_cite_index)
                     if multi_cite_index not in existing_multi_index:
                         valid_cite_tokens_map[seg] = format_abs(abstract)
+                        existing_multi_index.append(multi_cite_index)
                     else:
                         invalid_cite_tokens.append(seg)
                 else:
