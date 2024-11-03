@@ -13,9 +13,11 @@ def transfer_single(file_dir):
         with open(step_7_info_path, "r") as fi:
             step_7_info_list = json.load(fi)
     else:
-        return None
+        return []
     step_8_info_list = []
     for step_7_info in step_7_info_list:
+        if len(step_7_info["bib_info_map"]) < 4:
+            continue
         cite_token_list = []
         cite_content_list = []
         reference_list = []
