@@ -14,6 +14,8 @@ def transfer_single(file_dir):
             step_7_info_list = json.load(fi)
     else:
         return []
+    if step_7_info_list is None:
+        return []
     step_8_info_list = []
     for step_7_info in step_7_info_list:
         if len(step_7_info["bib_info_map"]) < 4:
