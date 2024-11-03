@@ -42,6 +42,8 @@ def transfer_single(file_dir):
                 targets.append(reference_list[i])
         step_8_info = {"arxiv_id": arxiv_id, "paper": paper, "targets": targets, "targets_idx": selected_id}
         step_8_info_list.append(step_8_info)
+        print("step_8_info", step_8_info)
+        time.sleep(10)
     return step_8_info_list
 
 
@@ -111,7 +113,7 @@ def run_on_darth_server(input_dir):
             fo.write("\n")
 
 
-
-
+if __name__ == "__main__":
+    run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028")
 
 
