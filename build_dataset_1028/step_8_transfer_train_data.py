@@ -29,9 +29,9 @@ def transfer_single(file_dir):
         selected_id = [_ for _ in range(len(cite_token_list))]
         random.shuffle(selected_id)
         selected_id = selected_id[:4]
-        print("selected_id", selected_id)
+        # print("selected_id", selected_id)
         selected_id = sorted(selected_id)
-        print("targets_idx", selected_id)
+        # print("targets_idx", selected_id)
         paper = step_7_info["paper"]
         arxiv_id = step_7_info["arxiv_id"]
         targets = []
@@ -44,8 +44,8 @@ def transfer_single(file_dir):
                 targets.append(reference_list[i])
         step_8_info = {"arxiv_id": arxiv_id, "paper": paper, "targets": targets, "targets_idx": selected_id}
         step_8_info_list.append(step_8_info)
-        print("step_8_info", step_8_info)
-        time.sleep(10)
+        # print("step_8_info", step_8_info)
+        # time.sleep(10)
     return step_8_info_list
 
 
