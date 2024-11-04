@@ -69,10 +69,7 @@ def complete_intro(model_path, embedded_corpus_path, title, abstract, partial_in
     meta_data = load_meta_data()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
-    # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: <|paper_start|>{partial_intro}"
-    # input_text = f"Title: {title}\n\nAbstract: {abstract}\n\nIntroduction: {partial_intro}"
-    input_text = "\\title{" + title + "\n\\maketitle\n\n\n\\section{Introduction}\n" + partial_intro
-    # input_text = f"<|paper_start|>{partial_intro}"
+    input_text = f"<|paper_start|> Title: {title}\nAbstract: {abstract}\nIntroduction\n{partial_intro}"
     input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     while cite_start_hidden_state is not None:
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5)
@@ -115,14 +112,14 @@ def llm_rerank(retrieved_k_results, meta_data):
     # 假设llm就选第一个
     res = recall_results[0]
     title = titles[0]
-    res = "(Reference: " + title + ": " + res
+    res = "(Reference: " + res
     reference = res.replace("<|reference_start|>", "").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
     return reference
 
 
 def load_meta_data():
-    meta_data_path = "../corpus_data/meta_data_1022.jsonl"
+    meta_data_path = "../corpus_data/meta_data_1103.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
         for line in tqdm(fi.readlines()):
@@ -132,22 +129,7 @@ def load_meta_data():
     return meta_data
 
 
-def load_corpus_base_bk():
-    # 尝试加载 HDF5 格式
-    try:
-        with h5py.File("../embedded_corpus/corpus.0.h5", 'r') as f:
-            encoded = f['encoded'][:]
-            lookup_indices = f['lookup_indices'][:]
-        return encoded, lookup_indices
-    except Exception as e:
-        print(f"Error loading HDF5: {e}")
-
-    # 如果所有格式都加载失败
-    print("Failed to load data from all formats")
-    return None, None
-
-
-def load_corpus_base(corpus_dir="../embedded_corpus/multi_1027/"):
+def load_corpus_base(corpus_dir="../embedded_corpus/1103/"):
     encoded_list = []
     lookup_indices_list = []
 
@@ -212,19 +194,14 @@ def retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, 
 
 
 def test():
-    # title = "Graph-tree Fusion Model with Bidirectional Information Propagation for Long Document Classification"
-    # abstract = "Long document classification presents challenges in capturing both local and global dependencies due to their extensive content and complex structure. Existing methods often struggle with token limits and fail to adequately model hierarchical relationships within documents. To address these constraints, we propose a novel model leveraging a graph-tree structure. Our approach integrates syntax trees for sentence encodings and document graphs for document encodings, which capture fine-grained syntactic relationships and broader document contexts, respectively. We use Tree Transformers to generate sentence encodings, while a graph attention network models inter- and intra-sentence dependencies. During training, we implement bidirectional information propagation from word-to-sentence-to-document and vice versa, which enriches the contextual representation. Our proposed method enables a comprehensive understanding of content at all hierarchical levels and effectively handles arbitrarily long contexts without token limit constraints. Experimental results demonstrate the effectiveness of our approach in all types of long document classification tasks."
-    # partial_intro = "Long document understanding has garnered increasing attention in the field of natural language processing (NLP) due to its wide range of applications across various domains, including legal document analysis, scientific literature categorization, and clinical text mining."
     title = "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark"
     abstract = "In the age of large-scale language models, benchmarks like the Massive Multitask Language Understanding (MMLU) have been pivotal in pushing the boundaries of what AI can achieve in language comprehension and reasoning across diverse domains. However, as models continue to improve, their performance on these benchmarks has begun to plateau, making it increasingly difficult to discern differences in model capabilities. This paper introduces MMLU-Pro, an enhanced dataset designed to extend the mostly knowledge-driven MMLU benchmark by integrating more challenging, reasoning-focused questions and expanding the choice set from four to ten options. Additionally, MMLU-Pro eliminates the trivial and noisy questions in MMLU. Our experimental results show that MMLU-Pro not only raises the challenge, causing a significant drop in accuracy by 16% to 33% compared to MMLU but also demonstrates greater stability under varying prompts. With 24 different prompt styles tested, the sensitivity of model scores to prompt variations decreased from 4-5% in MMLU to just 2% in MMLU-Pro. Additionally, we found that models utilizing Chain of Thought (CoT) reasoning achieved better performance on MMLU-Pro compared to direct answering, which is in stark contrast to the findings on the original MMLU, indicating that MMLU-Pro includes more complex reasoning questions. Our assessments confirm that MMLU-Pro is a more discriminative benchmark to better track progress in the field."
-    partial_intro = "<|paper_start|>In recent years, advancements in large language models (LLMs) have significantly transformed the field of natural language processing (NLP)."
+    partial_intro = "In recent years, advancements in large language models (LLMs) have significantly transformed the field of natural language processing (NLP)."
     # title = "Diffusion-based Extreme Image Compression with Compressed Feature Initialization"
     # abstract = "Diffusion-based extreme image compression methods have achieved impressive performance at extremely low bitrates. However, constrained by the iterative denoising process that starts from pure noise, these methods are limited in both fidelity and efficiency. To address these two issues, we present Relay Residual Diffusion Extreme Image Compression (RDEIC), which leverages compressed feature initialization and residual diffusion. Specifically, we first use the compressed latent features of the image with added noise, instead of pure noise, as the starting point to eliminate the unnecessary initial stages of the denoising process. Second, we design a novel relay residual diffusion that reconstructs the raw image by iteratively removing the added noise and the residual between the compressed and target latent features. Notably, our relay residual diffusion network seamlessly integrates pre-trained stable diffusion to leverage its robust generative capability for high-quality reconstruction. Third, we propose a fixed-step fine-tuning strategy to eliminate the discrepancy between the training and inference phases, further improving the reconstruction quality. Extensive experiments demonstrate that the proposed RDEIC achieves state-of-the-art visual quality and outperforms existing diffusion-based extreme image compression methods in both fidelity and efficiency. "
     # partial_intro = "Extreme image compression is becoming increasingly important with the growing demand for efficient storage and transmission of images where storage capacity or bandwidth is limited, such as in satellite communications and mobile devices. Conventional compression standards lik"
-    # # embedded_corpus_path = "../embedded_corpus/multi_1027/"
-    # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/test_1020/checkpoint-140/"
-    embedded_corpus_path = "../embedded_corpus/multi_1027/"
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/unweighted_1027/checkpoint-600/"
+    embedded_corpus_path = "../embedded_corpus/1103/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
 
 
