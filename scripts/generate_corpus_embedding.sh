@@ -6,7 +6,7 @@ cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 EMBEDDING_OUTPUT_DIR="../embedded_corpus/1103/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
 # dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
-dataset_path="../corpus_data/meta_data_1022.jsonl"
+dataset_path="../corpus_data/meta_data_1103.jsonl"
 model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
 
 cp ../tokenizer_files/*.json ${model_path}
