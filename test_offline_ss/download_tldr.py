@@ -6,13 +6,13 @@ from tqdm import tqdm
 from datetime import datetime
 
 
-def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_tldrs"):
+def download_tldrs(api_key, output_dir="/data/yubowang/offline_ss_tldrs"):
     """
     下载 Semantic Scholar 论文摘要到本地
 
     参数:
     api_key: Semantic Scholar API密钥
-    output_dir: 输出目录，默认为'downloaded_abstracts'
+    output_dir: 输出目录，默认为'downloaded_tldrs'
     """
 
     # 创建输出目录
@@ -42,7 +42,7 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_tldrs"):
         # 下载每个文件
         for i, url in enumerate(file_urls, 1):
             # 生成输出文件名
-            filename = f"abstracts_part_{i}.json.gz"
+            filename = f"tldrs_part_{i}.json.gz"
             output_path = os.path.join(output_dir, filename)
 
             print(f"\n正在下载文件 {i}/{len(file_urls)}: {filename}")
@@ -91,6 +91,6 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_tldrs"):
 # 使用示例
 if __name__ == "__main__":
     API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
-    download_abstracts(API_KEY)
+    download_tldrs(API_KEY)
 
 
