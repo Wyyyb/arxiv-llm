@@ -6,7 +6,7 @@ from tqdm import tqdm
 from datetime import datetime
 
 
-def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
+def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_tldrs"):
     """
     下载 Semantic Scholar 论文摘要到本地
 
@@ -22,7 +22,7 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
     headers = {
         'x-api-key': api_key
     }
-    dataset_url = "https://api.semanticscholar.org/datasets/v1/release/latest/dataset/abstracts"
+    dataset_url = "https://api.semanticscholar.org/datasets/v1/release/latest/dataset/tldrs"
 
     try:
         # 获取数据集元数据
@@ -91,6 +91,6 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
 # 使用示例
 if __name__ == "__main__":
     API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
-    download_abstracts(API_KEY, "./test_data")
+    download_abstracts(API_KEY)
 
 
