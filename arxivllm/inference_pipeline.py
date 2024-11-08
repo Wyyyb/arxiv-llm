@@ -119,7 +119,7 @@ def llm_rerank(retrieved_k_results, meta_data):
 
 
 def load_meta_data():
-    meta_data_path = "../corpus_data/meta_data_1103.jsonl"
+    meta_data_path = "../corpus_data/meta_data_1108.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
         for line in tqdm(fi.readlines()):
