@@ -6,7 +6,7 @@ from tqdm import tqdm
 from datetime import datetime
 
 
-def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
+def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_abstract"):
     """
     下载 Semantic Scholar 论文摘要到本地
 
@@ -44,6 +44,9 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
             # 生成输出文件名
             filename = f"abstracts_part_{i}.json.gz"
             output_path = os.path.join(output_dir, filename)
+            if os.path.exists(output_path):
+                print("skip", filename)
+                continue
 
             print(f"\n正在下载文件 {i}/{len(file_urls)}: {filename}")
 
@@ -91,6 +94,6 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss"):
 # 使用示例
 if __name__ == "__main__":
     API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
-    download_abstracts(API_KEY, "./test_data")
+    download_abstracts(API_KEY)
 
 

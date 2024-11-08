@@ -44,6 +44,9 @@ def download_papers(api_key, output_dir="/data/yubowang/offline_ss_papers"):
             # 生成输出文件名
             filename = f"papers_part_{i}.json.gz"
             output_path = os.path.join(output_dir, filename)
+            if os.path.exists(output_path):
+                print("skip", filename)
+                continue
 
             print(f"\n正在下载文件 {i}/{len(file_urls)}: {filename}")
 
