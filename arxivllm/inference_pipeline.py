@@ -22,8 +22,8 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     stop_token_ids = tokenizer.convert_tokens_to_ids(['<|cite_start|>', '<|paper_end|>'])
     print("stop_token_ids", stop_token_ids)
     eos_token_id = stop_token_ids[0]
-    # 生成续写的introduction
-    max_new_tokens = 2500  # 您可以根据需要调整这个值
+
+    max_new_tokens = 2500
     with torch.no_grad():
         output = model.generate(
             inputs.input_ids,
@@ -57,7 +57,8 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     # new_content = generated_text[len(input_text):]
     new_content = generated_text
     if "<|paper_end|>" in new_content:
-        return generated_text, None
+        end_index = new_content.index("<|paper_end|>")
+        return generated_text[:end_index + len("<|paper_end|>")], None
 
     print("---------------new_content:\n", new_content)
     # return new_content, output.hidden_states[-1][-1][-1]
