@@ -79,3 +79,5 @@ def collect():
     load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path)
 
 
+collect()
+
