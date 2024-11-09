@@ -1,10 +1,11 @@
 import json
 import os
+from tqdm import tqdm
 
 
 def load_papers(paper_dir_path):
     papers = {}
-    for file in os.listdir(paper_dir_path):
+    for file in tqdm(os.listdir(paper_dir_path)):
         if not file.endswith('.json'):
             continue
         file_path = os.path.join(paper_dir_path, file)
@@ -20,7 +21,7 @@ def load_papers(paper_dir_path):
 
 def load_abs(abs_dir_path):
     papers = {}
-    for file in os.listdir(abs_dir_path):
+    for file in tqdm(os.listdir(abs_dir_path)):
         if not file.endswith('.json'):
             continue
         file_path = os.path.join(abs_dir_path, file)
@@ -36,7 +37,7 @@ def load_abs(abs_dir_path):
 
 def load_tldr(tldr_dir_path):
     papers = {}
-    for file in os.listdir(tldr_dir_path):
+    for file in tqdm(os.listdir(tldr_dir_path)):
         if not file.endswith('.json'):
             continue
         file_path = os.path.join(tldr_dir_path, file)
@@ -55,7 +56,7 @@ def load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path):
     abstracts = load_abs(abs_dir_path)
     tldrs = load_tldr(tldr_dir_path)
     ss_data = {}
-    for k, v in papers.items():
+    for k, v in tqdm(papers.items()):
         if v in ss_data:
             continue
         if k not in abstracts:
