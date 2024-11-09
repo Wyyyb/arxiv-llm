@@ -3,7 +3,7 @@ conda activate cite_rag
 
 cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
-EMBEDDING_OUTPUT_DIR="../embedded_corpus/1103/"
+EMBEDDING_OUTPUT_DIR="../embedded_corpus/1108/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
 # dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
 dataset_path="../corpus_data/meta_data_1108.jsonl"
