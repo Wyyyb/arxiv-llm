@@ -57,27 +57,23 @@ def load_tldr(tldr_dir_path):
 def load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path):
     papers = load_papers(paper_dir_path)
     abstracts = load_abs(abs_dir_path)
-    tldrs = load_tldr(tldr_dir_path)
-    ss_data = {}
+    # tldrs = load_tldr(tldr_dir_path)
+    ss_data = []
     for k, v in tqdm(papers.items()):
-        if v in ss_data:
-            continue
         if k not in abstracts:
-            abstract = None
+            # abstract = None
+            continue
         else:
             abstract = abstracts[k]
-        if k not in tldrs:
-            tldr = None
-        else:
-            tldr = tldrs[k]
-        ss_data[v] = {"id": k, "abstract": abstract, "tldr": tldr}
+        ss_data.append([k, v, abstract])
     print("number of ss_data", len(ss_data))
     with open(output_path, "w") as fo:
-        fo.write(json.dumps(ss_data))
+        for each in ss_data:
+            fo.write(json.dumps(each) + "\n")
 
 
 def collect():
-    output_path = "/data/yubowang/ss_offline_data/ss_offline_data_1109.json"
+    output_path = "/data/yubowang/ss_offline_data/ss_offline_data_1109.jsonl"
     paper_dir_path = "/data/yubowang/offline_ss_papers/"
     abs_dir_path = "/data/yubowang/offline_ss_abstract/"
     tldr_dir_path = "/data/yubowang/offline_ss_tldrs/"
