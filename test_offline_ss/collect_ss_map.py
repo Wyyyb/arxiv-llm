@@ -16,6 +16,7 @@ def load_papers(paper_dir_path):
                 corpusid = curr["corpusid"]
                 if corpusid not in papers:
                     papers[corpusid] = title
+    print("number of papers data", len(papers))
     return papers
 
 
@@ -32,6 +33,7 @@ def load_abs(abs_dir_path):
                 corpusid = curr["corpusid"]
                 if corpusid not in papers:
                     papers[corpusid] = abstract
+    print("number of abs data", len(papers))
     return papers
 
 
@@ -48,6 +50,7 @@ def load_tldr(tldr_dir_path):
                 corpusid = curr["corpusid"]
                 if corpusid not in papers:
                     papers[corpusid] = tldr
+    print("number of tldr data", len(papers))
     return papers
 
 
@@ -68,6 +71,7 @@ def load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path):
         else:
             tldr = tldrs[k]
         ss_data[v] = {"id": k, "abstract": abstract, "tldr": tldr}
+    print("number of ss_data", len(ss_data))
     with open(output_path, "w") as fo:
         fo.write(json.dumps(ss_data))
 
