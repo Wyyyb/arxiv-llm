@@ -47,13 +47,14 @@ class OptimizedBM25Search:
 
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in tqdm(f):
-                paper = json.loads(line.strip())
+                # 解析每行的列表格式
+                doc_id, title, abstract = json.loads(line.strip())
 
                 # 添加文档到索引
                 writer.add_document(
-                    id=paper[0],
-                    title=paper[1],
-                    abstract=paper[2]
+                    id=str(doc_id),  # 确保ID是字符串
+                    title=title or "",  # 处理可能的None值
+                    abstract=abstract or ""
                 )
 
                 doc_count += 1
