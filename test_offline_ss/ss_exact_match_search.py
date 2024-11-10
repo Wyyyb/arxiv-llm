@@ -32,8 +32,9 @@ def load_query(dir_path):
 
 def load_corpus(corpus_path):
     corpus_data = {}
+    print("Loading corpus ...")
     with open(corpus_path, "r") as fi:
-        for line in fi.readlines():
+        for line in tqdm(fi.readlines()):
             curr = json.loads(line)
             corpus_id, title, abstract = curr
             key = normalize_title(title)
@@ -55,6 +56,7 @@ def main():
     corpus_data = load_corpus(corpus_path)
 
     for i, query_data in enumerate(query_data_list):
+        print("querying", query_data_path_list[i])
         success_count = 0
         res = copy.deepcopy(query_data)
         for k, v in tqdm(query_data.items()):
@@ -77,4 +79,7 @@ def main():
                 res[k] = None
                 continue
 
+
 main()
+
+
