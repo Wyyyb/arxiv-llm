@@ -51,9 +51,9 @@ class OptimizedBM25Search:
 
                 # 添加文档到索引
                 writer.add_document(
-                    id=paper['id'],
-                    title=paper['title'],
-                    abstract=paper['abstract']
+                    id=paper[0],
+                    title=paper[1],
+                    abstract=paper[2]
                 )
 
                 doc_count += 1
@@ -133,9 +133,14 @@ def main():
             continue
         query = k
         results = index.search_best(query)
-        best_match, score = results[0]
-        curr_res = {"corpus_id": best_match[0], "ss_title": best_match[1], "abstract": best_match[2],
-                    "bm25_score": score}
+        best_match, score = results
+        if best_match is None:
+            res[k] = v
+            continue
+        # curr_res = {"corpus_id": best_match[0], "ss_title": best_match[1], "abstract": best_match[2],
+        #             "bm25_score": score}
+        curr_res = {"corpus_id": best_match['id'], "ss_title": best_match['title'],
+                    "abstract": best_match['abstract'], "bm25_score": score}
         res[k] = curr_res
         success_count += 1
         if success_count % 100 == 0:
