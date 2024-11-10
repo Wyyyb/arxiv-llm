@@ -199,7 +199,7 @@ def main():
                     "bm25_score": score}
         res[k] = curr_res
         success_count += 1
-        if success_count % 1000 == 0:
+        if success_count % 100 == 0:
             print("query: ", query)
             print("result: ", curr_res)
             with open(document_path, "w") as fo:
