@@ -57,8 +57,8 @@ def main():
     corpus_data = load_corpus(corpus_path)
 
     for i, query_data in enumerate(query_data_list):
-        if not query_data_path_list[i].endswith("0.json") and not query_data_path_list[i].endswith("1.json"):
-            continue
+        # if not query_data_path_list[i].endswith("0.json") and not query_data_path_list[i].endswith("1.json"):
+        #     continue
         print("querying", query_data_path_list[i])
         success_count = 0
         res = copy.deepcopy(query_data)
@@ -72,7 +72,7 @@ def main():
                 paper_id = result
                 res[k] = {"paper_id": paper_id}
                 success_count += 1
-                if success_count % 10 == 0:
+                if success_count % 10000 == 0:
                     print("query: ", query)
                     print("result: ", res[k])
                     with open(query_data_path_list[i], "w") as fo:
@@ -80,6 +80,8 @@ def main():
             else:
                 res[k] = None
                 continue
+        with open(query_data_path_list[i], "w") as fo:
+            fo.write(json.dumps(res))
 
 
 main()
