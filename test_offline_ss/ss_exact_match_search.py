@@ -61,10 +61,12 @@ def main():
         #     continue
         print("querying", query_data_path_list[i])
         success_count = 0
+        fail_count = 0
         res = copy.deepcopy(query_data)
         for k, v in tqdm(query_data.items()):
             if v is not None:
                 res[k] = v
+                success_count += 1
                 continue
             query = k
             result = exact_match_search(corpus_data, query)
@@ -73,12 +75,15 @@ def main():
                 res[k] = {"paper_id": paper_id}
                 success_count += 1
                 if success_count % 10000 == 0:
+                    print("success count", success_count)
+                    print("fail count", fail_count)
                     print("query: ", query)
                     print("result: ", res[k])
                     with open(query_data_path_list[i], "w") as fo:
                         fo.write(json.dumps(res))
             else:
                 res[k] = None
+                fail_count += 1
                 continue
         with open(query_data_path_list[i], "w") as fo:
             fo.write(json.dumps(res))
