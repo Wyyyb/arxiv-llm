@@ -181,8 +181,8 @@ def load_documents(file_path):
 def main():
     os.makedirs("../local_darth_1110", exist_ok=True)
     os.makedirs("../local_darth_1110/index_directory", exist_ok=True)
-    index = DiskBM25Index("../local_darth_1110/index_directory")
-    index.build_index("/data/yubowang/ss_offline_data/ss_offline_data_1109.jsonl")
+    # index = DiskBM25Index("../local_darth_1110/index_directory")
+    # index.build_index("/data/yubowang/ss_offline_data/ss_offline_data_1109.jsonl")
     index = DiskBM25Index("../local_darth_1110/index_directory")
     index.load_index()
     document_path = "../local_1031/offline_query_ss_1110.json"
