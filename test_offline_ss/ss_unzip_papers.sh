@@ -1,9 +1,11 @@
 #!/bin/bash
 
 # 设置目录路径
-# DIR="/data/yubowang/offline_ss_abstract"
-DIR="/data/yubowang/offline_ss_papers"
-# DIR="/data/yubowang/offline_ss_tldrs"
+## DIR="/data/yubowang/offline_ss_abstract"
+#DIR="/data/yubowang/offline_ss_papers"
+## DIR="/data/yubowang/offline_ss_tldrs"
+
+DIR="/gpfs/public/research/xy/yubowang/offline_ss_papers"
 
 # 创建日志文件
 LOG_FILE="$DIR/decompress_log.txt"

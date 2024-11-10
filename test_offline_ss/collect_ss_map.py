@@ -54,10 +54,9 @@ def load_tldr(tldr_dir_path):
     return papers
 
 
-def load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path):
+def load_data(output_path, paper_dir_path, abs_dir_path):
     papers = load_papers(paper_dir_path)
     abstracts = load_abs(abs_dir_path)
-    # tldrs = load_tldr(tldr_dir_path)
     ss_data = []
     for k, v in tqdm(papers.items()):
         if k not in abstracts:
@@ -73,11 +72,12 @@ def load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path):
 
 
 def collect():
-    output_path = "/data/yubowang/ss_offline_data/ss_offline_data_1109.jsonl"
-    paper_dir_path = "/data/yubowang/offline_ss_papers/"
-    abs_dir_path = "/data/yubowang/offline_ss_abstract/"
-    tldr_dir_path = "/data/yubowang/offline_ss_tldrs/"
-    load_data(output_path, paper_dir_path, abs_dir_path, tldr_dir_path)
+    os.makedirs("/gpfs/public/research/xy/yubowang/ss_offline_data", exist_ok=True)
+    output_path = "/gpfs/public/research/xy/yubowang/ss_offline_data/ss_offline_data_1109.jsonl"
+    paper_dir_path = "/gpfs/public/research/xy/yubowang/offline_ss_papers/"
+    abs_dir_path = "/gpfs/public/research/xy/yubowang/offline_ss_abstract/"
+    # tldr_dir_path = "/data/yubowang/offline_ss_tldrs/"
+    load_data(output_path, paper_dir_path, abs_dir_path)
 
 
 collect()
