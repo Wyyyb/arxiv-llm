@@ -9,6 +9,22 @@ from concurrent.futures import ProcessPoolExecutor
 import os
 import mmh3  # MurmurHash3 for faster hashing
 import copy
+import re
+
+
+def normalize_text(text: str) -> str:
+    """
+    将文本转小写，去除特殊字符和多余空白
+    """
+    # 转小写
+    text = text.lower()
+    # 替换特殊字符为空格
+    text = re.sub(r'[^a-z0-9\s]', ' ', text)
+    # 将多个空白字符替换为单个空格
+    text = re.sub(r'\s+', ' ', text)
+    # 去除首尾空白
+    text = text.strip()
+    return text
 
 
 class DiskBM25Index:
@@ -23,6 +39,7 @@ class DiskBM25Index:
         self.index_path = os.path.join(index_dir, "bm25_index.pkl")
         self.docs_path = os.path.join(index_dir, "docs.pkl")
         self.stats_path = os.path.join(index_dir, "stats.pkl")
+        self.normalized_titles_path = os.path.join(index_dir, "normalized_titles.pkl")
 
         # BM25参数
         self.k1 = 1.5
@@ -41,6 +58,7 @@ class DiskBM25Index:
         # 第一遍遍历：计算文档数量和平均长度
         doc_count = 0
         total_len = 0
+        normalized_titles = {}  # 存储规范化后的标题
 
         print("第一遍遍历：计算基础统计信息...")
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -49,6 +67,8 @@ class DiskBM25Index:
                 tokens = doc[1].lower().split()
                 doc_count += 1
                 total_len += len(tokens)
+                # 存储规范化后的标题
+                normalized_titles[doc_count - 1] = normalize_text(doc[1])
 
         avgdl = total_len / doc_count
 
@@ -94,6 +114,9 @@ class DiskBM25Index:
         with open(self.stats_path, 'wb') as f:
             pickle.dump(stats, f)
 
+        with open(self.normalized_titles_path, 'wb') as f:
+            pickle.dump(normalized_titles, f)
+
     def load_index(self):
         print("loading index...")
         with open(self.index_path, 'rb') as f:
@@ -104,6 +127,9 @@ class DiskBM25Index:
             self.doc_count = stats['doc_count']
             self.avgdl = stats['avgdl']
             self.doc_lens = stats['doc_lens']
+
+        with open(self.normalized_titles_path, 'rb') as f:
+            self.normalized_titles = pickle.load(f)
         print("index loaded!")
 
     def _score_one(self, query_tokens: List[str], doc_id: int) -> float:
@@ -140,15 +166,42 @@ class DiskBM25Index:
         Returns:
             (最相似文档, 分数)
         """
-        query_tokens = query.lower().split()
+        # 首先进行精确匹配
+        normalized_query = normalize_text(query)
+        for doc_id, title in self.normalized_titles.items():
+            if normalized_query == title:
+                with open(self.docs_path, 'rb') as f:
+                    docs = pickle.load(f)
+                    doc = docs[doc_id]
+                return doc, float('inf')  # 返回一个极大值表示精确匹配
+
+        # 如果没有精确匹配，进行BM25搜索
+        query_tokens = normalized_query.split()
 
         # 获取候选文档ID
-        candidate_docs = set()
+        token_docs = defaultdict(set)
         for token in query_tokens:
             if token in self.index:
                 for doc_id, _ in self.index[token]:
-                    candidate_docs.add(doc_id)
+                    token_docs[token].add(doc_id)
+
+        # 只选择至少包含5个查询词的文档作为候选
+        min_tokens_required = min(5, len(query_tokens))  # 如果查询词少于5个，则使用查询词的数量
+        candidate_docs = set()
+        doc_counts = defaultdict(int)
+
+        for token, docs in token_docs.items():
+            for doc_id in docs:
+                doc_counts[doc_id] += 1
+
+        for doc_id, count in doc_counts.items():
+            if count >= min_tokens_required:
+                candidate_docs.add(doc_id)
+
         print("number of candidates", len(candidate_docs))
+
+        if not candidate_docs:
+            return None, 0.0
 
         # 仅追踪最高分数的文档
         best_score = float('-inf')
@@ -183,8 +236,6 @@ def load_documents(file_path):
 def main():
     os.makedirs("../local_darth_1110", exist_ok=True)
     os.makedirs("../local_darth_1110/index_directory", exist_ok=True)
-    # index = DiskBM25Index("../local_darth_1110/index_directory")
-    # index.build_index("/data/yubowang/ss_offline_data/ss_offline_data_1109.jsonl")
     index = DiskBM25Index("../local_darth_1110/index_directory")
     index.load_index()
     document_path = "../local_1031/offline_query_ss_1110.json"
@@ -212,31 +263,6 @@ def main():
                 fo.write(json.dumps(res))
 
 
-main()
-# 使用示例
+if __name__ == "__main__":
+    main()
 
-# 1. 首次建立索引
-"""
-index = DiskBM25Index("index_directory")
-index.build_index("ss_offline_data_1109.jsonl")
-"""
-
-# 2. 搜索示例
-"""
-# 初始化索引
-index = DiskBM25Index("index_directory")
-index.load_index()
-
-# 单次查询
-query = "Attention is all you need"
-results = index.search(query, top_k=1)
-best_match, score = results[0]
-print(f"最相似论文: {best_match}")
-print(f"BM25分数: {score}")
-
-# 批量查询
-queries = ["query1", "query2", "query3", ...]
-for query in tqdm(queries):
-    results = index.search(query)
-    # 处理结果
-"""
