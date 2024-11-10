@@ -95,6 +95,7 @@ class DiskBM25Index:
             pickle.dump(stats, f)
 
     def load_index(self):
+        print("loading index...")
         with open(self.index_path, 'rb') as f:
             self.index = pickle.load(f)
 
@@ -103,6 +104,7 @@ class DiskBM25Index:
             self.doc_count = stats['doc_count']
             self.avgdl = stats['avgdl']
             self.doc_lens = stats['doc_lens']
+        print("index loaded!")
 
     def _score_one(self, query_tokens: List[str], doc_id: int) -> float:
         score = 0.0
