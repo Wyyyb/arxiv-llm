@@ -95,7 +95,6 @@ class DiskBM25Index:
             pickle.dump(stats, f)
 
     def load_index(self):
-        """加载索引"""
         with open(self.index_path, 'rb') as f:
             self.index = pickle.load(f)
 
@@ -106,7 +105,6 @@ class DiskBM25Index:
             self.doc_lens = stats['doc_lens']
 
     def _score_one(self, query_tokens: List[str], doc_id: int) -> float:
-        """计算单个文档的BM25分数"""
         score = 0.0
         doc_len = self.doc_lens[doc_id]
 
@@ -114,60 +112,63 @@ class DiskBM25Index:
             if token not in self.index:
                 continue
 
-            # 获取包含该词的文档列表
             docs_with_term = self.index[token]
             df = len(docs_with_term)
             idf = math.log((self.doc_count - df + 0.5) / (df + 0.5) + 1)
 
-            # 查找当前文档的词频
             tf = 0
             for d_id, freq in docs_with_term:
                 if d_id == doc_id:
                     tf = freq
                     break
 
-            # BM25计算公式
             numerator = tf * (self.k1 + 1)
             denominator = tf + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)
             score += idf * numerator / denominator
 
         return score
 
-    def search(self, query: str, top_k: int = 1) -> List[Tuple[Dict, float]]:
+    def search_best(self, query: str):
         """
         搜索最相似的文档
 
         Args:
             query: 查询字符串
-            top_k: 返回的结果数量
 
         Returns:
-            [(文档, 分数), ...]
+            (最相似文档, 分数)
         """
         query_tokens = query.lower().split()
 
-        # 获取包含查询词的所有文档ID
+        # 获取候选文档ID
         candidate_docs = set()
         for token in query_tokens:
             if token in self.index:
-                candidate_docs.update(doc_id for doc_id, _ in self.index[token])
+                for doc_id, _ in self.index[token]:
+                    candidate_docs.add(doc_id)
+        print("number of candidates", len(candidate_docs))
 
-        # 计算候选文档的分数
-        scores = []
+        # 仅追踪最高分数的文档
+        best_score = float('-inf')
+        best_doc_id = None
+
+        # 计算每个候选文档的分数
         for doc_id in candidate_docs:
             score = self._score_one(query_tokens, doc_id)
-            scores.append((doc_id, score))
+            if score > best_score:
+                best_score = score
+                best_doc_id = doc_id
 
-        # 排序并获取top-k结果
-        scores.sort(key=lambda x: x[1], reverse=True)
-        top_results = scores[:top_k]
+        # 如果没有找到匹配的文档
+        if best_doc_id is None:
+            return None, 0.0
 
-        # 加载文档内容
+        # 只加载最佳匹配文档的内容
         with open(self.docs_path, 'rb') as f:
             docs = pickle.load(f)
-            results = [(docs[doc_id], score) for doc_id, score in top_results]
+            best_doc = docs[best_doc_id]
 
-        return results
+        return best_doc, best_score
 
 
 def load_documents(file_path):
@@ -193,13 +194,16 @@ def main():
             res[k] = v
             continue
         query = k
-        results = index.search(query, top_k=1)
-        best_match, score = results[0]
+        results = index.search_best(query)
+        best_match, score = results
+        if best_match is None:
+            res[k] = v
+            continue
         curr_res = {"corpus_id": best_match[0], "ss_title": best_match[1], "abstract": best_match[2],
                     "bm25_score": score}
         res[k] = curr_res
         success_count += 1
-        if success_count % 100 == 0:
+        if success_count % 10 == 0:
             print("query: ", query)
             print("result: ", curr_res)
             with open(document_path, "w") as fo:
