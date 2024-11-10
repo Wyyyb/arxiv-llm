@@ -5,7 +5,7 @@
 #DIR="/data/yubowang/offline_ss_papers"
 ## DIR="/data/yubowang/offline_ss_tldrs"
 
-DIR="/gpfs/public/research/xy/yubowang/offline_ss_papers"
+DIR="/gpfs/public/research/xy/yubowang/offline_ss_paper"
 
 # 创建日志文件
 LOG_FILE="$DIR/decompress_log.txt"
