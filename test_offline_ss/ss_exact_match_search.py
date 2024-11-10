@@ -34,11 +34,12 @@ def load_corpus(corpus_path):
     corpus_data = {}
     print("Loading corpus ...")
     with open(corpus_path, "r") as fi:
-        for line in tqdm(fi.readlines()):
+        # 使用 tqdm 包装文件对象
+        for line in tqdm(fi):
             curr = json.loads(line)
             corpus_id, title, abstract = curr
             key = normalize_title(title)
-            corpus_data[key] = curr
+            corpus_data[key] = str(corpus_id)
     return corpus_data
 
 
@@ -56,6 +57,8 @@ def main():
     corpus_data = load_corpus(corpus_path)
 
     for i, query_data in enumerate(query_data_list):
+        if not query_data_path_list[i].endswith("0.json") and not query_data_path_list[i].endswith("1.json"):
+            continue
         print("querying", query_data_path_list[i])
         success_count = 0
         res = copy.deepcopy(query_data)
@@ -66,9 +69,8 @@ def main():
             query = k
             result = exact_match_search(corpus_data, query)
             if result:
-                paper_id, title, abstract = result
-                res[k] = {"paper_id": paper_id, "title": title,
-                          "abstract": abstract}
+                paper_id = result
+                res[k] = {"paper_id": paper_id}
                 success_count += 1
                 if success_count % 10 == 0:
                     print("query: ", query)
