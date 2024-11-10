@@ -54,20 +54,21 @@ class PaperSearcher:
         exact_match_file = os.path.join(self.index_dir, "exact_match.json")
         hash_file = os.path.join(self.index_dir, "data_hash.txt")
 
-        current_hash = self._get_file_hash()
+        # current_hash = self._get_file_hash()
         need_update = True
 
         if all(os.path.exists(f) for f in [bm25_file, corpus_file, doc_info_file, exact_match_file, hash_file]):
-            with open(hash_file, 'r') as f:
-                stored_hash = f.read().strip()
-                if stored_hash == current_hash:
-                    need_update = False
+            need_update = False
+            # with open(hash_file, 'r') as f:
+            #     stored_hash = f.read().strip()
+            #     if stored_hash == current_hash:
+            #         need_update = False
 
         if need_update:
             print("Creating new index...")
             self.create_index()
-            with open(hash_file, 'w') as f:
-                f.write(current_hash)
+            # with open(hash_file, 'w') as f:
+            #     f.write(current_hash)
         else:
             print("Loading existing index...")
             with open(bm25_file, 'rb') as f:
