@@ -46,7 +46,7 @@ class DiskBM25Index:
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in tqdm(f):
                 doc = json.loads(line.strip())
-                tokens = doc['title'].lower().split()
+                tokens = doc[1].lower().split()
                 doc_count += 1
                 total_len += len(tokens)
 
@@ -63,7 +63,7 @@ class DiskBM25Index:
         with open(file_path, 'r', encoding='utf-8') as f:
             for doc_id, line in enumerate(tqdm(f)):
                 doc = json.loads(line.strip())
-                tokens = doc['title'].lower().split()
+                tokens = doc[1].lower().split()
 
                 # 计算词频
                 term_freq = defaultdict(int)
