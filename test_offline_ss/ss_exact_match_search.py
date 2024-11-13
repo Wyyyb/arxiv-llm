@@ -31,6 +31,7 @@ def load_query(dir_path):
 
 
 def load_corpus(corpus_path):
+    corpus_map = {}
     corpus_data = {}
     print("Loading corpus ...")
     with open(corpus_path, "r") as fi:
@@ -40,7 +41,8 @@ def load_corpus(corpus_path):
             corpus_id, title, abstract = curr
             key = normalize_title(title)
             corpus_data[key] = str(corpus_id)
-    return corpus_data
+            corpus_map[corpus_id] = abstract
+    return corpus_data, corpus_map
 
 
 def exact_match_search(corpus_data, query):
@@ -54,7 +56,7 @@ def main():
     corpus_path = "/gpfs/public/research/xy/yubowang/ss_offline_data/ss_offline_data_1109.jsonl"
     query_dir_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/local_1111/ss_data_query_1111_exact/"
     query_data_list, query_data_path_list = load_query(query_dir_path)
-    corpus_data = load_corpus(corpus_path)
+    corpus_data, corpus_map = load_corpus(corpus_path)
 
     for i, query_data in enumerate(query_data_list):
         # if not query_data_path_list[i].endswith("0.json") and not query_data_path_list[i].endswith("1.json"):
@@ -64,7 +66,7 @@ def main():
         fail_count = 0
         res = copy.deepcopy(query_data)
         for k, v in tqdm(query_data.items()):
-            if v is not None:
+            if v is not None and "abstract" in v:
                 res[k] = v
                 success_count += 1
                 continue
@@ -72,7 +74,12 @@ def main():
             result = exact_match_search(corpus_data, query)
             if result:
                 paper_id = result
-                res[k] = {"paper_id": paper_id}
+                if paper_id not in corpus_map:
+                    print("error in corpus map, not found id:", paper_id)
+                    res[k] = v
+                    continue
+                res[k] = {"paper_id": paper_id, "abstract": corpus_map[paper_id],
+                          "source": "exact match from offline ss"}
                 success_count += 1
                 if success_count % 10000 == 0:
                     print("success count", success_count)
@@ -85,6 +92,8 @@ def main():
                 res[k] = None
                 fail_count += 1
                 continue
+        print("success count", success_count)
+        print("fail count", fail_count)
         with open(query_data_path_list[i], "w") as fo:
             fo.write(json.dumps(res))
 
