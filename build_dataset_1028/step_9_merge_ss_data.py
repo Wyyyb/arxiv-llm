@@ -4,7 +4,9 @@ import os
 
 def load_api_result_data(data_path):
     with open(data_path, "r") as fi:
-        api_res = json.load(fi)
+        text = fi.read()
+        text = text.replace(", \"A personal view on systems medicine and the emergence of proacti", "}")
+        api_res = json.loads(text)
     print("api_result_data number", len(api_res))
     return api_res
 
