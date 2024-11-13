@@ -41,7 +41,7 @@ def load_corpus(corpus_path):
             corpus_id, title, abstract = curr
             key = normalize_title(title)
             corpus_data[key] = str(corpus_id)
-            corpus_map[corpus_id] = abstract
+            corpus_map[str(corpus_id)] = abstract
     return corpus_data, corpus_map
 
 
