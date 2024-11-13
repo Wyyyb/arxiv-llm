@@ -55,6 +55,7 @@ def split_dict(data, split_num=5):
         end = min(i + each_num, total)
         curr = items[i: end]
         res.append(dict(curr))
+        i = end
     return res
 
 
