@@ -1,5 +1,6 @@
 import json
 import os
+from tqdm import tqdm
 
 
 def load_api_result_data(data_path):
@@ -28,7 +29,7 @@ def load_exact_match_res(data_dir_path):
 
 def merge_data(api_res, exact_match_res):
     success_count = 0
-    for k, v in exact_match_res.items():
+    for k, v in tqdm(exact_match_res.items()):
         if k not in api_res:
             # print("key not found in api_res", k)
             continue
