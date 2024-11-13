@@ -31,7 +31,7 @@ def call_semantic_api(input_path, output_path, api_key):
         res_data[k] = curr_res
         api_total_count += 1
 
-        if api_total_count % 1000 == 0:
+        if api_total_count % 100 == 0:
             print(f"statistic: \napi_total_count: {api_total_count}\nsuccess_count: "
                   f"{success_count}\nlow_score_count: {low_score_count}\nfailed_count: {fail_count}")
             with open(output_path, "w") as fo:
