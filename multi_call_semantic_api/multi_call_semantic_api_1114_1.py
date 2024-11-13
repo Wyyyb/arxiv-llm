@@ -22,7 +22,9 @@ def call_semantic_api(input_path, output_path, api_key):
         if isinstance(v, dict) and "message" in v and v["message"] == "Title match not found":
             continue
         curr_res = get_paper_info(k, api_key)
-        if "matchScore" in curr_res and float(curr_res["matchScore"]) < 30:
+        if curr_res is None:
+            pass
+        elif "matchScore" in curr_res and float(curr_res["matchScore"]) < 30:
             low_score_count += 1
         elif "matchScore" in curr_res and float(curr_res["matchScore"]) >= 30:
             success_count += 1
