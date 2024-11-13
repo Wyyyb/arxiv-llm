@@ -59,7 +59,7 @@ def split_dict(data, split_num=5):
 
 def main():
     api_res_path = "/data/yubowang/arxiv-llm/local_1031/semantic_data_1101.json"
-    exact_match_dir_path = "/data/yubowang/data_trans_1030/"
+    exact_match_dir_path = "/data/yubowang/data_trans_1030/ss_data_query_1111_exact/"
     output_ss_data_dir_path = "/data/yubowang/arxiv-llm/local_darth_1014/"
     os.makedirs(output_ss_data_dir_path, exist_ok=True)
     api_res = load_api_result_data(api_res_path)
