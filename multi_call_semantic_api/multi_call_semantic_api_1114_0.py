@@ -67,10 +67,10 @@ def get_paper_info(title, api_key):
         response.raise_for_status()
         cost = float(time.time() - start)
         print("requesting semantic scholar api cost:", cost)
-        if cost < 2:
-            print("will sleeping...", 2 - cost)
-            # time.sleep(2-cost)
-        time.sleep(1.2)
+        if cost < 1.2:
+            print("will sleeping...", 1.2 - cost)
+            time.sleep(1.2-cost)
+        # time.sleep(1.2)
         data = response.json()
 
         if data:
