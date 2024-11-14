@@ -22,7 +22,7 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  train.py \
  --deepspeed ds_zero3_config.json \
  --output_dir ${output_dir} \
- --model_name_or_path /gpfs/public/research/xy/yubowang/models/Qwen2.5-7B \
+ --model_name_or_path /gpfs/public/research/xy/yubowang/models/Qwen2.5-14B \
  --save_steps 500 \
  --dataset_name json \
  --dataset_path ../local/training_data/train_data_1103.jsonl \
@@ -37,6 +37,5 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --num_train_epochs 5 \
  --logging_steps 1 \
  --overwrite_output_dir \
- --gradient_accumulation_steps 16\
- --use_flash_attn_2 true
+ --gradient_accumulation_steps 16
 
