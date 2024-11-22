@@ -35,9 +35,7 @@ for tar_file in "$input_dir"/arXiv_src_2410*.tar; do
     # 获取文件名（不含路径和扩展名）
     filename=$(basename "$tar_file" .tar)
 
-    # 在输出目录中创建子目录
-    target_dir="$output_dir/$filename"
-    mkdir -p "$target_dir"
+    target_dir="$output_dir"
 
     # 解压文件
     if tar -xf "$tar_file" -C "$target_dir"; then
