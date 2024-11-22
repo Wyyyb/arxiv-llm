@@ -1,6 +1,6 @@
 #!/bin/bash
 
-input_dir="/data/yubowang/2410_arxiv"
+input_dir="/data/yubowang/2410_arxiv/2410"
 output_dir="/data/yubowang/2410_arxiv_latex"
 
 # 创建输出目录（如果不存在）
