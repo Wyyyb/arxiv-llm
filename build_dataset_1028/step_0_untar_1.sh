@@ -26,12 +26,22 @@ for gz_file in "$input_dir"/*.gz; do
 
     echo "Processing: $gz_file"
 
-    # 获取不带.gz的文件名
-    output_file="$output_dir/$(basename "$gz_file" .gz)"
+    # 获取不带.gz的文件名作为子目录名
+    subdir="$output_dir/$(basename "$gz_file" .gz)"
 
-    # 解压文件
-    if tar -xzf "$gz_file" -C "$output_dir"; then
-        echo "Successfully extracted: $gz_file"
+    # 创建子目录
+    mkdir -p "$subdir"
+
+    # 检查子目录是否创建成功
+    if [ ! -d "$subdir" ]; then
+        echo "Error: Failed to create subdirectory '$subdir'"
+        ((fail_count++))
+        continue
+    fi
+
+    # 解压文件到对应子目录
+    if tar -xzf "$gz_file" -C "$subdir"; then
+        echo "Successfully extracted: $gz_file to $subdir"
         ((success_count++))
     else
         echo "Failed to extract: $gz_file"
