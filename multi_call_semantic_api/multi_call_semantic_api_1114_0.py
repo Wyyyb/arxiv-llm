@@ -67,10 +67,10 @@ def get_paper_info(title, api_key):
         response.raise_for_status()
         cost = float(time.time() - start)
         print("requesting semantic scholar api cost:", cost)
-        if cost < 1.2:
-            print("will sleeping...", 1.2 - cost)
-            time.sleep(1.2-cost)
-        # time.sleep(1.2)
+        if cost < 2:
+            print("will sleeping...", 2 - cost)
+            time.sleep(2-cost)
+        # time.sleep(2)
         data = response.json()
 
         if data:
@@ -88,13 +88,13 @@ def get_paper_info(title, api_key):
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
             print("Title match not found")
-            time.sleep(1.2)
+            time.sleep(2)
             return {"message": "Title match not found"}
         else:
             print(f"HTTP error occurred: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-    time.sleep(1.2)
+    time.sleep(2)
     return None
 
 
