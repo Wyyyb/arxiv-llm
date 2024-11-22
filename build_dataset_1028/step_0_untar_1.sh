@@ -30,8 +30,8 @@ for gz_file in "$input_dir"/*.gz; do
     output_file="$output_dir/$(basename "$gz_file" .gz)"
 
     # 解压文件
-    if gunzip -c "$gz_file" > "$output_file"; then
-        echo "Successfully extracted: $gz_file -> $output_file"
+    if tar -xzf "$gz_file" -C "$output_dir"; then
+        echo "Successfully extracted: $gz_file"
         ((success_count++))
     else
         echo "Failed to extract: $gz_file"
