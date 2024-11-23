@@ -82,13 +82,37 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     return res
 
 
+def identify(metadata):
+    res = []
+    corpus_id_count = 0
+    exist_paper_id = []
+    for each in metadata:
+        paper_id = each["paper_id"]
+        if paper_id in exist_paper_id:
+            continue
+        corpus_id_count += 1
+        if each["source"] == "arxiv":
+            corpus_id = f"arxiv-{str(corpus_id_count)}"
+        else:
+            corpus_id = f"ss-{str(corpus_id_count)}"
+        curr = {"corpus_id": corpus_id, "paper_id": paper_id, "title": each["meta_title"],
+                "abstract": each["abstract"], "source": each["source"]}
+        res.append(curr)
+    return res
+
+
 def main():
     ori_metadata = load_ori_metadata()
     ss_metadata = load_ss_res_data()
     metadata = ori_metadata + ss_metadata
+    corpus_data = identify(metadata)
     print("1123 version metadata number", len(metadata))
+    print("1124 version corpus data number", len(corpus_data))
     with open("../corpus_data/metadata_1123.jsonl", "w") as fo:
         for each in metadata:
+            fo.write(json.dumps(each) + "\n")
+    with open("../corpus_data/corpus_data_1124.jsonl", "w") as fo:
+        for each in corpus_data:
             fo.write(json.dumps(each) + "\n")
 
 
