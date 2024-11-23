@@ -70,6 +70,8 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     print("api_count", api_count)
     print("exact_count", exact_count)
     print("low score count", low_score_count)
+    print("abs_none_count", abs_none_count)
+    print("v_none_count", v_none_count)
     return res
 
 
