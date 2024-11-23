@@ -25,7 +25,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     api_count = 0
     low_score_count = 0
     v_none_count = 0
-    abs_none_count = 0
+    title_not_fount_count = 0
     for file in os.listdir(ss_res_dir):
         if not file.endswith("output.json"):
             continue
@@ -37,7 +37,12 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                 if v is None:
                     v_none_count += 1
                     continue
-                if "abstract" not in v or v["abstract"] is None:
+                if "abstract" not in v:
+                    if v["message"] != 'Title match not found':
+                        print("invalid message", v)
+                    title_not_fount_count += 1
+                    continue
+                elif v["abstract"] is None:
                     abstract = ""
                 else:
                     abstract = v["abstract"].strip()
@@ -70,7 +75,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     print("api_count", api_count)
     print("exact_count", exact_count)
     print("low score count", low_score_count)
-    print("abs_none_count", abs_none_count)
+    print("title_not_fount_count", title_not_fount_count)
     print("v_none_count", v_none_count)
     return res
 
