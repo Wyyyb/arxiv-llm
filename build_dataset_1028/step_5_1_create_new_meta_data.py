@@ -12,6 +12,7 @@ def load_ori_metadata(file_path="../corpus_data/meta_data_1022.jsonl"):
             abstract = abstract.replace("<|reference_start|>", "").replace("<|reference_end|>", "")
             curr["abstract"] = f"<|reference_start|>{title}: {abstract}<|reference_end|>"
             curr["source"] = "arxiv"
+            curr["meta_title"] = title
             res.append(curr)
     print("arxiv meta number:", len(res))
     return res
@@ -34,8 +35,8 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                 if "abstract" not in v or v["abstract"] is None:
                     continue
                 abstract = v["abstract"].strip()
-                if "matchScore" in v and v["matchScore"] < 50:
-                    print("***********matchScore less than 50:\n", k, v)
+                if "matchScore" in v and v["matchScore"] < 30:
+                    print("***********matchScore less than 30:\n", k, v)
                     continue
                 if "source" in v and v["source"] == "exact match from offline ss":
                     exact_count += 1
@@ -50,10 +51,11 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                     paper_id = v["paper_id"]
                 else:
                     print("***********paper id not found", v)
-
+                meta_title = v["title"]
+                curr["meta_title"] = v["title"]
                 curr["title"] = title
                 curr["paper_id"] = paper_id
-                curr["abstract"] = f"<|reference_start|>{title}: {abstract}<|reference_end|>"
+                curr["abstract"] = f"<|reference_start|>{meta_title}: {abstract}<|reference_end|>"
                 res.append(curr)
     print("api_count", api_count)
     print("exact_count", exact_count)
