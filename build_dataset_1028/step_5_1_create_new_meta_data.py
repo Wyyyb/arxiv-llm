@@ -44,9 +44,9 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                     api_count += 1
                     curr["source"] = "ss api result"
                 title = k
-                if "paper_id" not in v:
-                    print("***********paper_id not found", v)
-                paper_id = v["paper_id"]
+                if "paperId" not in v:
+                    print("***********paper id not found", v)
+                paper_id = v["paperId"]
                 curr["title"] = title
                 curr["paper_id"] = paper_id
                 curr["abstract"] = f"<|reference_start|>{title}: {abstract}<|reference_end|>"
