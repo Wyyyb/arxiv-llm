@@ -85,7 +85,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
 def identify(metadata):
     res = []
     corpus_id_count = 0
-    exist_paper_id = []
+    exist_paper_id = set()
     print("identifying")
     for each in tqdm(metadata):
         paper_id = each["paper_id"]
@@ -99,7 +99,7 @@ def identify(metadata):
         curr = {"corpus_id": corpus_id, "paper_id": paper_id, "title": each["meta_title"],
                 "abstract": each["abstract"], "source": each["source"]}
         res.append(curr)
-        exist_paper_id.append(paper_id)
+        exist_paper_id.add(paper_id)
     return res
 
 
