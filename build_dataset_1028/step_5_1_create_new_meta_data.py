@@ -38,9 +38,9 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                     v_none_count += 1
                     continue
                 if "abstract" not in v or v["abstract"] is None:
-                    abs_none_count += 1
-                    continue
-                abstract = v["abstract"].strip()
+                    abstract = ""
+                else:
+                    abstract = v["abstract"].strip()
                 if "matchScore" in v and v["matchScore"] < 30:
                     # print("***********matchScore less than 30:\n", k, v)
                     low_score_count += 1
