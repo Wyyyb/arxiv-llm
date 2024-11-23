@@ -23,6 +23,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     res = []
     exact_count = 0
     api_count = 0
+    low_score_count = 0
     for file in os.listdir(ss_res_dir):
         if not file.endswith("output.json"):
             continue
@@ -38,6 +39,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                 abstract = v["abstract"].strip()
                 if "matchScore" in v and v["matchScore"] < 30:
                     print("***********matchScore less than 30:\n", k, v)
+                    low_score_count += 1
                     continue
                 if "source" in v and v["source"] == "exact match from offline ss":
                     exact_count += 1
