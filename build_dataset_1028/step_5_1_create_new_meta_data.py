@@ -98,6 +98,7 @@ def identify(metadata):
         curr = {"corpus_id": corpus_id, "paper_id": paper_id, "title": each["meta_title"],
                 "abstract": each["abstract"], "source": each["source"]}
         res.append(curr)
+        exist_paper_id.append(paper_id)
     return res
 
 
