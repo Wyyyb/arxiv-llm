@@ -33,7 +33,7 @@ def extract_bib_item(bib_item):
 
 def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_data):
     step_3_info_path = os.path.join(data_dir_path, "step_3_info.json")
-    step_5_info_path = os.path.join(data_dir_path, "step_5_info.json")
+    step_5_1123_info_path = os.path.join(data_dir_path, "step_5_1123_info.json")
     if not os.path.exists(step_3_info_path):
         return None, semantic_data
     with open(step_3_info_path, "r") as fi:
@@ -90,7 +90,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
         valid_data_num += 1
     else:
         invalid_step_5 += 1
-    with open(step_5_info_path, "w") as fo:
+    with open(step_5_1123_info_path, "w") as fo:
         fo.write(json.dumps(step_5_data))
     return step_5_data, semantic_data
 
@@ -229,10 +229,10 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
                     print("skip", paper_dir)
                     continue
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
-                curr_step_5_info, semantic_data = integrate_single(paper_dir_path, semantic_data,
+                curr_step_5_1123_info, semantic_data = integrate_single(paper_dir_path, semantic_data,
                                                                    metadata, meta_id_map, qwen_data)
-                if curr_step_5_info is not None:
-                    step_5_full_data.append(curr_step_5_info)
+                if curr_step_5_1123_info is not None:
+                    step_5_full_data.append(curr_step_5_1123_info)
         print("total valid number: ", valid_data_num)
         print("total invalid step 5 number: ", invalid_step_5)
         print("step_3_wrong number: ", step_3_wrong)
@@ -251,12 +251,13 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
 
 
 def run_on_darth():
-    os.makedirs("../local_1031/", exist_ok=True)
+    # os.makedirs("../local_1031/", exist_ok=True)
     input_dir = "/data/yubowang/arxiv_plain_latex_data_1028"
-    step_5_output_path = "../local_1031/step_5_integration_1031.jsonl"
-    metadata_path = "../corpus_data/meta_data_1022.jsonl"
+    os.makedirs("../local_1123/", exist_ok=True)
+    step_5_output_path = "../local_1123/step_5_integration_1123.jsonl"
+    metadata_path = "../corpus_data/metadata_1123.jsonl"
     qwen_data_path = "../local_1031/qwen_extract_title_data_1031"
-    semantic_data_path = "../local_1031/semantic_data_1030.json"
+    semantic_data_path = "../local_1123/semantic_data_1123.json"
     step_5_integrate(input_dir, step_5_output_path, metadata_path, qwen_data_path, semantic_data_path)
 
 
