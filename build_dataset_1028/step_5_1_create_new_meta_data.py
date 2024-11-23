@@ -14,6 +14,8 @@ def load_ori_metadata(file_path="../corpus_data/meta_data_1022.jsonl"):
             curr["abstract"] = f"<|reference_start|>{title}: {abstract}<|reference_end|>"
             curr["source"] = "arxiv"
             curr["meta_title"] = title
+            curr.pop("docs_id")
+            curr["paper_id"] = curr["arxiv_id"]
             res.append(curr)
     print("arxiv meta number:", len(res))
     return res
