@@ -84,6 +84,7 @@ def main():
     ori_metadata = load_ori_metadata()
     ss_metadata = load_ss_res_data()
     metadata = ori_metadata + ss_metadata
+    print("1123 version metadata number", len(metadata))
     with open("../corpus_data/metadata_1123.jsonl", "w") as fo:
         for each in metadata:
             fo.write(json.dumps(each) + "\n")
