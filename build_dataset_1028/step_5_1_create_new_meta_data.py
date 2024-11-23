@@ -9,7 +9,7 @@ def load_ori_metadata(file_path="../corpus_data/meta_data_1022.jsonl"):
             curr = json.loads(line)
             abstract = curr["abstract"]
             title = curr["title"]
-            abstract = abstract.replace("<|reference_start|>", "").replace("<|reference_end|>", "").replace("")
+            abstract = abstract.replace("<|reference_start|>", "").replace("<|reference_end|>", "")
             curr["abstract"] = f"<|reference_start|>{title}: {abstract}<|reference_end|>"
             curr["source"] = "arxiv"
             res.append(curr)
