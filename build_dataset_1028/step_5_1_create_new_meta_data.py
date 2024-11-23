@@ -86,7 +86,8 @@ def identify(metadata):
     res = []
     corpus_id_count = 0
     exist_paper_id = []
-    for each in metadata:
+    print("identifying")
+    for each in tqdm(metadata):
         paper_id = each["paper_id"]
         if paper_id in exist_paper_id:
             continue
