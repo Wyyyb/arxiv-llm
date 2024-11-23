@@ -38,7 +38,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                     continue
                 abstract = v["abstract"].strip()
                 if "matchScore" in v and v["matchScore"] < 30:
-                    print("***********matchScore less than 30:\n", k, v)
+                    # print("***********matchScore less than 30:\n", k, v)
                     low_score_count += 1
                     continue
                 if "source" in v and v["source"] == "exact match from offline ss":
@@ -65,6 +65,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                 res.append(curr)
     print("api_count", api_count)
     print("exact_count", exact_count)
+    print("low score count", low_score_count)
     return res
 
 
