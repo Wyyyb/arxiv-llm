@@ -52,8 +52,9 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                 else:
                     print("***********paper id not found", v)
                 if "title" not in v:
-                    print("***********title not found", v)
-                meta_title = v["title"]
+                    meta_title = title
+                else:
+                    meta_title = v["title"]
                 curr["meta_title"] = v["title"]
                 curr["title"] = title
                 curr["paper_id"] = paper_id
