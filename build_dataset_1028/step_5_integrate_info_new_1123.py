@@ -44,9 +44,9 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
         return None, semantic_data
     if "full_intro" not in step_3_info or not step_3_info["full_intro"]:
         return None, semantic_data
-    arxiv_id = data_dir_path.split("/")[-1]
-    title = meta_id_map[arxiv_id]["title"]
-    abstract = meta_id_map[arxiv_id]["abstract"]
+    paper_id = data_dir_path.split("/")[-1]
+    title = meta_id_map[paper_id]["title"]
+    abstract = meta_id_map[paper_id]["abstract"]
     bib_info = {}
     valid_cite_count = 0
     global step_3_wrong, total_valid_cite_num, total_cite_num
@@ -62,10 +62,10 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
             bibitem = step_3_info["bib_info"][citation_key][0]
             key, cite_title = extract_bib_item(bibitem)
         else:
-            cite_title = find_title_from_qwen(qwen_data, arxiv_id, citation_key)
+            cite_title = find_title_from_qwen(qwen_data, paper_id, citation_key)
         cite_abstract = find_abs_from_metadata(metadata, cite_title)
         if not cite_title:
-            message = "title extraction failed: " + str(arxiv_id) + "-" + str(citation_key)
+            message = "title extraction failed: " + str(paper_id) + "-" + str(citation_key)
         elif not cite_abstract:
             message = "paper not in arxiv: " + str(cite_title)
             if cite_title not in semantic_data:
@@ -81,7 +81,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
         curr = {"citation_key": citation_key, "title": cite_title, "abstract": cite_abstract,
                 "message": message, "ori_bib_text": ori_bib_item}
         bib_info[cite_token] = curr
-    step_5_data = {"arxiv_id": arxiv_id, "title": title, "abstract": abstract,
+    step_5_data = {"paper_id": paper_id, "title": title, "abstract": abstract,
                    "full_intro": step_3_info["full_intro"], "bib_info": bib_info}
     global valid_data_num, invalid_step_5
     total_valid_cite_num += valid_cite_count
@@ -111,14 +111,14 @@ def find_abs_from_metadata(metadata, title):
     return metadata[title]
 
 
-def find_title_from_qwen(qwen_data, arxiv_id, citation_key):
-    if arxiv_id not in qwen_data:
-        print("arxiv_id not in qwen_data", arxiv_id)
+def find_title_from_qwen(qwen_data, paper_id, citation_key):
+    if paper_id not in qwen_data:
+        print("paper_id not in qwen_data", paper_id)
         return None
-    if citation_key not in qwen_data[arxiv_id]:
-        print("citation_key not in qwen_data[arxiv_id]", citation_key, arxiv_id)
+    if citation_key not in qwen_data[paper_id]:
+        print("citation_key not in qwen_data[paper_id]", citation_key, paper_id)
         return None
-    return qwen_data[arxiv_id][citation_key]
+    return qwen_data[paper_id][citation_key]
 
 
 def clean_title(title):
@@ -184,8 +184,8 @@ def load_metadata(metadata_path):
             cleaned_title = clean_title(curr["title"])
             if cleaned_title not in metadata:
                 metadata[cleaned_title] = abstract
-            if curr["arxiv_id"] not in meta_id_map:
-                meta_id_map[curr["arxiv_id"]] = curr
+            if curr["paper_id"] not in meta_id_map:
+                meta_id_map[curr["paper_id"]] = curr
     return metadata, meta_id_map
 
 
@@ -200,13 +200,13 @@ def load_qwen_data(qwen_data_path):
             curr_batch = json.load(fi)
             total_count += len(curr_batch)
             for each in curr_batch:
-                arxiv_id = each[0]
+                paper_id = each[0]
                 citation_key = each[1]
                 title = each[3]
-                if arxiv_id not in qwen_data:
-                    qwen_data[arxiv_id] = {}
-                if citation_key not in qwen_data[arxiv_id]:
-                    qwen_data[arxiv_id][citation_key] = title
+                if paper_id not in qwen_data:
+                    qwen_data[paper_id] = {}
+                if citation_key not in qwen_data[paper_id]:
+                    qwen_data[paper_id][citation_key] = title
     print("load qwen data number: ", len(qwen_data))
     print("total count: ", total_count)
     return qwen_data
