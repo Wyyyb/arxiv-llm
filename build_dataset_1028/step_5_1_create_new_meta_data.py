@@ -24,6 +24,8 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
     exact_count = 0
     api_count = 0
     low_score_count = 0
+    v_none_count = 0
+    abs_none_count = 0
     for file in os.listdir(ss_res_dir):
         if not file.endswith("output.json"):
             continue
@@ -33,8 +35,10 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
             for k, v in tqdm(data.items()):
                 curr = {}
                 if v is None:
+                    v_none_count += 1
                     continue
                 if "abstract" not in v or v["abstract"] is None:
+                    abs_none_count += 1
                     continue
                 abstract = v["abstract"].strip()
                 if "matchScore" in v and v["matchScore"] < 30:
