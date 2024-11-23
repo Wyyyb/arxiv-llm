@@ -2,6 +2,7 @@ import json
 import os
 from tqdm import tqdm
 import re
+import time
 
 
 valid_data_num = 0.0
@@ -175,6 +176,7 @@ def clean_title(title):
 def load_metadata(metadata_path):
     metadata = {}
     meta_id_map = {}
+    repeated_metadata_count = 0
     with open(metadata_path, 'r') as fi:
         for line in fi.readlines():
             curr = json.loads(line)
@@ -186,6 +188,11 @@ def load_metadata(metadata_path):
                 metadata[cleaned_title] = abstract
             if curr["paper_id"] not in meta_id_map:
                 meta_id_map[curr["paper_id"]] = curr
+            else:
+                print("************repeated metadata", curr)
+                repeated_metadata_count += 1
+    print("repeated_metadata_count", repeated_metadata_count)
+    time.sleep(10)
     return metadata, meta_id_map
 
 
