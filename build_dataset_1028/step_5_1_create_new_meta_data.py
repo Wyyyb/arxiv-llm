@@ -1,5 +1,6 @@
 import json
 import os
+from tqdm import tqdm
 
 
 def load_ori_metadata(file_path="../corpus_data/meta_data_1022.jsonl"):
@@ -28,7 +29,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
         file_path = os.path.join(ss_res_dir, file)
         with open(file_path, "r") as fi:
             data = json.load(fi)
-            for k, v in data.items():
+            for k, v in tqdm(data.items()):
                 curr = {}
                 if v is None:
                     continue
@@ -55,7 +56,7 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
                     meta_title = title
                 else:
                     meta_title = v["title"]
-                curr["meta_title"] = v["title"]
+                curr["meta_title"] = meta_title
                 curr["title"] = title
                 curr["paper_id"] = paper_id
                 curr["abstract"] = f"<|reference_start|>{meta_title}: {abstract}<|reference_end|>"
