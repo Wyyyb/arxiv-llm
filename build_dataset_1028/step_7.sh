@@ -6,4 +6,4 @@
 
 export CUDA_VISIBLE_DEVICES=0
 
-python step_7_format_and_split.py
+python step_7_format_and_split_new_1124.py

@@ -90,6 +90,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
     valid_cite_tokens_map = {}
     invalid_cite_tokens = []
     existing_multi_index = []
+    cite_token_corpus_id_map = {}
     for seg in segments:
         if seg.startswith("<|cite_") and seg.endswith("|>"):
             if seg not in bib_info:
@@ -97,8 +98,10 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                 continue
             info = bib_info[seg]
             abstract = info["abstract"]
+            corpus_id = info["corpus_id"]
             if abstract and len(abstract) > 10:
                 valid_cite_tokens_map[seg] = format_abs(abstract)
+                cite_token_corpus_id_map[seg] = corpus_id
             else:
                 invalid_cite_tokens.append(seg)
         if use_multi_cite:
@@ -108,8 +111,10 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
+                corpus_id = info["corpus_id"]
                 if abstract and len(abstract) > 10:
                     valid_cite_tokens_map[seg] = format_abs(abstract)
+                    cite_token_corpus_id_map[seg] = corpus_id
                 else:
                     invalid_cite_tokens.append(seg)
         else:  # do not use multi cite for initial setting
@@ -120,11 +125,13 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
+                corpus_id = info["corpus_id"]
                 if abstract and len(abstract) > 10:
                     multi_cite_index = seg.split("_")[2]
                     # print("seg", seg, "multi_cite_index", multi_cite_index)
                     if multi_cite_index not in existing_multi_index:
                         valid_cite_tokens_map[seg] = format_abs(abstract)
+                        cite_token_corpus_id_map[seg] = corpus_id
                         existing_multi_index.append(multi_cite_index)
                     else:
                         invalid_cite_tokens.append(seg)
@@ -140,7 +147,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
         final_paper = final_paper.replace(k, v)
     token_num = batch_compute_tokens(tokenizer, [final_paper])[0]
     if token_num <= 16000:
-        result = {"arxiv_id": arxiv_id, "paper": paper, "bib_info_map": valid_cite_tokens_map}
+        result = {"arxiv_id": arxiv_id, "paper": paper, "bib_info_map": valid_cite_tokens_map,
+                  "cite_corpus_id_map": cite_token_corpus_id_map}
         return [result]
     # second time split the paper without invalid cite tokens
     segments = split_text_with_citations(paper)
@@ -164,12 +172,14 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
             curr_segs.append(segments[next_seg_id])
             next_seg_id += 1
         else:
-            result = save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map, part_id, arxiv_id)
+            result = save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map,
+                                             cite_token_corpus_id_map, part_id, arxiv_id)
             part_id += 1
             curr_segs = []
             curr_length = 0
     if check_curr_segs(curr_segs):
-        result = save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map, part_id, arxiv_id)
+        result = save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map,
+                                         cite_token_corpus_id_map, part_id, arxiv_id)
         part_id += 1
     return result
 
@@ -179,7 +189,8 @@ def check_token_limits(tokenizer, paper):
     return token_num <= 16000
 
 
-def save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map, part_id, arxiv_id):
+def save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map,
+                            cite_token_corpus_id_map, part_id, arxiv_id):
     paper = "".join(curr_segs)
     if not check_token_limits(tokenizer, paper):
         print("split before has error, wrong paper token number computed")
@@ -191,7 +202,9 @@ def save_curr_res_to_result(tokenizer, curr_segs, result, valid_cite_tokens_map,
         if each.startswith("<|multi_cite_") or each.startswith("<|cite_"):
             bib_info_map[each] = valid_cite_tokens_map[each]
     new_arxiv_id = arxiv_id + "-" + str(part_id)
-    curr_res = {"arxiv_id": new_arxiv_id, "paper": paper, "bib_info_map": bib_info_map}
+    curr_res = {"arxiv_id": new_arxiv_id, "paper": paper, "bib_info_map": bib_info_map,
+                "cite_corpus_id_map": cite_token_corpus_id_map
+                }
     result.append(curr_res)
     return result
 
