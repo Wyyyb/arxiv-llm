@@ -99,7 +99,8 @@ def get_paper_info(title, api_key):
 
 
 if __name__ == "__main__":
-    API_KEY = "vgPRBYMNV9asiaTwN5o5b7mH2f0HnOVM9yN0MWp6"
+    # API_KEY = "vgPRBYMNV9asiaTwN5o5b7mH2f0HnOVM9yN0MWp6"
+    API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
     index = 4
     input_file_path = f"/data/yubowang/arxiv-llm/local_darth_1014/ss_result_data_1114_{str(index)}.json"
     output_file_path = input_file_path.replace(".json", "_output.json")
