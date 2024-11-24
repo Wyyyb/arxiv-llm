@@ -192,7 +192,7 @@ def load_metadata(metadata_path):
             if curr["paper_id"] not in meta_id_map:
                 meta_id_map[curr["paper_id"]] = curr
             else:
-                print("************repeated metadata", curr)
+                # print("************repeated metadata", curr)
                 repeated_metadata_count += 1
     print("repeated_metadata_count", repeated_metadata_count)
     time.sleep(10)
