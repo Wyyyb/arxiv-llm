@@ -78,8 +78,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
     title = step_5_data.get('title', None)
     abstract = step_5_data.get('abstract', None)
     intro = step_5_data.get('full_intro', None)
-    if len(intro) > 32000:
-        intro = intro[:32000]
+    if len(intro) > 64000:
+        intro = intro[:64000]
     bib_info = step_5_data.get('bib_info', None)
     if not (title and abstract and intro and bib_info):
         return None
@@ -98,6 +98,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                 continue
             info = bib_info[seg]
             abstract = info["abstract"]
+            if "citation_corpus_id" not in info:
+                print("info", info)
             corpus_id = info["citation_corpus_id"]
             if abstract and len(abstract) > 10:
                 valid_cite_tokens_map[seg] = format_abs(abstract)
@@ -111,6 +113,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
+                if "citation_corpus_id" not in info:
+                    print("info", info)
                 corpus_id = info["citation_corpus_id"]
                 if abstract and len(abstract) > 10:
                     valid_cite_tokens_map[seg] = format_abs(abstract)
@@ -125,6 +129,8 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
+                if "citation_corpus_id" not in info:
+                    print("info", info)
                 corpus_id = info["citation_corpus_id"]
                 if abstract and len(abstract) > 10:
                     multi_cite_index = seg.split("_")[2]
