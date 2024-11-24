@@ -46,6 +46,8 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
     if "full_intro" not in step_3_info or not step_3_info["full_intro"]:
         return None, semantic_data
     paper_id = data_dir_path.split("/")[-1]
+    if paper_id not in meta_id_map:
+        print("paper_id not found in meta_id_map", paper_id)
     title = meta_id_map[paper_id]["title"]
     abstract = meta_id_map[paper_id]["abstract"]
     bib_info = {}
@@ -64,7 +66,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
             key, cite_title = extract_bib_item(bibitem)
         else:
             cite_title = find_title_from_qwen(qwen_data, paper_id, citation_key)
-        cite_abstract = find_abs_from_metadata(metadata, cite_title)
+        cite_abstract, cite_corpus_id = find_abs_from_metadata(metadata, cite_title)
         if not cite_title:
             message = "title extraction failed: " + str(paper_id) + "-" + str(citation_key)
         elif not cite_abstract:
@@ -80,7 +82,7 @@ def integrate_single(data_dir_path, semantic_data, metadata, meta_id_map, qwen_d
             message = "success"
             valid_cite_count += 1
         curr = {"citation_key": citation_key, "title": cite_title, "abstract": cite_abstract,
-                "message": message, "ori_bib_text": ori_bib_item}
+                "message": message, "ori_bib_text": ori_bib_item, "citation_corpus_id": cite_corpus_id}
         bib_info[cite_token] = curr
     step_5_data = {"paper_id": paper_id, "title": title, "abstract": abstract,
                    "full_intro": step_3_info["full_intro"], "bib_info": bib_info}
@@ -108,8 +110,8 @@ def get_abs_from_semantic(semantic_data, cite_title):
 def find_abs_from_metadata(metadata, title):
     title = clean_title(title)
     if title is None or title not in metadata:
-        return None
-    return metadata[title]
+        return None, None
+    return metadata[title][0], metadata[title][1]
 
 
 def find_title_from_qwen(qwen_data, paper_id, citation_key):
@@ -183,9 +185,10 @@ def load_metadata(metadata_path):
             if "abstract" not in curr or "title" not in curr:
                 print("Error loading metadata, no abstract found:\n", curr)
             abstract = curr.get('abstract').replace("<|reference_start|>", "").replace("<|reference_end|>", "")
+            corpus_id = curr['corpus_id']
             cleaned_title = clean_title(curr["title"])
             if cleaned_title not in metadata:
-                metadata[cleaned_title] = abstract
+                metadata[cleaned_title] = [abstract, corpus_id]
             if curr["paper_id"] not in meta_id_map:
                 meta_id_map[curr["paper_id"]] = curr
             else:
@@ -237,7 +240,7 @@ def step_5_integrate(input_dir, output_path, metadata_path, qwen_data_path, sema
                     continue
                 paper_dir_path = os.path.join(input_dir, sub_dir, paper_dir)
                 curr_step_5_1123_info, semantic_data = integrate_single(paper_dir_path, semantic_data,
-                                                                   metadata, meta_id_map, qwen_data)
+                                                                        metadata, meta_id_map, qwen_data)
                 if curr_step_5_1123_info is not None:
                     step_5_full_data.append(curr_step_5_1123_info)
         print("total valid number: ", valid_data_num)

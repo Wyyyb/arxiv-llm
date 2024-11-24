@@ -85,11 +85,12 @@ def load_ss_res_data(ss_res_dir="../local_darth_1014/"):
 def identify(metadata):
     res = []
     corpus_id_count = 0
-    exist_paper_id = set()
+    exist_paper_id = {}
     print("identifying")
-    for each in tqdm(metadata):
-        paper_id = each["paper_id"]
+    for i, each in tqdm(enumerate(metadata)):
+        paper_id = str(each["paper_id"])
         if paper_id in exist_paper_id:
+            metadata[i]["corpus_id"] = exist_paper_id[paper_id]
             continue
         corpus_id_count += 1
         if each["source"] == "arxiv":
@@ -99,15 +100,16 @@ def identify(metadata):
         curr = {"corpus_id": corpus_id, "paper_id": paper_id, "title": each["meta_title"],
                 "abstract": each["abstract"], "source": each["source"]}
         res.append(curr)
-        exist_paper_id.add(paper_id)
-    return res
+        exist_paper_id[paper_id] = corpus_id
+        metadata[i]["corpus_id"] = corpus_id
+    return res, metadata
 
 
 def main():
     ori_metadata = load_ori_metadata()
     ss_metadata = load_ss_res_data()
     metadata = ori_metadata + ss_metadata
-    corpus_data = identify(metadata)
+    corpus_data, metadata = identify(metadata)
     print("1123 version metadata number", len(metadata))
     print("1124 version corpus data number", len(corpus_data))
     with open("../corpus_data/metadata_1123.jsonl", "w") as fo:
