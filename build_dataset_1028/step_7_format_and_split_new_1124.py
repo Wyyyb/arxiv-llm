@@ -98,9 +98,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                 continue
             info = bib_info[seg]
             abstract = info["abstract"]
-            if "citation_corpus_id" not in info:
-                print("info", info)
-            corpus_id = info["citation_corpus_id"]
+            corpus_id = info.get("citation_corpus_id", None)
             if abstract and len(abstract) > 10:
                 valid_cite_tokens_map[seg] = format_abs(abstract)
                 cite_token_corpus_id_map[seg] = corpus_id
@@ -113,9 +111,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
-                if "citation_corpus_id" not in info:
-                    print("info", info)
-                corpus_id = info["citation_corpus_id"]
+                corpus_id = info.get("citation_corpus_id", None)
                 if abstract and len(abstract) > 10:
                     valid_cite_tokens_map[seg] = format_abs(abstract)
                     cite_token_corpus_id_map[seg] = corpus_id
@@ -129,9 +125,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
                     continue
                 info = bib_info[seg]
                 abstract = info["abstract"]
-                if "citation_corpus_id" not in info:
-                    print("info", info)
-                corpus_id = info["citation_corpus_id"]
+                corpus_id = info.get("citation_corpus_id", None)
                 if abstract and len(abstract) > 10:
                     multi_cite_index = seg.split("_")[2]
                     # print("seg", seg, "multi_cite_index", multi_cite_index)
