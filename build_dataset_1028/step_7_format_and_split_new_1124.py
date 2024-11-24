@@ -74,7 +74,7 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
     with open(step_5_data_path, "r") as fi:
         step_5_data = json.load(fi)
     # first format and filter invalid citation tokens
-    arxiv_id = step_5_data.get('arxiv_id')
+    arxiv_id = step_5_data.get('paper_id', step_5_data.get("arxiv_id", None))
     title = step_5_data.get('title', None)
     abstract = step_5_data.get('abstract', None)
     intro = step_5_data.get('full_intro', None)
