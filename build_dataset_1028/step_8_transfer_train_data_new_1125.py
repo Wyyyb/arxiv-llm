@@ -23,6 +23,7 @@ def transfer_single(file_dir):
         cite_token_list = []
         cite_content_list = []
         reference_list = []
+        cite_corpus_id_map = step_7_info["cite_corpus_id_map"]
         for cite_token, cite_content in step_7_info["bib_info_map"].items():
             cite_token_list.append(cite_token)
             cite_content_list.append(cite_content)
@@ -44,10 +45,14 @@ def transfer_single(file_dir):
             paper = paper.replace(cite_token, cite_content_list[i])
             if i in selected_id:
                 targets.append(reference_list[i])
-        step_8_info = {"arxiv_id": arxiv_id, "paper": paper, "targets": targets, "targets_idx": selected_id}
+        step_8_info = {"arxiv_id": arxiv_id, "paper": paper, "targets": targets, "targets_idx": selected_id,
+                       "cite_corpus_id_map": cite_corpus_id_map}
         step_8_info_list.append(step_8_info)
         # print("step_8_info", step_8_info)
         # time.sleep(10)
+    step_8_info_path = os.path.join(file_dir, "step_8_info_1126.json")
+    with open(step_8_info_path, "w") as fo:
+        fo.write(json.dumps(step_8_info_list))
     return step_8_info_list
 
 
@@ -109,12 +114,14 @@ def run_on_darth_server(input_dir):
                     train_data.append(each)
     print("ori train data number", len(train_data))
     train_data = check_train_data_token_num(tokenizer, train_data)
-    print("train data number", len(train_data))
+    print("total raw data number", len(train_data))
     os.makedirs("../local_1125", exist_ok=True)
     random.shuffle(train_data)
     eval_data = train_data[0: 5000]
     train_data = train_data[5000:]
     train_data_path = "../local_1125/train_data_1125.jsonl"
+    print("train data number", len(train_data))
+    print("eval data number", len(eval_data))
     with open(train_data_path, "w") as fo:
         for each in train_data:
             fo.write(json.dumps(each))
@@ -124,7 +131,6 @@ def run_on_darth_server(input_dir):
         for each in eval_data:
             fo.write(json.dumps(each))
             fo.write("\n")
-
 
 
 if __name__ == "__main__":
