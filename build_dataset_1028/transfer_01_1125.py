@@ -88,8 +88,8 @@ def merge_compressed_jsonl(input_dir, output_path):
 # merge_compressed_jsonl('input_directory', 'output.jsonl')
 
 
-split_and_compress_jsonl('input.jsonl', 'output_directory')
-
+split_and_compress_jsonl('../local_1125/train_data_1125.jsonl', '/data/yubowang/data_trans_1030/train_data_1125')
+merge_compressed_jsonl('input_directory', 'output.jsonl')
 
 
 

@@ -111,11 +111,20 @@ def run_on_darth_server(input_dir):
     train_data = check_train_data_token_num(tokenizer, train_data)
     print("train data number", len(train_data))
     os.makedirs("../local_1125", exist_ok=True)
+    random.shuffle(train_data)
+    eval_data = train_data[0: 5000]
+    train_data = train_data[5000:]
     train_data_path = "../local_1125/train_data_1125.jsonl"
     with open(train_data_path, "w") as fo:
         for each in train_data:
             fo.write(json.dumps(each))
             fo.write("\n")
+    eval_data_path = "../local_1125/eval_data_1125.jsonl"
+    with open(eval_data_path, "w") as fo:
+        for each in eval_data:
+            fo.write(json.dumps(each))
+            fo.write("\n")
+
 
 
 if __name__ == "__main__":
