@@ -91,3 +91,12 @@ upload_jsonl_to_hf(
     repo_id="ubowang/cite-llm-corpus_data_1124",
     token=hf_token
 )
+
+os.makedirs("../local_1125", exist_ok=True)
+download_hf_to_jsonl(repo_id="ubowang/cite-llm-single-cite-train",
+                     output_path="../local_1125/train_data_1125.jsonl",
+                     token=hf_token)
+
+download_hf_to_jsonl(repo_id="ubowang/cite-llm-single-cite-eval",
+                     output_path="../local_1125/eval_data_1125.jsonl",
+                     token=hf_token)
