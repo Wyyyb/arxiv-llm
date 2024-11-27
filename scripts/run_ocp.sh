@@ -3,7 +3,7 @@
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
-# 创建并执行Python脚本
+# temp debug, ocp 2 hours
 python3 << EOF
 import torch
 import time
