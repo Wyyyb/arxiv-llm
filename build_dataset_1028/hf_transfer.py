@@ -101,9 +101,19 @@ hf_token = "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"
 #                      output_path="../local_1125/eval_data_1125.jsonl",
 #                      token=hf_token)
 
-download_hf_to_jsonl(repo_id="ubowang/cite-llm-corpus_data_1124",
-                     output_path="../corpus_data/corpus_data_1124.jsonl",
-                     token=hf_token)
+# download_hf_to_jsonl(repo_id="ubowang/cite-llm-corpus_data_1124",
+#                      output_path="../corpus_data/corpus_data_1124.jsonl",
+#                      token=hf_token)
 
+upload_jsonl_to_hf(
+    jsonl_path="/data/yubowang/arxiv-llm/local_1127/train_data_1127_use_multi.jsonl",
+    repo_id="ubowang/cite-llm-multi-cite-train",
+    token=hf_token
+)
 
+upload_jsonl_to_hf(
+    jsonl_path="/data/yubowang/arxiv-llm/local_1127/eval_data_1127_use_multi.jsonl",
+    repo_id="ubowang/cite-llm-multi-cite-eval",
+    token=hf_token
+)
 
