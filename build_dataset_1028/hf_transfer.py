@@ -116,12 +116,27 @@ hf_token = "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"
 #     repo_id="ubowang/cite-llm-multi-cite-eval",
 #     token=hf_token
 # )
-os.makedirs("../local_1127", exist_ok=True)
-download_hf_to_jsonl(repo_id="ubowang/cite-llm-multi-cite-train",
-                     output_path="../local_1127/train_data_1127_use_multi.jsonl",
-                     token=hf_token)
+# os.makedirs("../local_1127", exist_ok=True)
+# download_hf_to_jsonl(repo_id="ubowang/cite-llm-multi-cite-train",
+#                      output_path="../local_1127/train_data_1127_use_multi.jsonl",
+#                      token=hf_token)
 
 
+upload_jsonl_to_hf(
+    jsonl_path="/data/yubowang/arxiv-llm/local_1128_14B_10k/train_data_1128_14B_10k.jsonl",
+    repo_id="ubowang/cite-llm-multi-cite-14B-10k-train",
+    token=hf_token
+)
 
+# upload_jsonl_to_hf(
+#     jsonl_path="/data/yubowang/arxiv-llm/local_1128_14B_10k/eval_data_1128_14B_10k.jsonl",
+#     repo_id="ubowang/cite-llm-multi-cite-14B-10k-eval",
+#     token=hf_token
+# )
+
+# os.makedirs("../local_1128_14B_10k", exist_ok=True)
+# download_hf_to_jsonl(repo_id="ubowang/cite-llm-multi-cite-14B-10k-trainn",
+#                      output_path="../local_1128_14B_10k/train_data_1128_14B_10k.jsonl",
+#                      token=hf_token)
 
 
