@@ -113,7 +113,7 @@ def run_on_darth_server(input_dir):
                 for each in curr_res:
                     train_data.append(each)
     print("ori train data number", len(train_data))
-    train_data = check_train_data_token_num(tokenizer, train_data)
+    # train_data = check_train_data_token_num(tokenizer, train_data)
     print("total raw data number", len(train_data))
     os.makedirs("../local_1127", exist_ok=True)
     random.shuffle(train_data)
