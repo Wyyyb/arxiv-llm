@@ -23,7 +23,7 @@ def transfer_single(file_dir):
         cite_token_list = []
         cite_content_list = []
         reference_list = []
-        cite_corpus_id_map = step_7_info["cite_corpus_id_map"]
+        cite_corpus_id_map = json.dumps(step_7_info["cite_corpus_id_map"], ensure_ascii=False)
         for cite_token, cite_content in step_7_info["bib_info_map"].items():
             cite_token_list.append(cite_token)
             cite_content_list.append(cite_content)
