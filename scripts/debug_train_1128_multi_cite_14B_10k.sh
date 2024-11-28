@@ -14,9 +14,6 @@ conda activate cite_rag
 output_dir="../model_output/v1128_multi_cite_14B_10k"
 mkdir -p "$output_dir"
 
-echo "waiting 3600"
-sleep 3600
-
 torchrun --nproc_per_node $GPUS_PER_NODE \
  --master_addr $MASTER_ADDR \
  --node_rank $NODE_RANK \
