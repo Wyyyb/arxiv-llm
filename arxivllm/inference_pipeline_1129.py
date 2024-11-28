@@ -120,17 +120,17 @@ def llm_rerank(retrieved_k_results, meta_data):
 
 
 def load_meta_data():
-    meta_data_path = "../corpus_data/meta_data_1108.jsonl"
+    meta_data_path = "../corpus_data/corpus_data_1124.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
         for line in tqdm(fi.readlines()):
             curr = json.loads(line)
-            if curr["docs_id"] not in meta_data:
-                meta_data[curr["docs_id"]] = curr
+            if curr["corpus_id"] not in meta_data:
+                meta_data[curr["corpus_id"]] = curr
     return meta_data
 
 
-def load_corpus_base(corpus_dir="../embedded_corpus/1103/"):
+def load_corpus_base(corpus_dir="../embedded_corpus/1129/"):
     encoded_list = []
     lookup_indices_list = []
 
