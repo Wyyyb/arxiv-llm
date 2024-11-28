@@ -3,12 +3,12 @@ conda activate cite_rag
 
 cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
-EMBEDDING_OUTPUT_DIR="../embedded_corpus/1108/"
+EMBEDDING_OUTPUT_DIR="../embedded_corpus/1129/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
 # dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
-dataset_path="../corpus_data/meta_data_1108.jsonl"
-# model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
-model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-2815/"
+dataset_path="../corpus_data/corpus_data_1124.jsonl"
+model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-1000/"
+# model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-2815/"
 
 cp ../tokenizer_files/*.json ${model_path}
 
