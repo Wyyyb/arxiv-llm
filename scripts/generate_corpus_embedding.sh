@@ -12,7 +12,7 @@ model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi
 
 cp ../tokenizer_files/*.json ${model_path}
 
-for s in 1
+for s in 0
 do
 echo ${s}
 gpuid=$s
