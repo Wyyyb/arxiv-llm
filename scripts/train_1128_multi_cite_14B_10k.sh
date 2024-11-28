@@ -37,7 +37,7 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --learning_rate 1e-5 \
  --query_max_len 10000 \
  --passage_max_len 10000 \
- --num_train_epochs 5 \
+ --num_train_epochs 3 \
  --logging_steps 1 \
  --overwrite_output_dir \
  --gradient_accumulation_steps 16
