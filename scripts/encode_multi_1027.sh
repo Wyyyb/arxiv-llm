@@ -12,7 +12,7 @@ model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi
 
 cp ../tokenizer_files/*.json ${model_path}
 
-for s in {4..7}  # 使用8张卡，从0到7
+for s in {0..7}  # 使用8张卡，从0到7
 do
   echo ${s}
   gpuid=$s
@@ -27,9 +27,9 @@ do
     --passage_max_len 1024 \
     --dataset_name json \
     --dataset_path ${dataset_path} \
-    --dataset_number_of_shards 4 \
-    --dataset_shard_index ${s-4} \
-    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s-4}.pkl &  # 添加 & 实现并行
+    --dataset_number_of_shards 8 \
+    --dataset_shard_index ${s} \
+    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.pkl &  # 添加 & 实现并行
 done
 wait  # 等待所有进程完成
 
