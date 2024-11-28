@@ -3,14 +3,16 @@ conda activate cite_rag
 
 cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
-EMBEDDING_OUTPUT_DIR="../embedded_corpus/multi_1027/"
+EMBEDDING_OUTPUT_DIR="../embedded_corpus/1128_shards/"
 mkdir -p ${EMBEDDING_OUTPUT_DIR}
-dataset_path="../corpus_data/meta_data_1022.jsonl"
-model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/unweighted_1027/checkpoint-600/"
+# dataset_path="../corpus_data/meta_data_1020_sample.jsonl"
+dataset_path="../corpus_data/corpus_data_1124.jsonl"
+model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-1000/"
+# model_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-2815/"
 
 cp ../tokenizer_files/*.json ${model_path}
 
-for s in {0..7}  # 使用8张卡，从0到7
+for s in {4..7}  # 使用8张卡，从0到7
 do
   echo ${s}
   gpuid=$s
@@ -25,9 +27,9 @@ do
     --passage_max_len 1024 \
     --dataset_name json \
     --dataset_path ${dataset_path} \
-    --dataset_number_of_shards 8 \
-    --dataset_shard_index ${s} \
-    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s}.pkl &  # 添加 & 实现并行
+    --dataset_number_of_shards 4 \
+    --dataset_shard_index ${s-4} \
+    --encode_output_path ${EMBEDDING_OUTPUT_DIR}/corpus.${s-4}.pkl &  # 添加 & 实现并行
 done
 wait  # 等待所有进程完成
 
