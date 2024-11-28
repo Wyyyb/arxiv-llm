@@ -25,15 +25,15 @@ torchrun --nproc_per_node $GPUS_PER_NODE \
  --model_name_or_path /gpfs/public/research/xy/yubowang/models/Qwen2.5-14B \
  --save_steps 1000 \
  --dataset_name json \
- --dataset_path ../local_1127/train_data_1127_use_multi.jsonl \
+ --dataset_path ../local_1128_14B_10k/train_data_1128_14B_10k.jsonl \
  --bf16 \
  --normalize \
  --temperature 0.01 \
  --per_device_train_batch_size 1 \
  --gradient_checkpointing \
  --learning_rate 1e-5 \
- --query_max_len 12000 \
- --passage_max_len 12000 \
+ --query_max_len 10200 \
+ --passage_max_len 10200 \
  --num_train_epochs 3 \
  --logging_steps 1 \
  --overwrite_output_dir \
