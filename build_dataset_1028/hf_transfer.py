@@ -135,7 +135,7 @@ hf_token = "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"
 # )
 
 os.makedirs("../local_1128_14B_10k", exist_ok=True)
-download_hf_to_jsonl(repo_id="ubowang/cite-llm-multi-cite-14B-10k-trainn",
+download_hf_to_jsonl(repo_id="ubowang/cite-llm-multi-cite-14B-10k-train",
                      output_path="../local_1128_14B_10k/train_data_1128_14B_10k.jsonl",
                      token=hf_token)
 
