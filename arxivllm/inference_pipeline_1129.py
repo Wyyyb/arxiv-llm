@@ -213,7 +213,7 @@ def test():
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
     os.makedirs("../local_1129", exist_ok=True)
     os.makedirs("../local_1129/test_results_1129", exist_ok=True)
-    with open("../local_1129/test_results_1129/mmlu-pro_v2.txt", "w") as fo:
+    with open("../local_1129/test_results_1129/mmlu-pro_v3.txt", "w") as fo:
         fo.write(result)
 
 
