@@ -23,7 +23,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
     print("stop_token_ids", stop_token_ids)
     eos_token_id = stop_token_ids[0]
 
-    max_new_tokens = 2500
+    max_new_tokens = 4096
     with torch.no_grad():
         output = model.generate(
             inputs.input_ids,
@@ -31,7 +31,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
             max_new_tokens=max_new_tokens,
             do_sample=True,
             top_p=0.95,
-            temperature=0.6,
+            temperature=0.8,
             eos_token_id=eos_token_id,
             output_hidden_states=True,
             return_dict_in_generate=True
@@ -213,7 +213,7 @@ def test():
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
     os.makedirs("../local_1129", exist_ok=True)
     os.makedirs("../local_1129/test_results_1129", exist_ok=True)
-    with open("../local_1129/test_results_1129/VLM2Vec.txt", "w") as fo:
+    with open("../local_1129/test_results_1129/mmlu-pro_v2.txt", "w") as fo:
         fo.write(result)
 
 
