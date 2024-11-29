@@ -120,7 +120,7 @@ def llm_rerank(retrieved_k_results, meta_data):
 
 
 def load_meta_data():
-    meta_data_path = "../corpus_data/corpus_data_1124.jsonl"
+    meta_data_path = "../corpus_data/corpus_data_arxiv_1129.jsonl"
     meta_data = {}
     with open(meta_data_path, "r") as fi:
         for line in tqdm(fi.readlines()):
@@ -207,11 +207,12 @@ def test():
     # abstract = "Embedding models have been crucial in enabling various downstream tasks such as semantic similarity, information retrieval, and clustering. Recently, there has been a surge of interest in developing universal text embedding models that can generalize across tasks (e.g., MTEB). However, progress in learning universal multimodal embedding models has been relatively slow despite their importance. In this work, we aim to explore the potential for building universal embeddings capable of handling a wide range of downstream tasks. Our contributions are twofold: (1) MMEB (Massive Multimodal Embedding Benchmark), which covers 4 meta-tasks (i.e. classification, visual question answering, multimodal retrieval, and visual grounding) and 36 datasets, including 20 training and 16 evaluation datasets, and (2) VLM2Vec (Vision-Language Model -> Vector), a contrastive training framework that converts any state-of-the-art vision-language model into an embedding model via training on MMEB. Unlike previous models such as CLIP and BLIP, VLM2Vec can process any combination of images and text to generate a fixed-dimensional vector based on task instructions. We build a series of VLM2Vec models on Phi-3.5-V and evaluate them on MMEB's evaluation split. Our results show that VLM2Vec achieves an absolute average improvement of 10% to 20% over existing multimodal embedding models on both in-distribution and out-of-distribution datasets in MMEB."
     # partial_intro = "Embeddings, or distributed representations, encode inputs (whether text or images) as fixed-dimensional vectors, enabling a range of downstream tasks."
 
-    embedded_corpus_path = "../embedded_corpus/1128_shards/"
+    embedded_corpus_path = "../embedded_corpus/1129_shards/"
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
     model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-1000/"
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
-
+    os.makedirs("../local_1129", exist_ok=True)
+    os.makedirs("../local_1129/test_results_1129", exist_ok=True)
     with open("../local_1129/test_results_1129/VLM2Vec.txt", "w") as fo:
         fo.write(result)
 

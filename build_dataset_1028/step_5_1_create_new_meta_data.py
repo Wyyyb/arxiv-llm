@@ -120,8 +120,22 @@ def main():
             fo.write(json.dumps(each) + "\n")
 
 
-main()
+def filter_arxiv_corpus():
+    complete_corpus_path = "../corpus_data/corpus_data_1124.jsonl"
+    new_corpus_path = "../corpus_data/corpus_data_arxiv_1129.jsonl"
+    new_corpus_data = []
+    with open(complete_corpus_path, "r") as fi:
+        for line in fi:
+            curr = json.loads(line)
+            if curr["source"] == "arxiv":
+                new_corpus_data.append(curr)
+    with open(new_corpus_path, "w") as fo:
+        for each in new_corpus_data:
+            fo.write(json.dumps(each) + "\n")
 
 
+# main()
+
+filter_arxiv_corpus()
 
 
