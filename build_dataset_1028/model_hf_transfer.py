@@ -1,6 +1,7 @@
-from huggingface_hub import HfApi, create_repo
+from huggingface_hub import HfApi, create_repo, repo_exists
 from pathlib import Path
 import os
+import time
 
 
 def upload_model_to_hf(
@@ -8,7 +9,8 @@ def upload_model_to_hf(
         repo_name: str,
         hf_token: str,
         commit_message: str = "Upload model",
-        organization: str = None
+        organization: str = None,
+        max_retries: int = 5
 ) -> str:
     """
     将本地模型上传到 Hugging Face Hub
@@ -19,6 +21,7 @@ def upload_model_to_hf(
         hf_token: Hugging Face 的访问令牌
         commit_message: 提交信息
         organization: 组织名称（可选）
+        max_retries: 最大重试次数
 
     Returns:
         str: 模型在HF上的URL
@@ -34,6 +37,7 @@ def upload_model_to_hf(
             full_repo_name = repo_name
 
         # 创建私有仓库
+        print(f"Creating repository: {full_repo_name}")
         create_repo(
             repo_id=full_repo_name,
             token=hf_token,
@@ -41,6 +45,17 @@ def upload_model_to_hf(
             repo_type="model",
             exist_ok=True
         )
+
+        # 等待并验证仓库创建成功
+        for i in range(max_retries):
+            if repo_exists(repo_id=full_repo_name, token=hf_token):
+                print("Repository created successfully!")
+                break
+            if i < max_retries - 1:
+                print(f"Waiting for repository to be ready... (attempt {i + 1}/{max_retries})")
+                time.sleep(5)
+        else:
+            raise Exception("Repository creation could not be verified after maximum retries")
 
         # 获取本地模型目录中的所有文件
         path = Path(input_model_dir_path)
@@ -51,15 +66,24 @@ def upload_model_to_hf(
             # 计算相对路径
             relative_path = os.path.relpath(file, input_model_dir_path)
 
-            # 上传文件
-            api.upload_file(
-                path_or_fileobj=file,
-                path_in_repo=relative_path,
-                repo_id=full_repo_name,
-                token=hf_token,
-                commit_message=commit_message
-            )
-            print(f"Uploaded: {relative_path}")
+            # 重试上传
+            for attempt in range(max_retries):
+                try:
+                    print(f"Uploading: {relative_path} (attempt {attempt + 1}/{max_retries})")
+                    api.upload_file(
+                        path_or_fileobj=file,
+                        path_in_repo=relative_path,
+                        repo_id=full_repo_name,
+                        token=hf_token,
+                        commit_message=commit_message
+                    )
+                    print(f"Successfully uploaded: {relative_path}")
+                    break
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        raise
+                    print(f"Upload failed, retrying... Error: {str(e)}")
+                    time.sleep(5)
 
         # 返回模型URL
         return f"https://huggingface.co/{full_repo_name}"
