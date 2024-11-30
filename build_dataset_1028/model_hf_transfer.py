@@ -1,5 +1,6 @@
-from huggingface_hub import HfApi, create_repo, upload_folder
+from huggingface_hub import HfApi, create_repo, upload_folder, snapshot_download
 import os
+from tqdm import tqdm
 
 
 def upload_model_to_hf_hub(repo_id, local_dir, hf_token):
@@ -29,7 +30,7 @@ def upload_model_to_hf_hub(repo_id, local_dir, hf_token):
     print(f"模型已成功上传到 Hugging Face Hub: https://huggingface.co/{repo_id}")
 
 
-def main():
+def upload():
     # 用户变量
     repo_id = "ubowang/scholar-copilot-7B-ckpt2000-1130"
     local_dir = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
@@ -39,5 +40,42 @@ def main():
     upload_model_to_hf_hub(repo_id, local_dir, hf_token)
 
 
-main()
+def download_model_from_hf_hub(repo_id, local_dir, hf_token):
+    """
+    从 Hugging Face Hub 下载模型到本地目录，并显示下载进度
 
+    参数：
+    - repo_id: str, Hugging Face 仓库 ID
+    - local_dir: str, 本地保存目录路径
+    - hf_token: str, Hugging Face API token
+    """
+    print(f"开始从 {repo_id} 下载模型到 {local_dir}")
+
+    # 确保目标目录存在
+    os.makedirs(local_dir, exist_ok=True)
+
+    # 下载仓库内容
+    try:
+        snapshot_download(
+            repo_id=repo_id,
+            local_dir=local_dir,
+            token=hf_token,
+            local_dir_use_symlinks=False,  # 不使用符号链接
+            tqdm_class=tqdm  # 使用tqdm显示进度
+        )
+        print(f"模型已成功下载到: {local_dir}")
+    except Exception as e:
+        print(f"下载过程中发生错误: {str(e)}")
+
+
+def download():
+    repo_id = "ubowang/scholar-copilot-7B-ckpt2000-1130"
+    local_dir = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000"
+    hf_token = "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"  # 替换为你的token
+
+    # 下载模型
+    download_model_from_hf_hub(repo_id, local_dir, hf_token)
+
+
+# upload()
+download()
