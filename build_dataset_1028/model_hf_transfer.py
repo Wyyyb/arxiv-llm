@@ -1,12 +1,10 @@
 from huggingface_hub import HfApi, create_repo, upload_folder
 import os
-from tqdm import tqdm
-import time
 
 
 def upload_model_to_hf_hub(repo_id, local_dir, hf_token):
     """
-    使用 HTTP API 上传模型到 Hugging Face Hub，并显示上传进度
+    使用 HTTP API 上传模型到 Hugging Face Hub
 
     参数：
     - repo_id: str, Hugging Face 仓库 ID
@@ -17,36 +15,17 @@ def upload_model_to_hf_hub(repo_id, local_dir, hf_token):
     if not os.path.exists(local_dir):
         raise FileNotFoundError(f"路径 {local_dir} 不存在，请检查路径！")
 
-    # 计算总文件大小
-    total_size = 0
-    file_count = 0
-    for root, _, files in os.walk(local_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            total_size += os.path.getsize(file_path)
-            file_count += 1
-
-    print(f"开始上传 {file_count} 个文件，总大小: {total_size / (1024*1024):.2f} MB")
-
     # 创建或获取 Hugging Face 仓库
     api = HfApi()
     create_repo(repo_id=repo_id, token=hf_token, exist_ok=True)
 
-    # 使用tqdm创建进度条
-    with tqdm(total=total_size, unit='B', unit_scale=True, desc="上传进度") as pbar:
-        def upload_progress_callback(evolution: int, total: int):
-            # 更新进度条
-            pbar.update(evolution - pbar.n)
-
-        # 上传目录内容
-        upload_folder(
-            folder_path=local_dir,
-            path_in_repo=".",  # 上传到仓库根目录
-            repo_id=repo_id,
-            token=hf_token,
-            upload_progress=upload_progress_callback
-        )
-
+    # 上传目录内容
+    upload_folder(
+        folder_path=local_dir,
+        path_in_repo=".",  # 上传到仓库根目录
+        repo_id=repo_id,
+        token=hf_token
+    )
     print(f"模型已成功上传到 Hugging Face Hub: https://huggingface.co/{repo_id}")
 
 
