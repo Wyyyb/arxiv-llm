@@ -1,58 +1,43 @@
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, create_repo, upload_folder
 import os
 
 
-def upload_model_to_hf(
-        local_path="/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/",
-        repo_name="scholar-copilot-7B-ckpt2000-1130",
-        token=None
-):
+def upload_model_to_hf_hub(repo_id, local_dir, hf_token):
     """
-    上传本地模型到 Hugging Face Hub，如果仓库存在则覆盖内容
+    使用 HTTP API 上传模型到 Hugging Face Hub
 
-    Args:
-        local_path: 本地模型路径
-        repo_name: HF上的仓库名称
-        token: HF API token
+    参数：
+    - repo_id: str, Hugging Face 仓库 ID
+    - local_dir: str, 本地模型目录路径
+    - hf_token: str, Hugging Face API token
     """
-    if token is None:
-        raise ValueError("Please provide your Hugging Face API token")
+    # 检查目录是否存在
+    if not os.path.exists(local_dir):
+        raise FileNotFoundError(f"路径 {local_dir} 不存在，请检查路径！")
 
-    # 初始化API
+    # 创建或获取 Hugging Face 仓库
     api = HfApi()
+    create_repo(repo_id=repo_id, token=hf_token, exist_ok=True)
 
-    try:
-        # 检查仓库是否存在
-        try:
-            repo_info = api.repo_info(
-                repo_id=repo_name,
-                token=token
-            )
-            print(f"Repository {repo_name} already exists, will override content")
-        except Exception:
-            # 仓库不存在，创建新的私有仓库
-            api.create_repo(
-                repo_id=repo_name,
-                private=True,
-                token=token
-            )
-            print(f"Created new repository: {repo_name}")
-
-        # 上传模型文件，设置 repo_type="model" 来指定这是一个模型仓库
-        api.upload_folder(
-            folder_path=local_path,
-            repo_id=repo_name,
-            repo_type="model",
-            token=token,
-            ignore_patterns=["*.pyc", ".git*", ".DS_Store"],  # 忽略一些不必要的文件
-        )
-
-        print(f"Successfully uploaded model to: https://huggingface.co/{repo_name}")
-
-    except Exception as e:
-        print(f"Error occurred during upload: {str(e)}")
+    # 上传目录内容
+    upload_folder(
+        folder_path=local_dir,
+        path_in_repo=".",  # 上传到仓库根目录
+        repo_id=repo_id,
+        token=hf_token
+    )
+    print(f"模型已成功上传到 Hugging Face Hub: https://huggingface.co/{repo_id}")
 
 
-upload_model_to_hf(token="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")
+def main():
+    # 用户变量
+    repo_id = "ubowang/scholar-copilot-7B-ckpt2000-1130"
+    local_dir = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    hf_token = "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"
 
+    # 调用函数
+    upload_model_to_hf_hub(repo_id, local_dir, hf_token)
+
+
+main()
 
