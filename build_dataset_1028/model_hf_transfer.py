@@ -46,16 +46,16 @@ def upload_model_to_hf(
             exist_ok=True
         )
 
-        # 等待并验证仓库创建成功
-        for i in range(max_retries):
-            if repo_exists(repo_id=full_repo_name, token=hf_token):
-                print("Repository created successfully!")
-                break
-            if i < max_retries - 1:
-                print(f"Waiting for repository to be ready... (attempt {i + 1}/{max_retries})")
-                time.sleep(5)
-        else:
-            raise Exception("Repository creation could not be verified after maximum retries")
+        # # 等待并验证仓库创建成功
+        # for i in range(max_retries):
+        #     if repo_exists(repo_id=full_repo_name, token=hf_token):
+        #         print("Repository created successfully!")
+        #         break
+        #     if i < max_retries - 1:
+        #         print(f"Waiting for repository to be ready... (attempt {i + 1}/{max_retries})")
+        #         time.sleep(5)
+        # else:
+        #     raise Exception("Repository creation could not be verified after maximum retries")
 
         # 获取本地模型目录中的所有文件
         path = Path(input_model_dir_path)
