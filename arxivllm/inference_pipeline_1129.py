@@ -213,11 +213,11 @@ def test():
 
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-3000/"
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
-    os.makedirs("../local_1129", exist_ok=True)
-    os.makedirs("../local_1129/test_results_1129", exist_ok=True)
-    with open("../local_1129/test_results_1129/harness-ckpt-2000_v1.txt", "w") as fo:
+    os.makedirs("../local_1130", exist_ok=True)
+    os.makedirs("../local_1130/test_results_1130", exist_ok=True)
+    with open("../local_1130/test_results_1130/harness-ckpt-3000_v1.txt", "w") as fo:
         fo.write(result)
 
 
