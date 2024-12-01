@@ -214,11 +214,11 @@ def test():
 
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-4000/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
     os.makedirs("../local_1130", exist_ok=True)
     os.makedirs("../local_1130/test_results_1130", exist_ok=True)
-    with open("../local_1130/test_results_1130/mega-bench-ckpt-4000_v1_title_only.txt", "w") as fo:
+    with open("../local_1130/test_results_1130/mega-bench-ckpt-2000_v1_title_only.txt", "w") as fo:
         fo.write(result)
 
 
