@@ -5,6 +5,7 @@ log_dir="../logs"
 mkdir -p "$log_dir"
 timestamp=$(date +"%Y%m%d_%H%M%S")
 log_file="${log_dir}/training_${timestamp}.log"
+cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 
 # 将所有标准输出和错误输出重定向到日志文件，同时在终端显示
 {
@@ -15,7 +16,6 @@ export MASTER_ADDR=${MLP_WORKER_0_HOST:-${MASTER_ADDR:-127.0.0.1}}
 export MASTER_PORT=${MLP_WORKER_0_PORT:-${MASTER_PORT:-60000}}
 export WORLD_SIZE=$(($GPUS_PER_NODE * $NNODES))
 
-cd /gpfs/public/research/xy/yubowang/arxiv-llm/arxivllm
 source /gpfs/public/research/miniconda3/bin/activate
 conda activate cite_rag
 
