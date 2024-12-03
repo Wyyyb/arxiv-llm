@@ -85,16 +85,14 @@ def single_process_data(paper_dir_path, tokenizer, use_multi_cite=False):
         return None
     title = title.strip()
     abstract = abstract.strip().replace("<|reference_start|>", "").replace("<|reference_end|>", "")
-    latex_prefix = """
-    \\documentclass{article}
-    \\usepackage{graphicx}
-    \\usepackage{hyperref}
-    \\usepackage{amsmath}
-    \\usepackage{booktabs}
-    """
+    latex_prefix = """\\documentclass{article}
+\\usepackage{graphicx}
+\\usepackage{hyperref}
+\\usepackage{amsmath}
+\\usepackage{booktabs}"""
     intro = intro.replace("Introduction\n", "\\section{Introduction}\n\n").replace("Related Work\n", "\\section{Related Work}\n\n")
     paper = "<|paper_start|> " + latex_prefix + "\n\n\\title{" + title +\
-            "}\n\n\\begin{document}\n\nmakefile\n\n\\begin{abstract}\n" + abstract + \
+            "}\n\n\\begin{document}\n\n\\makefile\n\n\\begin{abstract}\n" + abstract + \
             "\\end{abstract}\n\n" + intro + "\\end{document} <|paper_end|>"
     # paper = "<|paper_start|> " + f"\\title{title}\nAbstract: {abstract}\n" + intro + " <|paper_end|>"
     segments = split_text_with_citations(paper)
