@@ -244,6 +244,7 @@ def load_citation_map_data(citation_map_data_path):
         for line in fi:
             curr = json.loads(line)
             citation_map_data[curr["id"]] = curr
+    print("citation_map_data loaded")
     return citation_map_data
 
 

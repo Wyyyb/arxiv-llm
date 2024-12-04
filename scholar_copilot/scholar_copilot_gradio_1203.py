@@ -216,7 +216,7 @@ embedded_corpus_path = "../embedded_corpus/1129_shards/"
 encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
 meta_data = load_meta_data()
 citation_map_data_path = "local_bibtex_info/bibtex_info_1202.jsonl"
-citation_map_data = load_citation_map_data()
+citation_map_data = load_citation_map_data(citation_map_data_path)
 
 with gr.Blocks() as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
