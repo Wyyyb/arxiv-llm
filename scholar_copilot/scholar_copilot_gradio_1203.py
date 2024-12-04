@@ -53,11 +53,6 @@ def mock_autocomplete_model(input_text, num_sentences=3):
     return output_text, citation_info_list
 
 
-def generate_full_paper(text):
-    time.sleep(2)
-    return text + " [This is the complete remaining part of the paper, including multiple paragraphs and sections...]"
-
-
 # 修改mock_search_citation函数，增加bibtex信息
 def mock_search_citation(text):
     """模拟搜索相关引用"""
@@ -150,11 +145,14 @@ def complete_next_sentences(text):
     return [text, completion]
 
 
-def generate_remaining(text):
+def generate_remaining(input_text):
     """生成剩余的完整论文内容"""
-    completion = text + " [This is the complete remaining part of the paper, " \
-                        "including multiple paragraphs and sections...]"
-    return [text, completion]
+    global citations_data
+    completion, citation_data_list = autocomplete_model(model, tokenizer, device, encoded_corpus,
+                                                        lookup_indices, meta_data, citation_map_data,
+                                                        input_text, num_sentences=-1)
+    citations_data += citation_data_list
+    return [input_text, completion]
 
 
 def update_text(original, completion, accept):

@@ -57,7 +57,7 @@ def clean_latex_text(input_text):
 def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data, citation_map,
                        input_text, num_sentences=3):
     print("num_sentences", num_sentences)
-    # ori_latex_input_text = input_text
+    ori_input_text = input_text
     # ori_input_text_length = len(ori_latex_input_text)
     # input_text = preprocess_input_text(input_text)
     # ori_input_text = input_text
@@ -79,7 +79,7 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
     if res_text is None:
         res_text = input_text
     output_text, citation_info_list = post_process_output_text(res_text, reference_id_list, citation_map)
-    return output_text, citation_info_list
+    return ori_input_text + output_text, citation_info_list
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
