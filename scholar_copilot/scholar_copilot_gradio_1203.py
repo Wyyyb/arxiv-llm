@@ -355,6 +355,6 @@ with gr.Blocks() as app:
         outputs=copy_status
     )
 
-# app.launch(share=True)
-app.launch()
+app.launch(share=True)
+# app.launch()
 
