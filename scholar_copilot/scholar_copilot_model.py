@@ -41,31 +41,34 @@ def clean_latex_text(input_text):
     for pattern in patterns:
         result = re.sub(pattern, '', result)
 
-    # Extract title content from \title{...}
-    title_pattern = r'\\title\{([^}]*)\}'
-    result = re.sub(title_pattern, r'\1', result)
+    # # Extract title content from \title{...}
+    # title_pattern = r'\\title\{([^}]*)\}'
+    # result = re.sub(title_pattern, r'\1', result)
+    #
+    # # Remove section markup for Introduction and Related Work
+    # intro_pattern = r'\\section\{Introduction\}'
+    # related_pattern = r'\\section\{Related Work\}'
+    # result = result.replace(intro_pattern, 'Introduction')
+    # result = result.replace(related_pattern, 'Related Work')
 
-    # Remove section markup for Introduction and Related Work
-    intro_pattern = r'\\section\{Introduction\}'
-    related_pattern = r'\\section\{Related Work\}'
-    result = result.replace(intro_pattern, 'Introduction')
-    result = result.replace(related_pattern, 'Related Work')
-
-    return result.strip()
+    return "<|paper_start|> " + result.strip()
 
 
 def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data, citation_map,
                        input_text, num_sentences=3):
-    ori_latex_input_text = input_text
-    ori_input_text_length = len(ori_latex_input_text)
+    print("num_sentences", num_sentences)
+    # ori_latex_input_text = input_text
+    # ori_input_text_length = len(ori_latex_input_text)
+    # input_text = preprocess_input_text(input_text)
+    # ori_input_text = input_text
     input_text = preprocess_input_text(input_text)
-    ori_input_text = input_text
+    input_text_length = len(input_text)
     input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     reference_id_list = []
     res_text = None
     while cite_start_hidden_state is not None:
         if num_sentences != -1:
-            enough_sentences, res_text = cut_after_third_sentence(input_text[ori_input_text_length:], num_sentences)
+            enough_sentences, res_text = cut_after_third_sentence(input_text[input_text_length:], num_sentences)
             if enough_sentences:
                 break
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=1)
@@ -75,7 +78,6 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
         input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
     if res_text is None:
         res_text = input_text
-    res_text = res_text.replace(ori_input_text, ori_latex_input_text)
     output_text, citation_info_list = post_process_output_text(res_text, reference_id_list, citation_map)
     return output_text, citation_info_list
 
