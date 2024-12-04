@@ -247,7 +247,7 @@ def llm_rerank(retrieved_k_results, meta_data):
     res = "(Reference:" + res
     reference = res.replace("<|reference_start|>", "").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
-    return reference, index_list[0]
+    return reference, meta_data[index_list[0]]["paper_id"]
 
 
 def load_meta_data():
