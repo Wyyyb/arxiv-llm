@@ -123,8 +123,10 @@ def replace_citations(input_text, reference_id_list, citation_map):
         nonlocal citation_index, res_citation_data_list, last_replacement
         if citation_index < len(reference_id_list):
             citation_key = citation_map.get(reference_id_list[citation_index], None).get("citation_key", None)
+            print("citation_key", citation_key)
             replacement = " \\cite{" + citation_key + "}"
             citation_data = citation_map.get(reference_id_list[citation_index], None)
+            print("citation_data", citation_data)
             if last_replacement == replacement:
                 replacement = ""
             else:
