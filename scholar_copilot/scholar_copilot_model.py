@@ -99,13 +99,14 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
     if res_text is None:
         res_text = input_text
     output_text, citation_info_list = post_process_output_text(res_text, reference_id_list, citation_map)
-    return ori_input_text + output_text, citation_info_list
+    return output_text, citation_info_list
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
     print("IN: post_process_output_text \noutput_text", output_text)
     print("citation_info_list", citation_info_list)
+    output_text = output_text.replace("<|paper_start|> ", "").replace("<|paper_end|> ", "")
     return output_text, citation_info_list
 
 
