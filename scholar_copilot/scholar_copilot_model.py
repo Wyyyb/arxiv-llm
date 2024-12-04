@@ -7,35 +7,115 @@ import json
 from tqdm import tqdm
 import os
 import glob
+import re
 
 
-def cut_after_third_sentence(text):
+def cut_after_third_sentence(text, num_sentences=3):
     count = 0
 
     for i in range(len(text) - 1):
         if text[i] in ['.', '!', '?'] and (text[i + 1] == ' ' or text[i + 1] == '\n'):
             count += 1
-            if count == 3:
+            if count == num_sentences:
                 return True, text[:i + 1]
-
     return False, text
 
 
-def preview_output_text(input_text, prefix_length):
-    input_text = input_text[prefix_length:]
+def preprocess_input_text(input_text):
+    input_text = clean_latex_text(input_text)
+    print("preprocess_input_text result", input_text)
+    return input_text
 
 
+def clean_latex_text(input_text):
+    # Remove document class, packages, makefile and document tags
+    patterns = [
+        r'\\documentclass\{[^}]*\}',
+        r'\\usepackage\{[^}]*\}',
+        r'\\makefile',
+        r'\\begin\{document\}',
+        r'\\end\{document\}'
+    ]
+
+    result = input_text
+    for pattern in patterns:
+        result = re.sub(pattern, '', result)
+
+    # Extract title content from \title{...}
+    title_pattern = r'\\title\{([^}]*)\}'
+    result = re.sub(title_pattern, r'\1', result)
+
+    # Remove section markup for Introduction and Related Work
+    intro_pattern = r'\\section\{Introduction\}'
+    related_pattern = r'\\section\{Related Work\}'
+    result = result.replace(intro_pattern, 'Introduction')
+    result = result.replace(related_pattern, 'Related Work')
+
+    return result.strip()
 
 
-def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data,
+def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data, citation_map,
                        input_text, num_sentences=3):
-    input_text_length = len(input_text)
+    ori_latex_input_text = input_text
+    ori_input_text_length = len(ori_latex_input_text)
+    input_text = preprocess_input_text(input_text)
+    ori_input_text = input_text
     input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
+    reference_id_list = []
+    res_text = None
     while cite_start_hidden_state is not None:
-        retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5)
-        reference = llm_rerank(retrieved_k_results, meta_data)
+        if num_sentences != -1:
+            enough_sentences, res_text = cut_after_third_sentence(input_text[ori_input_text_length:], num_sentences)
+            if enough_sentences:
+                break
+        retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=1)
+        reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
+        reference_id_list.append(curr_index)
         input_text = input_text + reference
         input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
+    if res_text is None:
+        res_text = input_text
+    res_text = res_text.replace(ori_input_text, ori_latex_input_text)
+    output_text, citation_info_list = post_process_output_text(res_text, reference_id_list, citation_map)
+    return output_text, citation_info_list
+
+
+def post_process_output_text(res_text, reference_id_list, citation_map):
+    output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
+    print("IN: post_process_output_text \noutput_text", output_text)
+    print("citation_info_list", citation_info_list)
+    return output_text, citation_info_list
+
+
+def replace_citations(input_text, reference_id_list, citation_map):
+    # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
+    pattern = r'<\|cite_start\|(.*?)<\|cite_end\|>'
+
+    # Keep track of current citation index
+    citation_index = 0
+    res_citation_data_list = []
+    last_replacement = ""
+
+    # Function to replace each match with corresponding reference id
+    def replace_match(match):
+        nonlocal citation_index, res_citation_data_list, last_replacement
+        if citation_index < len(reference_id_list):
+            citation_key = citation_map.get(reference_id_list[citation_index], None).get("citation_key", None)
+            replacement = " \\cite{" + citation_key + "}"
+            citation_data = citation_map.get(reference_id_list[citation_index], None)
+            if last_replacement == replacement:
+                replacement = ""
+            else:
+                res_citation_data_list.append(citation_data)
+                last_replacement = replacement
+            citation_index += 1
+            return replacement
+        return match.group(0), res_citation_data_list  # Keep original if no more reference ids
+
+    # Replace all citations
+    result = re.sub(pattern, replace_match, input_text)
+
+    return result, res_citation_data_list
 
 
 def single_complete_introduction(model, tokenizer, device, input_text):
@@ -127,6 +207,7 @@ def load_model(model_path, device):
 def llm_rerank(retrieved_k_results, meta_data):
     recall_results = []
     titles = []
+    index_list = []
     for each in retrieved_k_results:
         index, distance = each
         if index not in meta_data:
@@ -134,13 +215,14 @@ def llm_rerank(retrieved_k_results, meta_data):
             continue
         recall_results.append(meta_data[index]["abstract"])
         titles.append(meta_data[index]["title"])
+        index_list.append(index)
     # 假设llm就选第一个
     res = recall_results[0]
     title = titles[0]
     res = "(Reference:" + res
     reference = res.replace("<|reference_start|>", "").replace("<|reference_end|>", "<|cite_end|>")
     print("llm_rerank results", reference)
-    return reference
+    return reference, index_list[0]
 
 
 def load_meta_data():
@@ -154,6 +236,15 @@ def load_meta_data():
                 meta_data[curr["corpus_id"]] = curr
     print("corpus data loaded.")
     return meta_data
+
+
+def load_citation_map_data(citation_map_data_path):
+    citation_map_data = {}
+    with open(citation_map_data_path, "r") as fi:
+        for line in fi:
+            curr = json.loads(line)
+            citation_map_data[curr["id"]] = curr
+    return citation_map_data
 
 
 def load_corpus_base(corpus_dir="../embedded_corpus/1128_shards/"):
@@ -240,7 +331,7 @@ def test():
 
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1103/checkpoint-1000/"
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-3000/"
+    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     result = complete_intro(model_path, embedded_corpus_path, title, abstract, partial_intro)
     os.makedirs("../local_1130", exist_ok=True)
     os.makedirs("../local_1130/test_results_1130", exist_ok=True)
