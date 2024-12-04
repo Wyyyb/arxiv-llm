@@ -10,15 +10,35 @@ import glob
 import re
 
 
+def down_sample_cut(input_text):
+    # 寻找所有<|cite_start|>和<|cite_end|>之间的内容
+    pattern = r'<\|cite_start\|(.*?)<\|cite_end\|>'
+    citations = re.findall(pattern, input_text)
+
+    # 替换所有引用为$index$
+    output_text = input_text
+    for i in range(len(citations)):
+        output_text = re.sub(pattern, f'${i}$', output_text, count=1)
+
+    return citations, output_text
+
+
+def up_sample_cut(input_text, citation_list):
+    for i in range(len(citation_list)):
+        if f"${i}$" in input_text:
+            input_text = input_text.replace(f"${i}$", citation_list[i])
+    return input_text
+
+
 def cut_after_third_sentence(text, num_sentences=3):
     count = 0
-
+    text, citations = down_sample_cut(text)
     for i in range(len(text) - 1):
         if text[i] in ['.', '!', '?'] and (text[i + 1] == ' ' or text[i + 1] == '\n'):
             count += 1
             if count == num_sentences:
-                return True, text[:i + 1]
-    return False, text
+                return True, up_sample_cut(text[:i + 1], citations)
+    return False, up_sample_cut(text, citations)
 
 
 def preprocess_input_text(input_text):
