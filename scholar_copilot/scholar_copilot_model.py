@@ -32,9 +32,9 @@ def up_sample_cut(input_text, citation_list):
 
 def cut_after_third_sentence(text, num_sentences=3):
     count = 0
-    print("num_sentences", num_sentences)
+    # print("num_sentences", num_sentences)
     text, citations = down_sample_cut(text)
-    print("down_sample_cut(text) result", text, citations)
+    # print("down_sample_cut(text) result", text, citations)
     for i in range(len(text) - 1):
         if text[i] in ['.', '!', '?'] and (text[i + 1] == ' ' or text[i + 1] == '\n'):
             count += 1
@@ -45,7 +45,7 @@ def cut_after_third_sentence(text, num_sentences=3):
 
 def preprocess_input_text(input_text):
     input_text = clean_latex_text(input_text)
-    print("preprocess_input_text result", input_text)
+    # print("preprocess_input_text result", input_text)
     return input_text
 
 
@@ -78,7 +78,7 @@ def clean_latex_text(input_text):
 
 def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data, citation_map,
                        input_text, num_sentences=3):
-    print("num_sentences", num_sentences)
+    # print("num_sentences", num_sentences)
     ori_input_text = input_text
     # ori_input_text_length = len(ori_latex_input_text)
     # input_text = preprocess_input_text(input_text)
@@ -118,7 +118,7 @@ def post_process_output_text(res_text, reference_id_list, citation_map):
 
 def replace_citations(input_text, reference_id_list, citation_map):
     # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
-    pattern = r'<\|cite_start\|(.*?)<\|cite_end\|>'
+    pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
 
     # Keep track of current citation index
     citation_index = 0
@@ -172,11 +172,11 @@ def single_complete_introduction(model, tokenizer, device, input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    print("inputs.input_ids", len(inputs.input_ids[0]))
-    print("output_hidden_states", len(output.hidden_states))
-    print("output_hidden_states", len(output.hidden_states[-1]))
-    print("output_hidden_states", len(output.hidden_states[-1][-1]))
-    print("output.sequences[0]", len(output.sequences[0]), output.sequences[0])
+    # print("inputs.input_ids", len(inputs.input_ids[0]))
+    # print("output_hidden_states", len(output.hidden_states))
+    # print("output_hidden_states", len(output.hidden_states[-1]))
+    # print("output_hidden_states", len(output.hidden_states[-1][-1]))
+    # print("output.sequences[0]", len(output.sequences[0]), output.sequences[0])
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     new_input = tokenizer(generated_text, return_tensors="pt").to(device)
@@ -196,7 +196,7 @@ def single_complete_introduction(model, tokenizer, device, input_text):
         end_index = new_content.index("<|paper_end|>")
         return generated_text[:end_index + len("<|paper_end|>")], None
 
-    print("---------------new_content:\n", new_content)
+    # print("---------------new_content:\n", new_content)
     # return new_content, output.hidden_states[-1][-1][-1]
     return new_content, cite_rep
 
