@@ -12,7 +12,7 @@ import re
 
 def down_sample_cut(input_text):
     # 寻找所有<|cite_start|>和<|cite_end|>之间的内容
-    pattern = r'<\|cite_start\|(.*?)<\|cite_end\|>'
+    pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
     citations = re.findall(pattern, input_text)
 
     # 替换所有引用为$index$
@@ -20,7 +20,7 @@ def down_sample_cut(input_text):
     for i in range(len(citations)):
         output_text = re.sub(pattern, f'${i}$', output_text, count=1)
 
-    return citations, output_text
+    return output_text, citations
 
 
 def up_sample_cut(input_text, citation_list):
