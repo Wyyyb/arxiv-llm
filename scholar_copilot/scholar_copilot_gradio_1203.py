@@ -189,16 +189,15 @@ def download_citation_history():
     """生成包含所有历史引用的BibTeX文件"""
     global inserted_citations, citations_data
     print("citations_data", citations_data)
-    if not inserted_citations:
+    if not citations_data:
         return None  # 如果没有引用历史，返回None
 
-    citations = [json.loads(cit) for cit in inserted_citations]
-    bibtex_entries = [cit["bibtex"] for cit in citations]
+    bibtex_entries = [cit["bibtex"] for cit in citations_data]
     content = "\n\n".join(bibtex_entries)
 
     # 添加时间戳注释
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = f"% Citation history generated at {timestamp}\n% Total citations: {len(citations)}\n\n"
+    header = f"% Citation history generated at {timestamp}\n% Total citations: {len(bibtex_entries)}\n\n"
 
     # 创建临时文件
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".bib") as temp_file:
