@@ -322,11 +322,11 @@ with gr.Blocks() as app:
     )
 
     # 选中引用时更新BibTeX
-    citation_checkboxes.change(
-        fn=update_bibtex,
-        inputs=[citation_checkboxes],
-        outputs=[bibtex_info]
-    )
+    # citation_checkboxes.change(
+    #     fn=update_bibtex,
+    #     inputs=[citation_checkboxes],
+    #     outputs=[bibtex_info]
+    # )
 
     download_history_btn.click(
         fn=download_citation_history,
