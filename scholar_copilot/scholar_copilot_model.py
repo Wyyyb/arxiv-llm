@@ -135,12 +135,14 @@ def replace_citations(input_text, reference_id_list, citation_map):
 
         # 获取当前引用的信息
         current_ref_id = reference_id_list[index]
+        print("current_ref_id", current_ref_id)
         citation_data = citation_map.get(current_ref_id)
 
         if not citation_data:
             continue
 
         citation_key = citation_data.get("citation_key")
+        print("citation_key", citation_key)
         if not citation_key:
             continue
 
@@ -154,7 +156,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
             replacement_text = current_replacement
             res_citation_data_list.append(citation_data)
             last_replacement = current_replacement
-
+        print("replacement_text", replacement_text)
         # 替换文本
         input_text = input_text[:match.start()] + replacement_text + input_text[match.end():]
 
