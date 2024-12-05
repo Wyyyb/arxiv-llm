@@ -14,15 +14,21 @@ inserted_citations = set()
 
 
 # 事件处理
-def search_and_show_citations():
+def search_and_show_citations(input_text):
     global citations_data
-    curr_citations_data = mock_search_citation("")
+    curr_citations_data = search_citation(input_text)
     citations_data += curr_citations_data
     choices = [cit["citation_key"] + ": " + cit["title"] for cit in curr_citations_data]
     return {
         citation_box: gr.Group(visible=True),
         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
     }
+
+
+def search_citation(input_text):
+    citation_data_list = generate_citation(model, tokenizer, device, encoded_corpus, lookup_indices, meta_data, citation_map_data,
+                                           input_text)
+    return citation_data_list
 
 
 def update_bibtex(selected_citations):
@@ -314,7 +320,7 @@ with gr.Blocks() as app:
 
     citation_btn.click(
         fn=search_and_show_citations,
-        inputs=[],
+        inputs=[text_input],
         outputs=[citation_box, citation_checkboxes]
     )
 

@@ -10,6 +10,34 @@ import glob
 import re
 
 
+def generate_citation(model, tokenizer, device, encoded_corpus, lookup_indices, meta_data, citation_map_data,
+                      input_text):
+    new_input_text = input_text + " <|cite_start|>"
+    new_input = tokenizer(new_input_text, return_tensors="pt").to(device)
+    with torch.no_grad():
+        new_output = model(
+            new_input.input_ids,
+            attention_mask=new_input.attention_mask,
+            output_hidden_states=True,
+            return_dict=True
+        )
+    cite_rep = new_output.hidden_states[-1][:, -1, :]
+    retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_rep, top_k=5)
+    searched_citations = []
+    for each in retrieved_k_results:
+        index, distance = each
+        print("index", index)
+        if index not in meta_data:
+            print("index not found in meta_data", index)
+            continue
+        paper_id = meta_data[index]["paper_id"]
+        print("paper_id", paper_id)
+        citation_info = citation_map_data[paper_id]
+        print("citation_info", citation_info)
+        searched_citations.append(citation_info)
+    return searched_citations
+
+
 def down_sample_cut(input_text):
     # 寻找所有<|cite_start|>和<|cite_end|>之间的内容
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
@@ -223,11 +251,6 @@ def single_complete_introduction(model, tokenizer, device, input_text):
             output_hidden_states=True,
             return_dict_in_generate=True
         )
-    # print("inputs.input_ids", len(inputs.input_ids[0]))
-    # print("output_hidden_states", len(output.hidden_states))
-    # print("output_hidden_states", len(output.hidden_states[-1]))
-    # print("output_hidden_states", len(output.hidden_states[-1][-1]))
-    # print("output.sequences[0]", len(output.sequences[0]), output.sequences[0])
     generated_text = tokenizer.decode(output.sequences[0], skip_special_tokens=False)
 
     new_input = tokenizer(generated_text, return_tensors="pt").to(device)
