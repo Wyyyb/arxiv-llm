@@ -349,6 +349,7 @@ def load_citation_map_data(citation_map_data_path):
     with open(citation_map_data_path, "r") as fi:
         for line in fi:
             curr = json.loads(line)
+            curr["citation_key"] = curr["citation_key"].replace(" ", "").strip(":")
             citation_map_data[curr["id"]] = curr
     print("citation_map_data loaded")
     return citation_map_data
