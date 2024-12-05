@@ -26,7 +26,7 @@ def down_sample_cut(input_text):
 def up_sample_cut(input_text, citation_list):
     for i in range(len(citation_list)):
         if f"${i}$" in input_text:
-            input_text = input_text.replace(f"${i}$", citation_list[i])
+            input_text = input_text.replace(f"${i}$", "<|cite_start|>" + citation_list[i] + "<|cite_end|>")
     return input_text
 
 
