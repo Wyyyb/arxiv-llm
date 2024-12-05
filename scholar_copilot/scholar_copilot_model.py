@@ -109,14 +109,68 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
-    print("IN post_process_output_text")
-    print("reference_id_list", reference_id_list)
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
     output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
     return output_text, citation_info_list
 
 
 def replace_citations(input_text, reference_id_list, citation_map):
+    """
+    替换文本中的引用标记为LaTeX格式
+
+    Args:
+        input_text: 包含引用标记的文本
+        reference_id_list: 引用ID列表
+        citation_map: 引用详细信息的映射字典
+
+    Returns:
+        tuple: (替换后的文本, 引用数据列表)
+    """
+    # 用于存储处理后的引用数据
+    res_citation_data_list = []
+
+    # 查找所有需要替换的引用标记
+    pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
+    matches = re.finditer(pattern, input_text)
+
+    # 记录上一次的替换文本，用于避免重复引用
+    last_replacement = ""
+
+    # 对每个匹配项进行处理
+    for index, match in enumerate(matches):
+        # 如果超出引用ID列表范围，中断处理
+        if index >= len(reference_id_list):
+            break
+
+        # 获取当前引用的信息
+        current_ref_id = reference_id_list[index]
+        citation_data = citation_map.get(current_ref_id)
+
+        if not citation_data:
+            continue
+
+        citation_key = citation_data.get("citation_key")
+        if not citation_key:
+            continue
+
+        # 构造LaTeX格式的引用
+        current_replacement = f" \\cite{{{citation_key}}}"
+
+        # 处理重复引用
+        if current_replacement == last_replacement:
+            replacement_text = ""
+        else:
+            replacement_text = current_replacement
+            res_citation_data_list.append(citation_data)
+            last_replacement = current_replacement
+
+        # 替换文本
+        input_text = input_text[:match.start()] + replacement_text + input_text[match.end():]
+
+    return input_text, res_citation_data_list
+
+
+def replace_citations_bk(input_text, reference_id_list, citation_map):
     # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
 
@@ -124,7 +178,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
     citation_index = 0
     res_citation_data_list = []
     last_replacement = ""
-    print("reference_id_list", reference_id_list)
+    print("in replace_citations, reference_id_list", reference_id_list)
     # Function to replace each match with corresponding reference id
     def replace_match(match):
         nonlocal citation_index, res_citation_data_list, last_replacement
