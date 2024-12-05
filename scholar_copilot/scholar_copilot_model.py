@@ -92,6 +92,7 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
         if num_sentences != -1:
             enough_sentences, res_text = cut_after_third_sentence(input_text[input_text_length:], num_sentences)
             if enough_sentences:
+                res_text = ori_input_text + res_text
                 break
         retrieved_k_results = retrieve_reference(encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
