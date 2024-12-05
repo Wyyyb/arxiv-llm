@@ -109,23 +109,13 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
+    print("post_process_output_text, res_text", res_text)
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
     output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
     return output_text, citation_info_list
 
 
 def replace_citations(input_text, reference_id_list, citation_map):
-    """
-    替换文本中的引用标记为LaTeX格式
-
-    Args:
-        input_text: 包含引用标记的文本
-        reference_id_list: 引用ID列表
-        citation_map: 引用详细信息的映射字典
-
-    Returns:
-        tuple: (替换后的文本, 引用数据列表)
-    """
     # 用于存储处理后的引用数据
     res_citation_data_list = []
 
