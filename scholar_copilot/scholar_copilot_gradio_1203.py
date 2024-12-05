@@ -223,7 +223,7 @@ with gr.Blocks() as app:
         # 左侧编辑区
         with gr.Column(scale=2):
             text_input = gr.Textbox(
-                lines=15,
+                lines=30,
                 label="Write your paper here",
                 placeholder="Start writing your academic paper..."
             )
@@ -236,7 +236,7 @@ with gr.Blocks() as app:
         # 右侧预览区
         with gr.Column(scale=2):
             preview = gr.Textbox(
-                lines=15,
+                lines=30,
                 label="Preview of completion",
                 interactive=False
             )
@@ -258,23 +258,31 @@ with gr.Blocks() as app:
             insert_citation_btn = gr.Button("Insert selected citations")
 
     with gr.Row():
-        with gr.Column():
-            gr.Markdown("### BibTeX Information")
-            bibtex_info = gr.TextArea(
-                label="BibTeX entries",
-                interactive=False,
-                lines=10,
-                container=False
-            )
-            with gr.Row():
-                copy_btn = gr.Button("Copy BibTeX")
-                download_history_btn = gr.Button("Download Citation History")
-                copy_status = gr.Textbox(
-                    value="",
-                    label="",
-                    interactive=False,
-                    show_label=False
-                )
+        # copy_btn = gr.Button("Copy BibTeX")
+        download_history_btn = gr.Button("Download Citation History")
+        copy_status = gr.Textbox(
+            value="",
+            label="",
+            interactive=False,
+            show_label=False
+        )
+        # with gr.Column():
+        #     gr.Markdown("### BibTeX Information")
+        #     bibtex_info = gr.TextArea(
+        #         label="BibTeX entries",
+        #         interactive=False,
+        #         lines=10,
+        #         container=False
+        #     )
+        #     with gr.Row():
+        #         copy_btn = gr.Button("Copy BibTeX")
+        #         download_history_btn = gr.Button("Download Citation History")
+        #         copy_status = gr.Textbox(
+        #             value="",
+        #             label="",
+        #             interactive=False,
+        #             show_label=False
+        #         )
 
     # 原有事件处理
     complete_btn.click(
@@ -343,15 +351,15 @@ with gr.Blocks() as app:
 
 
     # 复制BibTeX按钮事件
-    copy_btn.click(
-        fn=copy_to_clipboard,
-        inputs=[bibtex_info],
-        outputs=[bibtex_info, copy_status]
-    ).then(
-        fn=clear_status,
-        inputs=None,
-        outputs=copy_status
-    )
+    # copy_btn.click(
+    #     fn=copy_to_clipboard,
+    #     inputs=[bibtex_info],
+    #     outputs=[bibtex_info, copy_status]
+    # ).then(
+    #     fn=clear_status,
+    #     inputs=None,
+    #     outputs=copy_status
+    # )
 
 app.launch(share=True)
 # app.launch()

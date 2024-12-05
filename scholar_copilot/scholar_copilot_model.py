@@ -106,7 +106,7 @@ def post_process_output_text(res_text, reference_id_list, citation_map):
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
     # print("IN: post_process_output_text \noutput_text", output_text)
     # print("citation_info_list", citation_info_list)
-    output_text = output_text.replace("<|paper_start|> ", "").replace("<|paper_end|> ", "")
+    output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
     return output_text, citation_info_list
 
 
