@@ -131,7 +131,7 @@ def replace_citations_bk(input_text, reference_id_list, citation_map):
     # 对每个匹配项进行处理
     for index, match in enumerate(matches):
         print("index", index)
-        print("match", match)
+        print("match", match.group())
         # 如果超出引用ID列表范围，中断处理
         if index >= len(reference_id_list):
             break
@@ -144,7 +144,7 @@ def replace_citations_bk(input_text, reference_id_list, citation_map):
         if not citation_data:
             continue
 
-        citation_key = citation_data.get("citation_key")
+        citation_key = citation_data.get("citation_key", "").replace(" ", "").strip(":")
         print("citation_key", citation_key)
         if not citation_key:
             continue
