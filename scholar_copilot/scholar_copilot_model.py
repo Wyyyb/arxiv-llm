@@ -129,6 +129,8 @@ def replace_citations(input_text, reference_id_list, citation_map):
 
     # 对每个匹配项进行处理
     for index, match in enumerate(matches):
+        print("index", index)
+        print("match", match)
         # 如果超出引用ID列表范围，中断处理
         if index >= len(reference_id_list):
             break
