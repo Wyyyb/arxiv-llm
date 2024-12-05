@@ -32,7 +32,9 @@ def up_sample_cut(input_text, citation_list):
 
 def cut_after_third_sentence(text, num_sentences=3):
     count = 0
+    print("num_sentences", num_sentences)
     text, citations = down_sample_cut(text)
+    print("down_sample_cut(text) result", text, citations)
     for i in range(len(text) - 1):
         if text[i] in ['.', '!', '?'] and (text[i + 1] == ' ' or text[i + 1] == '\n'):
             count += 1
@@ -96,6 +98,9 @@ def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices
         reference_id_list.append(curr_index)
         input_text = input_text + reference
         input_text, cite_start_hidden_state = single_complete_introduction(model, tokenizer, device, input_text)
+        if len(input_text) > 32000:
+            print("too long input text", len(input_text))
+            break
     if res_text is None:
         res_text = input_text
     output_text, citation_info_list = post_process_output_text(res_text, reference_id_list, citation_map)
