@@ -181,6 +181,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
         if citation_index < len(reference_id_list):
             print("reference_id_list[citation_index]", reference_id_list[citation_index])
             citation_key = citation_map.get(reference_id_list[citation_index], None).get("citation_key", None)
+            citation_key = citation_key.replace(" ", "").strip(":")
             print("citation_key", citation_key)
             replacement = " \\cite{" + citation_key + "}"
             citation_data = citation_map.get(reference_id_list[citation_index], None)

@@ -16,8 +16,9 @@ inserted_citations = set()
 # 事件处理
 def search_and_show_citations():
     global citations_data
-    citations_data = mock_search_citation("")
-    choices = [cit["citation_key"] + ": " + cit["title"] for cit in citations_data]
+    curr_citations_data = mock_search_citation("")
+    citations_data += curr_citations_data
+    choices = [cit["citation_key"] + ": " + cit["title"] for cit in curr_citations_data]
     return {
         citation_box: gr.Group(visible=True),
         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
@@ -186,8 +187,8 @@ def insert_selected_citations(text, selected_citations):
 # 添加下载历史引用的函数
 def download_citation_history():
     """生成包含所有历史引用的BibTeX文件"""
-    global inserted_citations
-
+    global inserted_citations, citations_data
+    print("citations_data", citations_data)
     if not inserted_citations:
         return None  # 如果没有引用历史，返回None
 
