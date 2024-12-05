@@ -115,7 +115,7 @@ def post_process_output_text(res_text, reference_id_list, citation_map):
     return output_text, citation_info_list
 
 
-def replace_citations(input_text, reference_id_list, citation_map):
+def replace_citations_bk(input_text, reference_id_list, citation_map):
     # 用于存储处理后的引用数据
     res_citation_data_list = []
 
@@ -124,6 +124,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
     matches = list(re.finditer(pattern, input_text))
     print("reference_id_list", reference_id_list)
     print("matches", len(matches))
+    print("Matches:", [m.group(0) for m in matches])
     # 记录上一次的替换文本，用于避免重复引用
     last_replacement = ""
 
@@ -165,7 +166,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
     return input_text, res_citation_data_list
 
 
-def replace_citations_bk(input_text, reference_id_list, citation_map):
+def replace_citations(input_text, reference_id_list, citation_map):
     # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
 
