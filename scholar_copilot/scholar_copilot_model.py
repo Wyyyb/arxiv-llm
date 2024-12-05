@@ -121,9 +121,9 @@ def replace_citations(input_text, reference_id_list, citation_map):
 
     # 查找所有需要替换的引用标记
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
-    matches = re.finditer(pattern, input_text)
+    matches = list(re.finditer(pattern, input_text))
     print("reference_id_list", reference_id_list)
-    print("matches", len(list(matches)))
+    print("matches", len(matches))
     # 记录上一次的替换文本，用于避免重复引用
     last_replacement = ""
 
