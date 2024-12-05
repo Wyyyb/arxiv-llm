@@ -192,7 +192,10 @@ def download_citation_history():
     if not citations_data:
         return None  # 如果没有引用历史，返回None
 
-    bibtex_entries = [cit["bibtex"] for cit in citations_data]
+    bibtex_entries = []
+    for cit in citations_data:
+        if cit["bibtex"] not in bibtex_entries:
+            bibtex_entries.append(cit["bibtex"])
     content = "\n\n".join(bibtex_entries)
 
     # 添加时间戳注释
