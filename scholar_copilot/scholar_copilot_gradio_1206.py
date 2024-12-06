@@ -4,6 +4,7 @@ import tempfile
 from scholar_copilot_model_1206 import *
 import torch
 import faiss
+import time
 
 
 def generate_citation(input_text):
@@ -57,6 +58,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     for each in yield_list:
         curr_yield_text += " " + each
         yield curr_yield_text
+        time.sleep(0.1)
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     while cite_start_hidden_state is not None:
         enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
@@ -73,11 +75,13 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         for each in yield_list:
             curr_yield_text += " " + each
             yield curr_yield_text
+            time.sleep(0.1)
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
     citations_data += citation_data_list
     yield display_text
+    time.sleep(0.1)
 
 
 def stream_generate(text, progress=gr.Progress()):

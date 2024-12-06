@@ -177,7 +177,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
 
     # Replace all citations
     result = re.sub(pattern, replace_match, input_text)
-    result = result.replace("<|paper_start|> ", "")
+    result = result.replace("<|paper_start|> ", "").replace("<|cite_start|>", "")
     return result, res_citation_data_list
 
 
