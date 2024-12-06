@@ -104,7 +104,7 @@ def clean_latex_text(input_text):
     return "<|paper_start|> " + result.strip()
 
 
-def autocomplete_model(model, tokenizer, device,  encoded_corpus, lookup_indices, meta_data, citation_map,
+def autocomplete_model(model, tokenizer, device, encoded_corpus, lookup_indices, meta_data, citation_map,
                        input_text, num_sentences=3):
     # print("num_sentences", num_sentences)
     ori_input_text = input_text
@@ -140,7 +140,27 @@ def post_process_output_text(res_text, reference_id_list, citation_map):
     print("post_process_output_text, res_text", res_text)
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
     output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
+    output_text = merge_consecutive_citations(output_text)
     return output_text, citation_info_list
+
+
+def merge_consecutive_citations(text):
+    # 首先匹配连续的citations（之间只允许有空白字符）
+    pattern = r'\\cite\{[^}]+\}(\s*\\cite\{[^}]+\})*'
+
+    def merge_group(match):
+        # 对每组连续的citations进行处理
+        group_text = match.group(0)
+        # 提取这组中的所有citation keys
+        cite_pattern = r'\\cite\{([^}]+)\}'
+        keys = re.findall(cite_pattern, group_text)
+        # 合并为单个citation
+        return "\\cite{" + ", ".join(keys) + "}"
+
+    # 替换所有连续的citation组
+    result = re.sub(pattern, merge_group, text)
+
+    return result
 
 
 def replace_citations_bk(input_text, reference_id_list, citation_map):
