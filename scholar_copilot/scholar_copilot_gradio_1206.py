@@ -235,7 +235,7 @@ if __name__ == "__main__":
     citations_data = []
 
     app.queue()  # 启用整个应用的队列功能
-    app.launch()
+    app.launch(share=True)
 
 
 
