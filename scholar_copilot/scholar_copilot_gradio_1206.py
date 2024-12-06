@@ -232,6 +232,7 @@ if __name__ == "__main__":
     index = faiss.IndexFlatIP(d)
     faiss.normalize_L2(encoded_corpus)
     index.add(encoded_corpus)
+    print("index building finished")
     citations_data = []
 
     app.queue()  # 启用整个应用的队列功能
