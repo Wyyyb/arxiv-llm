@@ -47,6 +47,8 @@ def split_yield_list(input_text, prefix_length):
 
 def stream_complete_3_sentence(text, progress=gr.Progress()):
     global citations_data
+    sentence_num = 0
+    enough = False
     current_text = text
     current_text = preprocess_input_text(current_text)
     input_text_length = len(current_text)
@@ -56,12 +58,17 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
     for each in yield_list:
+        if "." in each and (each.endswith(".") or ".\n" in each):
+            sentence_num += 1
+            print("sentence_num: ", sentence_num, "each", each)
         curr_yield_text += " " + each
         yield curr_yield_text
+        if sentence_num == 3:
+            enough = True
+            display_text = curr_yield_text
+            break
         time.sleep(0.1)
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    sentence_num = 0
-    enough = False
     while cite_start_hidden_state is not None and not enough:
         # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
         # if enough_sentences:
@@ -92,6 +99,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
     # print("33 display_text", display_text)
     citations_data += citation_data_list
+    print("global citations_data", citations_data)
     yield display_text
     time.sleep(0.1)
 
