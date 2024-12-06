@@ -152,7 +152,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
     citation_index = 0
     res_citation_data_list = []
     last_replacement = ""
-    print("in replace_citations, reference_id_list", reference_id_list)
+    # print("in replace_citations, reference_id_list", reference_id_list)
     # Function to replace each match with corresponding reference id
 
     def replace_match(match):
@@ -178,15 +178,15 @@ def replace_citations(input_text, reference_id_list, citation_map):
     # Replace all citations
     result = re.sub(pattern, replace_match, input_text)
     result = result.replace("<|paper_start|> ", "").replace("<|cite_start|>", "")
-    print("res_citation_data_list", res_citation_data_list)
+    # print("res_citation_data_list", res_citation_data_list)
 
     return result, res_citation_data_list
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
-    print("post_process_output_text, res_text", res_text)
+    # print("post_process_output_text, res_text", res_text)
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
-    print("post_process_output_text, citation_info_list ", citation_info_list)
+    # print("post_process_output_text, citation_info_list ", citation_info_list)
     output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
     output_text = merge_consecutive_citations(output_text)
     return output_text, citation_info_list
