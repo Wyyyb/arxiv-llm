@@ -210,6 +210,12 @@ def download_citation_history():
     return temp_file_path
 
 
+def clear_cache():
+    global citations_data
+    citations_data = []
+    return "", []
+
+
 with gr.Blocks() as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
@@ -219,13 +225,14 @@ with gr.Blocks() as app:
             text_input = gr.Textbox(
                 lines=30,
                 label="Write your paper here",
-                placeholder="Writing your academic paper..."
+                placeholder="Start writing your academic paper..."
             )
 
             with gr.Row():
-                complete_btn = gr.Button("Complete 3 sentences")
-                generate_btn = gr.Button("Complete to the end")
+                complete_btn = gr.Button("Complete me (3 sentences)")
+                generate_btn = gr.Button("Generate to the end")
                 citation_btn = gr.Button("Insert citation")
+                clear_btn = gr.Button("Clear All")  # 新增清理按钮
 
     # 引用建议区
     with gr.Row():
@@ -248,19 +255,19 @@ with gr.Blocks() as app:
             show_label=False
         )
 
-    # 修改后的事件处理
+    # 事件处理
     complete_btn.click(
         fn=stream_complete_3_sentence,
         inputs=[text_input],
         outputs=[text_input],
-        queue=True  # 启用队列以支持流式输出
+        queue=True
     )
 
     generate_btn.click(
         fn=stream_generate,
         inputs=[text_input],
         outputs=[text_input],
-        queue=True  # 启用队列以支持流式输出
+        queue=True
     )
 
     citation_btn.click(
@@ -279,6 +286,13 @@ with gr.Blocks() as app:
         fn=download_citation_history,
         inputs=[],
         outputs=[gr.File()]
+    )
+
+    # 新增清理按钮事件处理
+    clear_btn.click(
+        fn=clear_cache,
+        inputs=[],
+        outputs=[text_input, citation_checkboxes]  # 清空文本框和引用选项
     )
 
 if __name__ == "__main__":
