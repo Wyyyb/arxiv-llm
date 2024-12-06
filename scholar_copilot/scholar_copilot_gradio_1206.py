@@ -55,7 +55,8 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
-    display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+    display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
+    citations_data += citation_data_list
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
     for each in yield_list:
         if "." in each and (each.endswith(".") or ".\n" in each):
@@ -79,7 +80,8 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         reference_id_list.append(curr_index)
         current_text = current_text + reference
         current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
-        display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+        display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
+        citations_data += citation_data_list
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
         for each in yield_list:
             if "." in each and (each.endswith(".") or ".\n" in each):
@@ -112,7 +114,8 @@ def stream_generate(text, progress=gr.Progress()):
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
-    display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+    display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
+    citations_data += citation_data_list
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
     for each in yield_list:
         curr_yield_text += " " + each
@@ -130,7 +133,8 @@ def stream_generate(text, progress=gr.Progress()):
         reference_id_list.append(curr_index)
         current_text = current_text + reference
         current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
-        display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+        display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
+        citations_data += citation_data_list
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
         sentence_num = 0
         enough = False
@@ -147,7 +151,8 @@ def stream_generate(text, progress=gr.Progress()):
             break
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     # print("11 current_text", current_text)
-    display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+    display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
+    citations_data += citation_data_list
     # print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
     # print("33 display_text", display_text)

@@ -148,7 +148,6 @@ def llm_rerank(retrieved_k_results, meta_data):
 def replace_citations(input_text, reference_id_list, citation_map):
     # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
-
     # Keep track of current citation index
     citation_index = 0
     res_citation_data_list = []
@@ -162,6 +161,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
             print("reference_id_list[citation_index]", reference_id_list[citation_index])
             citation_key = citation_map.get(reference_id_list[citation_index], None).get("citation_key", None)
             citation_key = citation_key.replace(" ", "").strip(":")
+            citation_key = re.sub(r'\s+', '', citation_key)
             print("citation_key", citation_key)
             replacement = "\\cite{" + citation_key + "}"
             citation_data = citation_map.get(reference_id_list[citation_index], None)
@@ -179,12 +179,14 @@ def replace_citations(input_text, reference_id_list, citation_map):
     result = re.sub(pattern, replace_match, input_text)
     result = result.replace("<|paper_start|> ", "").replace("<|cite_start|>", "")
     print("res_citation_data_list", res_citation_data_list)
+
     return result, res_citation_data_list
 
 
 def post_process_output_text(res_text, reference_id_list, citation_map):
     print("post_process_output_text, res_text", res_text)
     output_text, citation_info_list = replace_citations(res_text, reference_id_list, citation_map)
+    print("post_process_output_text, citation_info_list ", citation_info_list)
     output_text = output_text.replace("<|paper_start|> ", "").replace(" <|paper_end|>", "")
     output_text = merge_consecutive_citations(output_text)
     return output_text, citation_info_list
@@ -227,7 +229,10 @@ def load_citation_map_data(citation_map_data_path):
     with open(citation_map_data_path, "r") as fi:
         for line in fi:
             curr = json.loads(line)
-            curr["citation_key"] = curr["citation_key"].replace(" ", "").strip(":")
+            citation_key = curr["citation_key"].replace(" ", "").strip(":")
+            citation_key = re.sub(r'\s+', '', citation_key)
+            curr["citation_key"] = citation_key
+
             citation_map_data[curr["id"]] = curr
     print("citation_map_data loaded")
     return citation_map_data
