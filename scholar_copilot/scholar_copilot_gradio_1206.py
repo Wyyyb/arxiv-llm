@@ -60,7 +60,9 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         yield curr_yield_text
         time.sleep(0.1)
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    while cite_start_hidden_state is not None:
+    sentence_num = 0
+    enough = False
+    while cite_start_hidden_state is not None and not enough:
         # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
         # if enough_sentences:
         #     current_text = res_text
@@ -72,19 +74,16 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
         display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
-        sentence_num = 0
-        enough = False
         for each in yield_list:
             if "." in each and each.endswith("."):
                 sentence_num += 1
+                print("sentence_num: ", sentence_num, "each", each)
             curr_yield_text += " " + each
             yield curr_yield_text
             if sentence_num == 3:
                 enough = True
                 break
             time.sleep(0.1)
-        if enough:
-            break
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     # print("11 current_text", current_text)
     display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)

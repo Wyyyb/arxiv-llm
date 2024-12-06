@@ -163,7 +163,7 @@ def replace_citations(input_text, reference_id_list, citation_map):
             citation_key = citation_map.get(reference_id_list[citation_index], None).get("citation_key", None)
             citation_key = citation_key.replace(" ", "").strip(":")
             print("citation_key", citation_key)
-            replacement = " \\cite{" + citation_key + "}"
+            replacement = "\\cite{" + citation_key + "}"
             citation_data = citation_map.get(reference_id_list[citation_index], None)
             print("citation_data", citation_data)
             if last_replacement == replacement:
