@@ -38,7 +38,9 @@ def split_yield_list(input_text, prefix_length):
     print("split_yield_list input_text", input_text)
     print("split_yield_list prefix_length", prefix_length)
     prefix_text = input_text[:prefix_length]
-    text_list = input_text[prefix_length:].split(" ")
+    text = input_text[prefix_length:]
+    print("split_yield_list text", text)
+    text_list = text.split(" ")
     return prefix_text, text_list
 
 
@@ -49,7 +51,8 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     curr_prefix_length = len(current_text)
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
-    curr_yield_text, yield_list = split_yield_list(current_text, curr_prefix_length)
+    display_text = replace_citations(current_text, reference_id_list, citation_map_data)
+    curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
     for each in yield_list:
         curr_yield_text += " " + each
         yield curr_yield_text
@@ -69,6 +72,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         for each in yield_list:
             curr_yield_text += " " + each
             yield curr_yield_text
+        curr_prefix_length = len(current_text)
     display_text = replace_citations(current_text, reference_id_list, citation_map_data)
     display_text = post_process_output_text(display_text, reference_id_list, citation_map_data)
     yield display_text
