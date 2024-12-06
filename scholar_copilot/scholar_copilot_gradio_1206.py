@@ -35,6 +35,8 @@ def generate_citation(input_text):
 
 
 def split_yield_list(input_text, prefix_length):
+    print("split_yield_list input_text", input_text)
+    print("split_yield_list prefix_length", prefix_length)
     prefix_text = input_text[:prefix_length]
     text_list = input_text[prefix_length:].split(" ")
     return prefix_text, text_list
