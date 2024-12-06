@@ -48,15 +48,15 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     current_text = text
     current_text = preprocess_input_text(current_text)
     input_text_length = len(current_text)
-    curr_prefix_length = len(current_text)
+    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
-    display_text = replace_citations(current_text, reference_id_list, citation_map_data)
+    display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
     for each in yield_list:
         curr_yield_text += " " + each
         yield curr_yield_text
-    curr_prefix_length = len(current_text)
+    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     while cite_start_hidden_state is not None:
         enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
         if enough_sentences:
@@ -67,13 +67,13 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         reference_id_list.append(curr_index)
         current_text = current_text + reference
         current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
-        display_text = replace_citations(current_text, reference_id_list, citation_map_data)
+        display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
         for each in yield_list:
             curr_yield_text += " " + each
             yield curr_yield_text
-        curr_prefix_length = len(current_text)
-    display_text = replace_citations(current_text, reference_id_list, citation_map_data)
+        curr_prefix_length = len(current_text) - len("<|paper_start|> ")
+    display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
     display_text = post_process_output_text(display_text, reference_id_list, citation_map_data)
     yield display_text
 
