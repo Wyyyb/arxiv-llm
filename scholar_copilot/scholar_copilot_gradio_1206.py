@@ -73,20 +73,24 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
         sentence_num = 0
+        enough = False
         for each in yield_list:
             if "." in each and each.endswith("."):
                 sentence_num += 1
             curr_yield_text += " " + each
             yield curr_yield_text
             if sentence_num == 3:
+                enough = True
                 break
             time.sleep(0.1)
+        if enough:
+            break
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    print("11 current_text", current_text)
+    # print("11 current_text", current_text)
     display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
-    print("22 display_text", display_text)
+    # print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
-    print("33 display_text", display_text)
+    # print("33 display_text", display_text)
     citations_data += citation_data_list
     yield display_text
     time.sleep(0.1)
@@ -121,20 +125,24 @@ def stream_generate(text, progress=gr.Progress()):
         display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
         sentence_num = 0
+        enough = False
         for each in yield_list:
             if "." in each and each.endswith("."):
                 sentence_num += 1
             curr_yield_text += " " + each
             yield curr_yield_text
             # if sentence_num == 3:
+            #     enough = True
             #     break
             time.sleep(0.1)
+        if enough:
+            break
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    print("11 current_text", current_text)
+    # print("11 current_text", current_text)
     display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
-    print("22 display_text", display_text)
+    # print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
-    print("33 display_text", display_text)
+    # print("33 display_text", display_text)
     citations_data += citation_data_list
     yield display_text
     time.sleep(0.1)
