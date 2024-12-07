@@ -288,21 +288,6 @@ with gr.Blocks(css="""
         gap: 30px;
         margin: 20px 0;
     }
-    .logo {
-        width: 80px;
-        height: 80px;
-        background: white;
-        border-radius: 50%;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    .logo:hover {
-        transform: scale(1.05);
-    }
     .intro-section {
         background: var(--color-4);
         padding: 30px;
@@ -408,7 +393,7 @@ with gr.Blocks(css="""
                     display: flex;
                     align-items: center;
                     gap: 5px;
-                    margin-left: 10px;
+                    margin-left: 2px;
                     flex: 0.2;
                 }
                 .logos-container > div {
