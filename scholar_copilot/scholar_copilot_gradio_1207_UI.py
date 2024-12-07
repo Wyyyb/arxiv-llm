@@ -305,7 +305,7 @@ with gr.Blocks(css="""
         margin-top: 20px;
     }
     .main-editor {
-        background: white;
+        background: #FAEED1;
         padding: 20px;
         border-radius: 15px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -333,7 +333,7 @@ with gr.Blocks(css="""
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .citation-section {
-        background: white;
+        background: #FAEED1;
         padding: 20px;
         border-radius: 15px;
         margin-top: 20px;
