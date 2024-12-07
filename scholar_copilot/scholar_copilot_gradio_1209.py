@@ -244,6 +244,21 @@ def download_citation_history():
     return temp_file_path
 
 
+def update_bibtex():
+    """生成包含所有历史引用的BibTeX文件"""
+    global citations_data
+    print("citations_data", citations_data)
+    if not citations_data:
+        return None  # 如果没有引用历史，返回None
+
+    bibtex_entries = []
+    for cit in citations_data:
+        if cit["bibtex"] not in bibtex_entries:
+            bibtex_entries.append(cit["bibtex"])
+    content = "\n\n".join(bibtex_entries)
+    return content
+
+
 def clear_cache():
     global citations_data
     citations_data = []
@@ -370,6 +385,22 @@ with gr.Blocks(css="""
         border-radius: 8px;
         margin: 10px 0;
     }
+    .bibtex-section {
+        background: var(--color-4);
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .bibtex-display {
+        font-family: monospace;
+        white-space: pre-wrap;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--color-1);
+        margin-top: 10px;
+    }
 """) as app:
     with gr.Column(elem_classes="container"):
         with gr.Column(elem_classes="header"):
@@ -441,7 +472,8 @@ with gr.Blocks(css="""
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
                 citation_btn = gr.Button("📚 Search citations", size="md")
                 # download_btn = gr.Button("📥 Download Citation History", size="md")
-                download_history_btn = gr.Button("📥 Download Citation History", size="md")
+                # download_history_btn = gr.Button("📥 Download Citation History", size="md")
+                update_bibtex_btn = gr.Button("📝 Update BibTeX", size="md")
                 clear_btn = gr.Button("🗑️ Clear All", size="md")
 
         # Citation section
@@ -455,6 +487,13 @@ with gr.Blocks(css="""
                     interactive=True
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
+
+                gr.Markdown("### 📑 Existing BibTeX Entries")
+                bibtex_display = gr.TextArea(
+                    label="BibTeX",
+                    interactive=False,
+                    elem_classes="bibtex-display"
+                )
 
         # Event handlers
         complete_btn.click(
@@ -488,11 +527,10 @@ with gr.Blocks(css="""
             inputs=[],
             outputs=[text_input, citation_checkboxes]
         )
-
-        download_history_btn.click(
-            fn=download_citation_history,
+        update_bibtex_btn.click(
+            fn=update_bibtex,
             inputs=[],
-            outputs=[gr.File()]
+            outputs=[bibtex_display]
         )
 
 if __name__ == "__main__":
