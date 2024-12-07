@@ -390,42 +390,23 @@ with gr.Blocks(css="""
 """) as app:
     with gr.Column(elem_classes="container"):
         with gr.Column(elem_classes="header"):
-            gr.Markdown("""
-                <style>
-                .header-container {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 20px;
-                    margin-bottom: 10px;
-                }
-                .header-title {
-                    font-size: 2.5em;
-                    margin: 0;
-                    padding: 0;
-                }
-                .logo-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .logo {
-                    height: 40px;
-                    width: auto;
-                    object-fit: contain;
-                }
-                </style>
-                <div class='header-container'>
-                    <h1 class='header-title'>Scholar Copilot</h1>
-                    <div class='logo-container'>
-                        <img src='src/tiger-lab.png' class='logo'>
-                        <img src='src/tiger-lab.png' class='logo'>
-                    </div>
-                </div>
-                <div style='text-align: center;'>
+            # 将标题和logo放在同一行
+            with gr.Row(elem_classes="title-row", equal_height=True):
+                gr.Markdown(
+                    """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot</h1>""",
+                    elem_classes="title"
+                )
+                # 创建一个新的Row来包含两个logo
+                with gr.Row(elem_classes="logos-container"):
+                    gr.Image("src/tiger-lab.png", show_label=False, height=40, container=False)
+                    gr.Image("src/tiger-lab.png", show_label=False, height=40, container=False)
+
+            # 副标题
+            gr.Markdown(
+                """<div style='text-align: center;'>
                     <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
-                </div>
-            """)
+                </div>"""
+            )
 
         # Introduction section
         with gr.Column(elem_classes="intro-section"):
