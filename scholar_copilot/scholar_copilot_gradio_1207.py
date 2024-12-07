@@ -182,9 +182,9 @@ def stream_generate(text, progress=gr.Progress()):
 
 
 def search_and_show_citations(input_text):
-    global citations_data
+    global citations_data, curr_search_candidates
     curr_citations_data = generate_citation(input_text)
-    citations_data += curr_citations_data
+    curr_search_candidates += curr_citations_data
     choices = []
     for cit in curr_citations_data:
         paper_id = cit["id"]
@@ -202,7 +202,7 @@ def search_and_show_citations(input_text):
 
 def insert_selected_citations(text, selected_citations):
     """插入选中的引用并追踪"""
-    global citations_data
+    global citations_data, curr_search_candidates
 
     if not selected_citations:
         return text
@@ -210,6 +210,9 @@ def insert_selected_citations(text, selected_citations):
     selected_citations = [each.split(": ")[0] for each in selected_citations]
     citations = ", ".join(selected_citations)
     new_text = text + " \\cite{" + citations + "}"
+    for each_candidate in curr_search_candidates:
+        if each_candidate["citation_key"] in selected_citations:
+            citations_data += each_candidate
     return new_text
 
 
@@ -443,6 +446,7 @@ if __name__ == "__main__":
     index, lookup_indices = load_faiss_index(index_dir)
     print("index building finished")
     citations_data = []
+    curr_search_candidates = []
 
     app.queue()  # 启用整个应用的队列功能
     app.launch(share=True)
