@@ -140,7 +140,7 @@ hf_token = "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"
 #                      token=hf_token)
 
 upload_jsonl_to_hf(
-    jsonl_path="/Users/MyDisk/2024/git/arxiv-llm/local_bibtex_info/bibtex_info_1202.jsonl",
+    jsonl_path="../local_bibtex_info/bibtex_info_1202.jsonl",
     repo_id="ubowang/bibtex_info_1202",
     token=hf_token
 )

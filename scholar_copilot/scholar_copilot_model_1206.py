@@ -269,6 +269,13 @@ def load_corpus_base(corpus_dir="../embedded_corpus/1128_shards/"):
         raise ValueError("No data was successfully loaded")
 
 
+def load_faiss_index(index_dir):
+    index = faiss.read_index(os.path.join(index_dir, 'index'))
+    with open(os.path.join(index_dir, 'lookup_indices.npy'), 'rb') as f:
+        lookup_indices = np.load(f)
+    return index, lookup_indices
+
+
 def load_model(model_path, device):
     config = AutoConfig.from_pretrained(model_path)
 
