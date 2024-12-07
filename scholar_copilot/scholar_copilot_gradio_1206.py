@@ -25,7 +25,7 @@ def generate_citation(input_text):
         curr_index, distance = each
         print("index", curr_index)
         if curr_index not in meta_data:
-            print("index not found in meta_data", index)
+            print("index not found in meta_data", curr_index)
             continue
         paper_id = meta_data[curr_index]["paper_id"]
         print("paper_id", paper_id)
