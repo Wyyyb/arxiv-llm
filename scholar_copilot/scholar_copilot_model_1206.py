@@ -8,9 +8,11 @@ from tqdm import tqdm
 import os
 import glob
 import re
+import time
 
 
 def retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=5):
+    start = time.time()
     print("Retrieving reference")
 
     # if isinstance(encoded_corpus, torch.Tensor):
@@ -32,6 +34,7 @@ def retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=5):
 
     print("retrieved_indices", retrieved_indices)
     print("distances[0]", distances[0])
+    print("***************Retrieve cost time: ", time.time() - start)
     return list(zip(retrieved_indices, distances[0]))
 
 

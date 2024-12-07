@@ -30,7 +30,7 @@ def generate_citation(input_text):
         paper_id = meta_data[curr_index]["paper_id"]
         print("paper_id", paper_id)
         citation_info = citation_map_data[paper_id]
-        print("citation_info", citation_info)
+        # print("citation_info", citation_info)
         searched_citations.append(citation_info)
     return searched_citations
 
