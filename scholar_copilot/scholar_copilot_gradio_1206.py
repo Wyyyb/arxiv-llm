@@ -320,7 +320,8 @@ with gr.Blocks() as app:
 
 if __name__ == "__main__":
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
-    model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    # model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
@@ -328,10 +329,6 @@ if __name__ == "__main__":
     meta_data = load_meta_data()
     citation_map_data_path = "../local_bibtex_info/bibtex_info_1202.jsonl"
     citation_map_data = load_citation_map_data(citation_map_data_path)
-    # d = encoded_corpus.shape[1]
-    # index = faiss.IndexFlatIP(d)
-    # faiss.normalize_L2(encoded_corpus)
-    # index.add(encoded_corpus)
     index_dir = "/data/xueguang/scholar-hnsw-single"
     index, lookup_indices = load_faiss_index(index_dir)
     print("index building finished")
