@@ -413,9 +413,6 @@ with gr.Blocks(css="""
                     gap: 20px;
                     padding: 0 20px;
                 }
-                .spacer {
-                    flex: 0.2;
-                }
                 .title {
                     flex: 0.6;
                     text-align: center;
@@ -431,7 +428,6 @@ with gr.Blocks(css="""
             """)
 
             with gr.Row(elem_classes="title-row", equal_height=True):
-                gr.Markdown("", elem_classes="spacer")
                 gr.Markdown(
                     """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot</h1>""",
                     elem_classes="title"
