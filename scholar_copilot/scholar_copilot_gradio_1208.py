@@ -347,6 +347,9 @@ with gr.Blocks(css="""
         border-radius: 15px;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 600px; 
+        margin-left: auto; 
+        margin-right: auto;
     }
     .citation-section button {
         background: var(--color-1);
@@ -361,6 +364,12 @@ with gr.Blocks(css="""
         background: var(--color-4);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .citation-section .gr-form {
+        max-width: 100%;
+    }
+    .citation-section .gr-checkbox-group {
+        max-width: 100%;
     }
     .textbox textarea {
         border: 2px solid var(--color-2);
@@ -481,13 +490,6 @@ with gr.Blocks(css="""
                     interactive=True
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
-
-            # copy_status = gr.Textbox(
-            #     value="",
-            #     label="",
-            #     interactive=False,
-            #     show_label=False
-            # )
 
         # Event handlers
         complete_btn.click(
