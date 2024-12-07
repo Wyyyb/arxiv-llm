@@ -24,7 +24,7 @@ def generate_citation(input_text):
     for each in retrieved_k_results:
         curr_index, distance = each
         print("index", curr_index)
-        if index not in meta_data:
+        if curr_index not in meta_data:
             print("index not found in meta_data", index)
             continue
         paper_id = meta_data[curr_index]["paper_id"]
