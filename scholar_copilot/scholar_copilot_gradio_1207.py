@@ -307,7 +307,7 @@ with gr.Blocks(css="""
 """) as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
-    with gr.Box(elem_classes="introduction"):
+    with gr.Group(elem_classes="introduction"):
         gr.Markdown("""
         Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).
 
