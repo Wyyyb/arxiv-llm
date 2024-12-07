@@ -1,4 +1,3 @@
-import gradio as gr
 from datetime import datetime
 import tempfile
 from scholar_copilot_model_1206 import *
@@ -429,6 +428,9 @@ if __name__ == "__main__":
 
     # 设置环境变量
     os.environ['GRADIO_TEMP_DIR'] = temp_dir
+    tempfile.tempdir = temp_dir
+    import gradio as gr
+
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     # model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
