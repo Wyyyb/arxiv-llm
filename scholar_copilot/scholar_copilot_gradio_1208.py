@@ -256,7 +256,7 @@ def clear_cache():
 example_text = ""
 with open("src/examples.txt", "r") as fi:
     for line in fi.readlines():
-        example_text += line + "\n"
+        example_text += line
 
 
 with gr.Blocks(css="""
@@ -424,7 +424,7 @@ with gr.Blocks(css="""
             with gr.Row(elem_classes="title-row", equal_height=True):
                 gr.Markdown("", elem_classes="spacer")
                 gr.Markdown(
-                    """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot</h1>""",
+                    """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot - Your Academic Writing Assistant</h1>""",
                     elem_classes="title"
                 )
                 with gr.Row(elem_classes="logos-container"):
