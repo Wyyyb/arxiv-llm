@@ -292,7 +292,7 @@ with gr.Blocks(css="""
         transform: scale(1.05);
     }
     .intro-section {
-        background: white;
+        background: #FAEED1;
         padding: 30px;
         border-radius: 15px;
         margin-bottom: 30px;
