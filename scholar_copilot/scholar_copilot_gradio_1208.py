@@ -176,7 +176,7 @@ def format_citation(citation_key, url):
     if citation_length > 80:
         citation_key = citation_key[:77] + "..."
         citation_length = 80
-    return citation_key + "\u2004" * (total_length - citation_length - url_length) + url
+    return citation_key + " " * (total_length - citation_length - url_length) + url
 
 
 def search_and_show_citations(input_text):
@@ -240,7 +240,17 @@ def download_citation_history():
         temp_file.write(header + content)
         temp_file_path = temp_file.name
 
-    return temp_file_path
+    # return temp_file_path
+    return [
+        temp_file_path,
+        """
+        <script>
+        window.scrollBy({
+            top: 300,
+            behavior: 'smooth'
+        });
+        </script>
+        """]
 
 
 def clear_cache():
@@ -251,6 +261,18 @@ def clear_cache():
         value=[],
     )
     return "", citations_checkbox
+
+
+def scroll_page():
+    # 返回一段 JavaScript 代码来实现滚动
+    return """
+    <script>
+    window.scrollBy({
+        top: 300,  // 滚动的像素距离
+        behavior: 'smooth'  // 平滑滚动效果
+    });
+    </script>
+    """
 
 
 example_text = ""
@@ -515,7 +537,7 @@ with gr.Blocks(css="""
         download_history_btn.click(
             fn=download_citation_history,
             inputs=[],
-            outputs=[gr.File()]
+            outputs=[gr.File(), gr.HTML()]
         )
 
 
