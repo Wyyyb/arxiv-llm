@@ -181,16 +181,6 @@ def stream_generate(text, progress=gr.Progress()):
 #     }
 
 
-def format_citation(citation_key, url):
-    total_length = 160
-    citation_length = len(citation_key)
-    url_length = len(url)
-    if citation_length > 120:
-        citation_key = citation_key[:120]
-        citation_length = 120
-    return citation_key + " " * (total_length - citation_length - url_length) + url
-
-
 def search_and_show_citations(input_text):
     global citations_data, curr_search_candidates
     curr_citations_data = generate_citation(input_text)
@@ -227,6 +217,33 @@ def insert_selected_citations(text, selected_citations):
 
 
 def download_citation_history():
+    """生成并下载包含所有历史引用的BibTeX文件"""
+    global citations_data
+    print("citations_data", citations_data)
+    if not citations_data:
+        return None
+
+    bibtex_entries = []
+    for cit in citations_data:
+        if cit["bibtex"] not in bibtex_entries:
+            bibtex_entries.append(cit["bibtex"])
+    content = "\n\n".join(bibtex_entries)
+
+    # 添加时间戳注释
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    header = f"% Citation history generated at {timestamp}\n% Total citations: {len(bibtex_entries)}\n\n"
+
+    file_content = header + content
+
+    # 返回文件内容和建议的文件名
+    return gr.File.update(
+        value=file_content.encode('utf-8'),
+        visible=True,
+        filename=f"citations_{timestamp.replace(' ', '_')}.txt"
+    )
+
+
+def download_citation_history_bk():
     """生成包含所有历史引用的BibTeX文件"""
     global citations_data
     print("citations_data", citations_data)
@@ -259,22 +276,22 @@ def clear_cache():
 
 with gr.Blocks(css="""
     :root {
-        --color-1: #B2A59B;
-        --color-2: #DED0B6; 
-        --color-3: #FFFFFF;
-        --color-4: #607274;
+        --color-1: #89A8B2;
+        --color-2: #F1F0E8; 
+        --color-3: #B3C8CF;
+        --color-4: #E5E1DA;
     }
 
     .container {
         max-width: 1200px;
         margin: auto;
         padding: 20px;
-        background-color: var(--color-3);
+        background-color: var(--color-2);
     }
     .header {
         text-align: center;
         margin-bottom: 40px;
-        background: linear-gradient(135deg, var(--color-1), var(--color-2));
+        background: linear-gradient(135deg, var(--color-1), var(--color-3));
         padding: 30px;
         border-radius: 15px;
         color: var(--color-4);
@@ -302,31 +319,32 @@ with gr.Blocks(css="""
         transform: scale(1.05);
     }
     .intro-section {
-        background: white;
+        background: var(--color-4);
         padding: 30px;
         border-radius: 15px;
         margin-bottom: 30px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .feature-list {
-        background: var(--color-2);
+        background: var(--color-4);
         padding: 20px;
         border-radius: 10px;
         margin-top: 20px;
     }
     .main-editor {
-        background: white;
-        padding: 20px;
+        background: var(--color-4);
+        padding: 0px;
         border-radius: 15px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     .button-row {
         display: flex;
         gap: 10px;
         margin-top: 15px;
         flex-wrap: wrap;
     }
-    .button-row button {
+    .button-row button, .button-row a {
         flex: 1;
         min-width: 200px;
         background: var(--color-1);
@@ -336,31 +354,34 @@ with gr.Blocks(css="""
         border-radius: 8px;
         font-weight: 500;
         transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
     }
-    .button-row button:hover {
+    .button-row button:hover, .button-row a:hover {
         background: var(--color-4);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .citation-section {
-        background: white;
+        background: var(--color-4);
         padding: 20px;
         border-radius: 15px;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .citation-section button {
-        background: var(--color-2);
+        background: var(--color-1);
         border: none;
-        color: var(--color-4);
+        color: white;
         padding: 12px 20px;
         border-radius: 8px;
         font-weight: 500;
         transition: all 0.3s ease;
     }
     .citation-section button:hover {
-        background: var(--color-1);
-        color: white;
+        background: var(--color-4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .textbox textarea {
         border: 2px solid var(--color-2);
@@ -429,16 +450,18 @@ with gr.Blocks(css="""
         # Main editor section
         with gr.Column(elem_classes="main-editor"):
             text_input = gr.Textbox(
-                lines=30,
+                lines=20,
                 label="Write your paper here",
                 placeholder="Start writing your academic paper...",
+                elem_classes="textbox"
             )
-
+            file_output = gr.File(visible=False)
             with gr.Row(elem_classes="button-row"):
-                complete_btn = gr.Button("🔄 Complete 3 sentences", size="lg")
-                generate_btn = gr.Button("✨ Generate to the end", size="lg")
-                citation_btn = gr.Button("📚 Insert citation", size="lg")
-                clear_btn = gr.Button("🗑️ Clear All", size="lg")
+                complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
+                generate_btn = gr.Button("✨ Generate to the end", size="md")
+                citation_btn = gr.Button("📚 Insert citation", size="md")
+                download_btn = gr.Button("📥 Download Citation History", size="md")
+                clear_btn = gr.Button("🗑️ Clear All", size="md")
 
         # Citation section
         with gr.Column(elem_classes="citation-section"):
@@ -452,8 +475,6 @@ with gr.Blocks(css="""
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
 
-        with gr.Row():
-            download_history_btn = gr.Button("📥 Download Citation History", size="lg")
             copy_status = gr.Textbox(
                 value="",
                 label="",
@@ -488,39 +509,51 @@ with gr.Blocks(css="""
             outputs=[text_input]
         )
 
-        download_history_btn.click(
-            fn=download_citation_history,
-            inputs=[],
-            outputs=[gr.File()]
-        )
-
         clear_btn.click(
             fn=clear_cache,
             inputs=[],
             outputs=[text_input, citation_checkboxes]
+        )
+        download_btn.click(
+            fn=download_citation_history,
+            inputs=[],
+            outputs=[file_output]
         )
 
 
 if __name__ == "__main__":
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     # model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    # model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
+    # device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    # model, tokenizer = load_model(model_path, device)
+    # embedded_corpus_path = "../embedded_corpus/1129_shards/"
+    # # encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
+    # meta_data = load_meta_data()
+    # citation_map_data_path = "../local_bibtex_info/bibtex_info_1202.jsonl"
+    # citation_map_data = load_citation_map_data(citation_map_data_path)
+    # # index_dir = "/data/xueguang/scholar-hnsw-single"
+    # index_dir = "../embedded_corpus/scholar-hnsw-1207/"
+    # index, lookup_indices = load_faiss_index(index_dir)
+    # print("index building finished")
+    # citations_data = []
+    # curr_search_candidates = []
     model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
-    model, tokenizer = load_model(model_path, device)
+    model, tokenizer = None, None
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
     # encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
-    meta_data = load_meta_data()
+    meta_data = None
     citation_map_data_path = "../local_bibtex_info/bibtex_info_1202.jsonl"
-    citation_map_data = load_citation_map_data(citation_map_data_path)
+    citation_map_data = None
     # index_dir = "/data/xueguang/scholar-hnsw-single"
     index_dir = "../embedded_corpus/scholar-hnsw-1207/"
-    index, lookup_indices = load_faiss_index(index_dir)
-    print("index building finished")
+    index, lookup_indices = None, None
     citations_data = []
     curr_search_candidates = []
 
     app.queue()  # 启用整个应用的队列功能
-    app.launch(share=True)
+    app.launch()
 
 
 
