@@ -229,7 +229,7 @@ def insert_selected_citations(text, selected_citations):
 def download_citation_history():
     """生成并下载包含所有历史引用的BibTeX文件"""
     global citations_data
-    print("citations_data", citations_data)
+    print("in download_citation_history： citations_data", citations_data)
     if not citations_data:
         return None
 
@@ -440,7 +440,7 @@ with gr.Blocks(css="""
                 placeholder="Start writing your academic paper...",
                 elem_classes="textbox"
             )
-            file_output = gr.File(visible=False)
+            # file_output = gr.File(visible=False)
             with gr.Row(elem_classes="button-row"):
                 complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
@@ -466,6 +466,12 @@ with gr.Blocks(css="""
                 interactive=False,
                 show_label=False
             )
+
+        file_output = gr.File(
+            label="Download Citations",
+            visible=False,
+            interactive=True
+        )
 
         # Event handlers
         complete_btn.click(
