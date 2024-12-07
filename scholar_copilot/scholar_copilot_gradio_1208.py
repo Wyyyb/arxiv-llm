@@ -418,18 +418,28 @@ with gr.Blocks(css="""
                     padding: 0 !important;
                     margin: 0 !important;
                 }
+                .subtitle {
+                font-size: 1.2em;
+                color: #666;
+                text-align: center;
+                margin-top: 5px;
+                font-weight: normal;
+                }
                 </style>
             """)
 
             with gr.Row(elem_classes="title-row", equal_height=True):
                 gr.Markdown("", elem_classes="spacer")
                 gr.Markdown(
-                    """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot - Your Academic Writing Assistant</h1>""",
+                    """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot</h1>""",
                     elem_classes="title"
                 )
                 with gr.Row(elem_classes="logos-container"):
                     gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40, container=False)
                     gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40, container=False)
+            gr.Markdown(
+                """<h3 class='subtitle'> Your Academic Writing Assistant</h3>"""
+            )
 
         # Introduction section
         with gr.Column(elem_classes="intro-section"):
