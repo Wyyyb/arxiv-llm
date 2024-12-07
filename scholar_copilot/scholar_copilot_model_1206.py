@@ -10,11 +10,11 @@ import glob
 import re
 
 
-def retrieve_reference(index, encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=5):
+def retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=5):
     print("Retrieving reference")
 
-    if isinstance(encoded_corpus, torch.Tensor):
-        encoded_corpus = encoded_corpus.cpu().numpy()
+    # if isinstance(encoded_corpus, torch.Tensor):
+    #     encoded_corpus = encoded_corpus.cpu().numpy()
     if isinstance(cite_start_hidden_state, torch.Tensor):
         cite_start_hidden_state = cite_start_hidden_state.cpu().numpy()
 

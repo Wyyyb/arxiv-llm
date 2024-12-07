@@ -19,7 +19,7 @@ def generate_citation(input_text):
             return_dict=True
         )
     cite_rep = new_output.hidden_states[-1][:, -1, :]
-    retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_rep, top_k=10)
+    retrieved_k_results = retrieve_reference(index, lookup_indices, cite_rep, top_k=10)
     searched_citations = []
     for each in retrieved_k_results:
         index, distance = each
@@ -75,7 +75,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         # if enough_sentences:
         #     current_text = res_text
         #     break
-        retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=1)
+        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
         current_text = current_text + reference
@@ -127,7 +127,7 @@ def stream_generate(text, progress=gr.Progress()):
         # if enough_sentences:
         #     current_text = res_text
         #     break
-        retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_start_hidden_state,
+        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state,
                                                  top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
