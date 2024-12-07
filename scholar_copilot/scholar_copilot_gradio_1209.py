@@ -418,7 +418,7 @@ with gr.Blocks(css="""
                 }
                 .title {
                     flex: 0.6;
-                    text-align: right;
+                    text-align: center;
                 }
                 .subtitle {
                 font-size: 1.2em;
@@ -437,7 +437,9 @@ with gr.Blocks(css="""
                     elem_classes="title"
                 )
             gr.Markdown(
-                """<h3 class='subtitle'> Your Academic Writing Assistant -- By <a href="https://huggingface.co/TIGER-Lab" target="_blank">TIGER-Lab</a></h3>"""
+                """<h3 class='subtitle'> Your Academic Writing Assistant -- By <a href="https://huggingface.co/TIGER-Lab" target="_blank">TIGER-Lab</a></h3>
+                   <p>Authors: Yubo Wang, Xueguang Ma, Xiang Yue, and Wenhu Chen</p>
+                   <p>Contact: <a href="mailto:yubo.wang.sunny@gmail.com">yubo.wang.sunny@gmail.com</a></p>"""
             )
 
         # Introduction section
