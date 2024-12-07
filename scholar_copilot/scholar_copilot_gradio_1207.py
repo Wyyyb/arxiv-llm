@@ -251,7 +251,7 @@ with gr.Blocks(css="""
     :root {
         --color-1: #B2A59B;
         --color-2: #DED0B6; 
-        --color-3: #FAEED1;
+        --color-3: #FFFFFF;
         --color-4: #607274;
     }
 
