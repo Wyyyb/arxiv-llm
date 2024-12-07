@@ -541,7 +541,7 @@ with gr.Blocks(css="""
                     gr.Markdown("### 📄 BibTeX Entries")
                     bibtex_output = gr.Code(
                         label="BibTeX",
-                        language="bibtex",
+                        language="python",
                         value="",
                         lines=30,
                         elem_classes="bibtex-box",
