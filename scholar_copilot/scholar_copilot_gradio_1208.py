@@ -170,12 +170,12 @@ def stream_generate(text, progress=gr.Progress()):
 
 
 def format_citation(citation_key, url):
-    total_length = 160
+    total_length = 120
     citation_length = len(citation_key)
     url_length = len(url)
-    if citation_length > 120:
-        citation_key = citation_key[:117] + "..."
-        citation_length = 120
+    if citation_length > 80:
+        citation_key = citation_key[:77] + "..."
+        citation_length = 80
     return citation_key + "\u3000" * (total_length - citation_length - url_length) + url
 
 
