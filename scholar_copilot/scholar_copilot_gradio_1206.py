@@ -216,7 +216,12 @@ def clear_cache():
     return "", []
 
 
-with gr.Blocks() as app:
+with gr.Blocks(css="""
+    .citation-choices .gr-checkbox-row {
+        display: block !important;
+        margin-bottom: 8px;
+    }
+""") as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
     with gr.Row():
@@ -229,10 +234,10 @@ with gr.Blocks() as app:
             )
 
             with gr.Row():
-                complete_btn = gr.Button("Complete me (3 sentences)")
+                complete_btn = gr.Button("Complete 3 sentences")
                 generate_btn = gr.Button("Generate to the end")
                 citation_btn = gr.Button("Insert citation")
-                clear_btn = gr.Button("Clear All")  # 新增清理按钮
+                clear_btn = gr.Button("Clear All")
 
     # 引用建议区
     with gr.Row():
@@ -242,7 +247,8 @@ with gr.Blocks() as app:
             citation_checkboxes = gr.CheckboxGroup(
                 choices=[],
                 label="Select citations to insert",
-                interactive=True
+                interactive=True,
+                elem_classes=["citation-choices"]  # 添加自定义CSS类
             )
             insert_citation_btn = gr.Button("Insert selected citations")
 
@@ -288,11 +294,10 @@ with gr.Blocks() as app:
         outputs=[gr.File()]
     )
 
-    # 新增清理按钮事件处理
     clear_btn.click(
         fn=clear_cache,
         inputs=[],
-        outputs=[text_input, citation_checkboxes]  # 清空文本框和引用选项
+        outputs=[text_input, citation_checkboxes]
     )
 
 if __name__ == "__main__":
