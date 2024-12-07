@@ -203,6 +203,7 @@ def search_and_show_citations(input_text):
         title = cit["title"]
         url = f" (https://arxiv.org/abs/{paper_id})"
         item = format_citation(citation_key + ": " + title, url)
+        print("item", item)
         choices.append(item)
     return {
         citation_box: gr.Group(visible=True),
