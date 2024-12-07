@@ -307,7 +307,7 @@ with gr.Blocks(theme=gr.themes.Soft(
 
             with gr.Row():
                 complete_btn = gr.Button(
-                    "Complete me (3 sentences)",
+                    "Complete 3 sentences",
                     elem_classes="custom-button",
                     variant="primary"
                 )
