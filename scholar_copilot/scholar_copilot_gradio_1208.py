@@ -413,13 +413,26 @@ with gr.Blocks(css="""
                     gap: 5px;
                     margin-left: 2px;
                     flex: 0.2;
+                    height: 50px;
+                    width: auto;
                 }
+                
                 .logos-container > div {
                     border: none !important;
                     background: none !important;
                     box-shadow: none !important;
                     padding: 0 !important;
                     margin: 0 !important;
+                    width: 40px !important;
+                    height: 40px !important;
+                    flex-shrink: 0;  /* 防止logo被压缩 */
+                }
+                
+                .logos-container img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: contain !important;
+                    display: block !important;
                 }
                 .subtitle {
                 font-size: 1.2em;
@@ -438,8 +451,8 @@ with gr.Blocks(css="""
                     elem_classes="title"
                 )
                 with gr.Row(elem_classes="logos-container"):
-                    gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40, container=False)
-                    gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40, container=False)
+                    gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
+                    gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
             gr.Markdown(
                 """<h3 class='subtitle'> Your Academic Writing Assistant</h3>"""
             )
