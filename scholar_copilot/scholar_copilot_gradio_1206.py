@@ -221,6 +221,19 @@ with gr.Blocks(css="""
         display: block !important;
         margin-bottom: 8px;
     }
+    .citation-choices .gr-form {
+        gap: 0 !important;
+    }
+    .citation-choices .gr-container {
+        gap: 0 !important;
+    }
+    .citation-choices .gr-checkbox-row label {
+        display: block !important;
+        width: 100% !important;
+    }
+    .citation-choices .gr-checkbox-row input[type='checkbox'] {
+        margin-right: 8px;
+    }
 """) as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
@@ -248,7 +261,8 @@ with gr.Blocks(css="""
                 choices=[],
                 label="Select citations to insert",
                 interactive=True,
-                elem_classes=["citation-choices"]  # 添加自定义CSS类
+                elem_classes=["citation-choices"],
+                container=False  # 添加这个参数以减少额外的容器嵌套
             )
             insert_citation_btn = gr.Button("Insert selected citations")
 
@@ -261,7 +275,7 @@ with gr.Blocks(css="""
             show_label=False
         )
 
-    # 事件处理
+    # 事件处理部分保持不变
     complete_btn.click(
         fn=stream_complete_3_sentence,
         inputs=[text_input],
