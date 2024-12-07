@@ -22,12 +22,12 @@ def generate_citation(input_text):
     retrieved_k_results = retrieve_reference(index, lookup_indices, cite_rep, top_k=10)
     searched_citations = []
     for each in retrieved_k_results:
-        index, distance = each
-        print("index", index)
+        curr_index, distance = each
+        print("index", curr_index)
         if index not in meta_data:
             print("index not found in meta_data", index)
             continue
-        paper_id = meta_data[index]["paper_id"]
+        paper_id = meta_data[curr_index]["paper_id"]
         print("paper_id", paper_id)
         citation_info = citation_map_data[paper_id]
         print("citation_info", citation_info)
