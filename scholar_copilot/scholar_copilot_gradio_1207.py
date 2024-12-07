@@ -19,18 +19,18 @@ def generate_citation(input_text):
             return_dict=True
         )
     cite_rep = new_output.hidden_states[-1][:, -1, :]
-    retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_rep, top_k=10)
+    retrieved_k_results = retrieve_reference(index, lookup_indices, cite_rep, top_k=10)
     searched_citations = []
     for each in retrieved_k_results:
-        index, distance = each
-        print("index", index)
-        if index not in meta_data:
-            print("index not found in meta_data", index)
+        curr_index, distance = each
+        print("index", curr_index)
+        if curr_index not in meta_data:
+            print("index not found in meta_data", curr_index)
             continue
-        paper_id = meta_data[index]["paper_id"]
+        paper_id = meta_data[curr_index]["paper_id"]
         print("paper_id", paper_id)
         citation_info = citation_map_data[paper_id]
-        print("citation_info", citation_info)
+        # print("citation_info", citation_info)
         searched_citations.append(citation_info)
     return searched_citations
 
@@ -75,7 +75,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         # if enough_sentences:
         #     current_text = res_text
         #     break
-        retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_start_hidden_state, top_k=1)
+        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
         current_text = current_text + reference
@@ -127,7 +127,7 @@ def stream_generate(text, progress=gr.Progress()):
         # if enough_sentences:
         #     current_text = res_text
         #     break
-        retrieved_k_results = retrieve_reference(index, encoded_corpus, lookup_indices, cite_start_hidden_state,
+        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state,
                                                  top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
@@ -161,14 +161,37 @@ def stream_generate(text, progress=gr.Progress()):
     time.sleep(0.1)
 
 
+# def search_and_show_citations(input_text):
+#     global citations_data
+#     curr_citations_data = generate_citation(input_text)
+#     citations_data += curr_citations_data
+#     choices = []
+#     for cit in curr_citations_data:
+#         paper_id = cit["id"]
+#         item = cit["citation_key"] + ": " + cit["title"] + f" (https://arxiv.org/abs/{paper_id})"
+#         choices.append(item)
+#     return {
+#         citation_box: gr.Group(visible=True),
+#         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
+#     }
+
+
 def search_and_show_citations(input_text):
     global citations_data
     curr_citations_data = generate_citation(input_text)
     citations_data += curr_citations_data
-    choices = [cit["citation_key"] + ": " + cit["title"] for cit in curr_citations_data]
+    choices = []
+    for cit in curr_citations_data:
+        paper_id = cit["id"]
+        # 使用HTML格式创建带超链接的文本
+        item = f'{cit["citation_key"]}: {cit["title"]} (https://arxiv.org/abs/{paper_id})'
+        choices.append(item)
     return {
         citation_box: gr.Group(visible=True),
-        citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
+        citation_checkboxes: gr.CheckboxGroup(
+            choices=choices,
+            value=[],
+        )
     }
 
 
@@ -217,198 +240,202 @@ def clear_cache():
 
 
 with gr.Blocks(css="""
-    /* 主题颜色 */
-    :root {
-        --primary-color: #2D5DA1;
-        --secondary-color: #45B7D1;
-        --accent-color: #F15B40;
-        --neutral-color: #4A5568;
-        --bg-light: #F7FAFC;
-    }
-
-    /* 整体样式 */
     .container {
         max-width: 1200px;
-        margin: 0 auto;
+        margin: auto;
         padding: 20px;
     }
-
-    /* 按钮样式 */
-    .primary-btn {
-        background: var(--primary-color) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease !important;
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        background: linear-gradient(to right, #2193b0, #6dd5ed);
+        padding: 30px;
+        border-radius: 15px;
+        color: white;
     }
-    .primary-btn:hover {
-        background: #1D4ED8 !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    .logos {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        margin: 20px 0;
     }
-
-    .secondary-btn {
-        background: var(--secondary-color) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease !important;
+    .logo {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .secondary-btn:hover {
-        background: #3AA1BD !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    .intro-section {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
-    .accent-btn {
-        background: var(--accent-color) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease !important;
-    }
-    .accent-btn:hover {
-        background: #E74C3C !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    /* 引用选项样式 */
-    .citation-choices .gr-checkbox-row {
-        display: block !important;
-        margin-bottom: 8px;
-        padding: 8px;
-        border-radius: 4px;
-        transition: background-color 0.2s ease;
-    }
-    .citation-choices .gr-checkbox-row:hover {
-        background-color: var(--bg-light);
-    }
-    .citation-choices .gr-form {
-        gap: 0 !important;
-    }
-    .citation-choices .gr-container {
-        gap: 0 !important;
-    }
-    .citation-choices .gr-checkbox-row label {
-        display: block !important;
-        width: 100% !important;
-    }
-    .citation-choices .gr-checkbox-row input[type='checkbox'] {
-        margin-right: 8px;
-    }
-
-    /* 介绍文本样式 */
-    .introduction {
-        background: var(--bg-light);
+    .feature-list {
+        background: white;
         padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 24px;
-        color: var(--neutral-color);
-        line-height: 1.6;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+    .main-editor {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .citation-section {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 """) as app:
-    gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
+    with gr.Column(elem_classes="container"):
+        # Header section with logos
+        with gr.Column(elem_classes="header"):
+            gr.Markdown("""
+                <div style='text-align: center;'>
+                    <h1 style='font-size: 2.5em; margin-bottom: 10px;'>Scholar Copilot</h1>
+                    <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
+                </div>
+            """)
 
-    with gr.Group(elem_classes="introduction"):
-        gr.Markdown("""
-        Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).
+            # Logos section
+            with gr.Row(elem_classes="logos"):
+                # App logo (using ASCII art as placeholder)
+                gr.Markdown("""
+                    <div class='logo'>
+                        <pre style='font-size: 24px; color: #2193b0;'>
+                        SC
+                        </pre>
+                    </div>
+                """)
+                # Organization logo (using ASCII art as placeholder)
+                gr.Markdown("""
+                    <div class='logo'>
+                        <pre style='font-size: 24px; color: #2193b0;'>
+                        ORG
+                        </pre>
+                    </div>
+                """)
 
-        The current version of Scholar Copilot leverages a state-of-the-art 7-billion-parameter language model (LLM) trained on the complete Arxiv full paper corpus. This unified model for retrieval and generation is adept at making context-sensitive decisions about when to cite, what to cite, and how to generate coherent content based on reference papers.
+        # Introduction section
+        with gr.Column(elem_classes="intro-section"):
+            gr.Markdown("""
+                Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).
 
-        The demo supports three core features tailored to the academic workflow:
+                The current version of Scholar Copilot leverages a state-of-the-art 7-billion-parameter language model (LLM) trained on the complete Arxiv full paper corpus. This unified model for retrieval and generation is adept at making context-sensitive decisions about when to cite, what to cite, and how to generate coherent content based on reference papers.
+            """)
 
-        - **Next-3-Sentence Suggestions**: Facilitates writing by predicting the next sentences with automatic retrieval and citation of relevant reference papers.
-        - **Citation Suggestions on Demand**: Provides precise, contextually appropriate paper citations whenever needed.
-        - **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
-        """)
+            with gr.Column(elem_classes="feature-list"):
+                gr.Markdown("""
+                    ### 🚀 Core Features:
 
-    with gr.Row():
-        with gr.Column(scale=2):
+                    * 📝 **Next-3-Sentence Suggestions**: Facilitates writing by predicting the next sentences with automatic retrieval and citation of relevant reference papers.
+                    * 📚 **Citation Suggestions on Demand**: Provides precise, contextually appropriate paper citations whenever needed.
+                    * ✨ **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
+                """)
+
+        # Main editor section
+        with gr.Column(elem_classes="main-editor"):
             text_input = gr.Textbox(
                 lines=30,
                 label="Write your paper here",
-                placeholder="Start writing your academic paper..."
+                placeholder="Start writing your academic paper...",
             )
 
-            with gr.Row():
-                complete_btn = gr.Button("Complete 3 sentences", elem_classes="primary-btn")
-                generate_btn = gr.Button("Generate to the end", elem_classes="primary-btn")
-                citation_btn = gr.Button("Insert citation", elem_classes="secondary-btn")
-                clear_btn = gr.Button("Clear All", elem_classes="accent-btn")
+            with gr.Row(elem_classes="button-row"):
+                complete_btn = gr.Button("🔄 Complete 3 sentences", size="lg")
+                generate_btn = gr.Button("✨ Generate to the end", size="lg")
+                citation_btn = gr.Button("📚 Insert citation", size="lg")
+                clear_btn = gr.Button("🗑️ Clear All", size="lg")
 
-    with gr.Row():
-        citation_box = gr.Group(visible=True)
-        with citation_box:
-            gr.Markdown("### Citation Suggestions")
-            citation_checkboxes = gr.CheckboxGroup(
-                choices=[],
-                label="Select citations to insert",
-                interactive=True,
-                elem_classes=["citation-choices"],
-                container=False
+        # Citation section
+        with gr.Column(elem_classes="citation-section"):
+            citation_box = gr.Group(visible=True)
+            with citation_box:
+                gr.Markdown("### 📚 Citation Suggestions")
+                citation_checkboxes = gr.CheckboxGroup(
+                    choices=[],
+                    label="Select citations to insert",
+                    interactive=True
+                )
+                insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
+
+        with gr.Row():
+            download_history_btn = gr.Button("📥 Download Citation History", size="lg")
+            copy_status = gr.Textbox(
+                value="",
+                label="",
+                interactive=False,
+                show_label=False
             )
-            insert_citation_btn = gr.Button("Insert selected citations", elem_classes="secondary-btn")
 
-    with gr.Row():
-        download_history_btn = gr.Button("Download Citation History", elem_classes="secondary-btn")
-        copy_status = gr.Textbox(
-            value="",
-            label="",
-            interactive=False,
-            show_label=False
+        # Event handlers
+        complete_btn.click(
+            fn=stream_complete_3_sentence,
+            inputs=[text_input],
+            outputs=[text_input],
+            queue=True
         )
 
-    # 事件处理部分保持不变
-    complete_btn.click(
-        fn=stream_complete_3_sentence,
-        inputs=[text_input],
-        outputs=[text_input],
-        queue=True
-    )
+        generate_btn.click(
+            fn=stream_generate,
+            inputs=[text_input],
+            outputs=[text_input],
+            queue=True
+        )
 
-    generate_btn.click(
-        fn=stream_generate,
-        inputs=[text_input],
-        outputs=[text_input],
-        queue=True
-    )
+        citation_btn.click(
+            fn=search_and_show_citations,
+            inputs=[text_input],
+            outputs=[citation_box, citation_checkboxes]
+        )
 
-    citation_btn.click(
-        fn=search_and_show_citations,
-        inputs=[text_input],
-        outputs=[citation_box, citation_checkboxes]
-    )
+        insert_citation_btn.click(
+            fn=insert_selected_citations,
+            inputs=[text_input, citation_checkboxes],
+            outputs=[text_input]
+        )
 
-    insert_citation_btn.click(
-        fn=insert_selected_citations,
-        inputs=[text_input, citation_checkboxes],
-        outputs=[text_input]
-    )
+        download_history_btn.click(
+            fn=download_citation_history,
+            inputs=[],
+            outputs=[gr.File()]
+        )
 
-    download_history_btn.click(
-        fn=download_citation_history,
-        inputs=[],
-        outputs=[gr.File()]
-    )
-
-    clear_btn.click(
-        fn=clear_cache,
-        inputs=[],
-        outputs=[text_input, citation_checkboxes]
-    )
+        clear_btn.click(
+            fn=clear_cache,
+            inputs=[],
+            outputs=[text_input, citation_checkboxes]
+        )
 
 
 if __name__ == "__main__":
-    model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    # model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
+    model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     model, tokenizer = load_model(model_path, device)
     embedded_corpus_path = "../embedded_corpus/1129_shards/"
-    encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
+    # encoded_corpus, lookup_indices = load_corpus_base(embedded_corpus_path)
     meta_data = load_meta_data()
     citation_map_data_path = "../local_bibtex_info/bibtex_info_1202.jsonl"
     citation_map_data = load_citation_map_data(citation_map_data_path)
-    d = encoded_corpus.shape[1]
-    index = faiss.IndexFlatIP(d)
-    faiss.normalize_L2(encoded_corpus)
-    index.add(encoded_corpus)
+    index_dir = "/data/xueguang/scholar-hnsw-single"
+    index, lookup_indices = load_faiss_index(index_dir)
     print("index building finished")
     citations_data = []
 

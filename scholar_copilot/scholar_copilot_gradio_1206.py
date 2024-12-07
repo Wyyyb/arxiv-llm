@@ -242,6 +242,20 @@ def clear_cache():
 with gr.Blocks() as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
+    gr.Markdown("""
+        ### Introduction
+
+        Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).
+
+        The current version of Scholar Copilot leverages a state-of-the-art 7-billion-parameter language model (LLM) trained on the complete Arxiv full paper corpus. This unified model for retrieval and generation is adept at making context-sensitive decisions about when to cite, what to cite, and how to generate coherent content based on reference papers.
+
+        ### Core Features:
+
+        * **Next-3-Sentence Suggestions**: Facilitates writing by predicting the next sentences with automatic retrieval and citation of relevant reference papers.
+        * **Citation Suggestions on Demand**: Provides precise, contextually appropriate paper citations whenever needed.
+        * **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
+        """)
+
     with gr.Row():
         # 主编辑区
         with gr.Column(scale=2):
