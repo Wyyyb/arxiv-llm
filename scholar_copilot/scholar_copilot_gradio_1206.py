@@ -161,14 +161,40 @@ def stream_generate(text, progress=gr.Progress()):
     time.sleep(0.1)
 
 
+# def search_and_show_citations(input_text):
+#     global citations_data
+#     curr_citations_data = generate_citation(input_text)
+#     citations_data += curr_citations_data
+#     choices = []
+#     for cit in curr_citations_data:
+#         paper_id = cit["id"]
+#         item = cit["citation_key"] + ": " + cit["title"] + f" (https://arxiv.org/abs/{paper_id})"
+#         choices.append(item)
+#     return {
+#         citation_box: gr.Group(visible=True),
+#         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
+#     }
+
+
 def search_and_show_citations(input_text):
     global citations_data
     curr_citations_data = generate_citation(input_text)
     citations_data += curr_citations_data
-    choices = [cit["citation_key"] + ": " + cit["title"] for cit in curr_citations_data]
+    choices = []
+    for cit in curr_citations_data:
+        paper_id = cit["id"]
+        # 使用HTML格式创建带超链接的文本
+        item = (f'{cit["citation_key"]}: {cit["title"]} '
+                f'<a href="https://arxiv.org/abs/{paper_id}" target="_blank">[arxiv]</a>')
+        choices.append(item)
     return {
         citation_box: gr.Group(visible=True),
-        citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
+        # 设置allow_html=True来启用HTML渲染
+        citation_checkboxes: gr.CheckboxGroup(
+            choices=choices,
+            value=[],
+            allow_html=True
+        )
     }
 
 
@@ -242,7 +268,8 @@ with gr.Blocks() as app:
             citation_checkboxes = gr.CheckboxGroup(
                 choices=[],
                 label="Select citations to insert",
-                interactive=True
+                interactive=True,
+                allow_html=True
             )
             insert_citation_btn = gr.Button("Insert selected citations")
 
