@@ -229,6 +229,7 @@ with gr.Blocks(theme=gr.themes.Soft(
                      height=100,
                      show_label=False,
                      container=False,
+                     interactive=False,
                      elem_classes="logo-image")
         with gr.Column(scale=4):
             gr.Markdown(
@@ -320,24 +321,91 @@ with gr.Blocks(theme=gr.themes.Soft(
             show_label=False
         )
 
-    # CSS样式
+    # CSS样式部分更新
     gr.HTML(
         """
         <style>
+        /* 设置全局字体 */
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+        }
+
         .header-container {
             background: linear-gradient(90deg, #1a237e, #283593);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             color: white;
+            display: flex;
+            align-items: center;
         }
+
+        /* 标题样式 */
+        .header-container h1 {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header-container h3 {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 介绍文本样式 */
+        .introduction h4 {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 500;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .introduction p, .introduction li {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .logo-image {
+            width: 100px !important;
+            height: 100px !important;
+            object-fit: contain;
+            background-color: transparent;
+        }
+
+        .logo-image > div {
+            border: none !important;
+        }
+
+        .logo-image img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .logo-image .controls {
+            display: none !important;
+        }
+
+        .logo-image img:hover {
+            transform: none !important;
+        }
+
         .main-textarea {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             background-color: #ffffff;
+            font-family: 'SF Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
+            font-size: 14px;
         }
+
         .custom-button {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-weight: 500;
             font-size: 14px;
             padding: 8px 16px;
@@ -345,23 +413,35 @@ with gr.Blocks(theme=gr.themes.Soft(
             border-radius: 6px;
             transition: all 0.3s ease;
         }
+
         .custom-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+
         .citation-checkboxes {
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
         }
-        /* 主题色定义 */
+
+        /* Citation标题样式 */
+        .citation-box h3 {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 500;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
         :root {
             --primary-color: #1a237e;
             --secondary-color: #283593;
             --background-color: #f5f7fa;
         }
-        /* 设置整体背景色 */
+
         body {
             background-color: var(--background-color);
         }
