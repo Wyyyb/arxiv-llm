@@ -102,11 +102,11 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     # print("11 current_text", current_text)
     # display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
-    # print("22 display_text", display_text)
+    print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
-    # print("33 display_text", display_text)
+    print("33 display_text", display_text)
     citations_data += citation_data_list
-    print("global citations_data", citations_data)
+    # print("global citations_data", citations_data)
     yield display_text
     time.sleep(0.1)
 
@@ -164,21 +164,6 @@ def stream_generate(text, progress=gr.Progress()):
     citations_data += citation_data_list
     yield display_text
     time.sleep(0.1)
-
-
-# def search_and_show_citations(input_text):
-#     global citations_data
-#     curr_citations_data = generate_citation(input_text)
-#     citations_data += curr_citations_data
-#     choices = []
-#     for cit in curr_citations_data:
-#         paper_id = cit["id"]
-#         item = cit["citation_key"] + ": " + cit["title"] + f" (https://arxiv.org/abs/{paper_id})"
-#         choices.append(item)
-#     return {
-#         citation_box: gr.Group(visible=True),
-#         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
-#     }
 
 
 def format_citation(citation_key, url):
