@@ -249,17 +249,17 @@ def clear_cache():
 
 with gr.Blocks(css="""
     :root {
-        --color-1: #B2A59B;
-        --color-2: #DED0B6; 
-        --color-3: #FFFFFF;
-        --color-4: #607274;
+        --color-1: #6482AD;
+        --color-2: #7FA1C3; 
+        --color-3: #E2DAD6;
+        --color-4: #F5EDED;
     }
 
     .container {
         max-width: 1200px;
         margin: auto;
         padding: 20px;
-        background-color: var(--color-3);
+        background-color: black;
     }
     .header {
         text-align: center;
