@@ -193,7 +193,6 @@ def search_and_show_citations(input_text):
         citation_checkboxes: gr.CheckboxGroup(
             choices=choices,
             value=[],
-            allow_html=True
         )
     }
 

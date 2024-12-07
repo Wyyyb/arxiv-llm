@@ -130,13 +130,13 @@ def llm_rerank(retrieved_k_results, meta_data):
     titles = []
     index_list = []
     for each in retrieved_k_results:
-        index, distance = each
-        if index not in meta_data:
-            print("index not found in meta_data", index)
+        curr_index, distance = each
+        if curr_index not in meta_data:
+            print("index not found in meta_data", curr_index)
             continue
-        recall_results.append(meta_data[index]["abstract"])
-        titles.append(meta_data[index]["title"])
-        index_list.append(index)
+        recall_results.append(meta_data[curr_index]["abstract"])
+        titles.append(meta_data[curr_index]["title"])
+        index_list.append(curr_index)
 
     res = recall_results[0]
     res = "(Reference:" + res
