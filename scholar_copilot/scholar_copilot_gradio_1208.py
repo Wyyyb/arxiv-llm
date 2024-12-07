@@ -246,7 +246,17 @@ def download_citation_history():
 def clear_cache():
     global citations_data
     citations_data = []
-    return "", []
+    citations_checkbox = gr.CheckboxGroup(
+        choices=[],
+        value=[],
+    )
+    return "", citations_checkbox
+
+
+example_text = ""
+with open("src/examples.txt", "r") as fi:
+    for line in fi.readlines():
+        example_text += line + "\n"
 
 
 with gr.Blocks(css="""
@@ -444,13 +454,14 @@ with gr.Blocks(css="""
                 lines=20,
                 label="Write your paper here",
                 placeholder="Start writing your academic paper...",
-                elem_classes="textbox"
+                elem_classes="textbox",
+                value=example_text
             )
             # file_output = gr.File(visible=False)
             with gr.Row(elem_classes="button-row"):
                 complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
-                citation_btn = gr.Button("📚 Insert citation", size="md")
+                citation_btn = gr.Button("📚 Search citations", size="md")
                 # download_btn = gr.Button("📥 Download Citation History", size="md")
                 download_history_btn = gr.Button("📥 Download Citation History", size="md")
                 clear_btn = gr.Button("🗑️ Clear All", size="md")
@@ -467,12 +478,12 @@ with gr.Blocks(css="""
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
 
-            copy_status = gr.Textbox(
-                value="",
-                label="",
-                interactive=False,
-                show_label=False
-            )
+            # copy_status = gr.Textbox(
+            #     value="",
+            #     label="",
+            #     interactive=False,
+            #     show_label=False
+            # )
 
         # Event handlers
         complete_btn.click(
