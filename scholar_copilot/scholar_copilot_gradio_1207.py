@@ -217,9 +217,45 @@ def clear_cache():
 
 
 with gr.Blocks(theme=gr.themes.Soft(
-        primary_hue="blue",
-        secondary_hue="gray",
-        neutral_hue="slate",
+    primary_hue=gr.themes.Color(
+        c50="#EBF5FF",
+        c100="#D6EBFF",
+        c200="#A6D5FF",
+        c300="#7AC1FF",
+        c400="#47A3FF",
+        c500="#2189FF",  # 主色调，更柔和的蓝色
+        c600="#1272E8",
+        c700="#0D5BCC",
+        c800="#0849B0",
+        c900="#043594",
+        c950="#02297A",
+    ),
+    secondary_hue=gr.themes.Color(
+        c50="#F8F9FA",
+        c100="#F1F3F5",
+        c200="#E9ECEF",
+        c300="#DEE2E6",
+        c400="#CED4DA",
+        c500="#ADB5BD",  # 更深的灰色
+        c600="#868E96",
+        c700="#495057",
+        c800="#343A40",
+        c900="#212529",
+        c950="#1A1D1F",
+    ),
+    neutral_hue=gr.themes.Color(
+        c50="#F9FAFB",
+        c100="#F3F4F6",
+        c200="#E5E7EB",
+        c300="#D1D5DB",
+        c400="#9CA3AF",
+        c500="#6B7280",
+        c600="#4B5563",
+        c700="#374151",
+        c800="#1F2937",
+        c900="#111827",
+        c950="#030712",
+    ),
 )) as app:
     # Logo和标题区
     with gr.Row(elem_classes="header-container"):
@@ -329,9 +365,9 @@ with gr.Blocks(theme=gr.themes.Soft(
         * {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
         }
-
+        
         .header-container {
-            background: linear-gradient(90deg, #1a237e, #283593);
+            background: linear-gradient(90deg, #2189FF, #47A3FF);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
