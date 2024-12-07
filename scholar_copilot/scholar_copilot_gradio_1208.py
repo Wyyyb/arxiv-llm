@@ -170,13 +170,13 @@ def stream_generate(text, progress=gr.Progress()):
 
 
 def format_citation(citation_key, url):
-    total_length = 120
+    total_length = 160
     citation_length = len(citation_key)
     url_length = len(url)
-    if citation_length > 80:
-        citation_key = citation_key[:75] + "...  "
-        citation_length = 80
-    return citation_key + " " * (total_length - citation_length - url_length) + "\n" + url
+    if citation_length > 120:
+        citation_key = citation_key[:115] + "...  "
+        citation_length = 120
+    return citation_key + " " * (total_length - citation_length - url_length) + url
 
 
 def search_and_show_citations(input_text):
