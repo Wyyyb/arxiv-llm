@@ -23,8 +23,13 @@ def retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=5):
 
     faiss.normalize_L2(cite_start_hidden_state)
     distances, indices = index.search(cite_start_hidden_state, top_k)
+    retrieved_indices = []
 
-    retrieved_indices = [str(lookup_indices[i], 'ascii') for i in indices[0]]
+    for i in indices[0]:
+        each_index = str(lookup_indices[i], 'ascii')
+        print("index is ", each_index)
+        retrieved_indices.append(each_index)
+
     print("retrieved_indices", retrieved_indices)
     print("distances[0]", distances[0])
     return list(zip(retrieved_indices, distances[0]))
