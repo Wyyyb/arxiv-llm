@@ -176,7 +176,7 @@ def format_citation(citation_key, url):
     if citation_length > 120:
         citation_key = citation_key[:117] + "..."
         citation_length = 120
-    return citation_key + " " * (total_length - citation_length - url_length) + url
+    return citation_key + "\u3000" * (total_length - citation_length - url_length) + url
 
 
 def search_and_show_citations(input_text):
