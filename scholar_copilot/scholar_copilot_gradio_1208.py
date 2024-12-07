@@ -347,9 +347,10 @@ with gr.Blocks(css="""
         border-radius: 15px;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        max-width: 600px; 
+        max-width: 800px; 
         margin-left: auto; 
         margin-right: auto;
+        align-items: left;
     }
     .citation-section button {
         background: var(--color-1);
