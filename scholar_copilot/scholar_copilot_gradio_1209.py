@@ -455,6 +455,8 @@ with gr.Blocks(css="""
                     * ✨ **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
                 """)
 
+            gr.Markdown("""The current version of ScholarCopilot primarily focuses on the introduction and related work sections of academic papers. We will support full paper writing in future release.""")
+
         # Main editor section
         with gr.Column(elem_classes="main-editor"):
             text_input = gr.Textbox(
@@ -486,7 +488,7 @@ with gr.Blocks(css="""
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
 
-                gr.Markdown("### 📑 Existing BibTeX Entries")
+                gr.Markdown("### 📝 Existing BibTeX Entries")
                 bibtex_display = gr.TextArea(
                     label="BibTeX",
                     interactive=False,
