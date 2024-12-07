@@ -184,12 +184,10 @@ def search_and_show_citations(input_text):
     for cit in curr_citations_data:
         paper_id = cit["id"]
         # 使用HTML格式创建带超链接的文本
-        item = (f'{cit["citation_key"]}: {cit["title"]} '
-                f'<a href="https://arxiv.org/abs/{paper_id}" target="_blank">[arxiv]</a>')
+        item = f'{cit["citation_key"]}: {cit["title"]} (https://arxiv.org/abs/{paper_id})'
         choices.append(item)
     return {
         citation_box: gr.Group(visible=True),
-        # 设置allow_html=True来启用HTML渲染
         citation_checkboxes: gr.CheckboxGroup(
             choices=choices,
             value=[],
