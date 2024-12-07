@@ -212,7 +212,7 @@ def insert_selected_citations(text, selected_citations):
     new_text = text + " \\cite{" + citations + "}"
     for each_candidate in curr_search_candidates:
         if each_candidate["citation_key"] in selected_citations:
-            citations_data += each_candidate
+            citations_data.append(each_candidate)
     return new_text
 
 
