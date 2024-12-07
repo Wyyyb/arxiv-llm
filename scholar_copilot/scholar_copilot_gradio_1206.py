@@ -216,25 +216,7 @@ def clear_cache():
     return "", []
 
 
-with gr.Blocks(css="""
-    .citation-choices .gr-checkbox-row {
-        display: block !important;
-        margin-bottom: 8px;
-    }
-    .citation-choices .gr-form {
-        gap: 0 !important;
-    }
-    .citation-choices .gr-container {
-        gap: 0 !important;
-    }
-    .citation-choices .gr-checkbox-row label {
-        display: block !important;
-        width: 100% !important;
-    }
-    .citation-choices .gr-checkbox-row input[type='checkbox'] {
-        margin-right: 8px;
-    }
-""") as app:
+with gr.Blocks() as app:
     gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
 
     with gr.Row():
@@ -250,7 +232,7 @@ with gr.Blocks(css="""
                 complete_btn = gr.Button("Complete 3 sentences")
                 generate_btn = gr.Button("Generate to the end")
                 citation_btn = gr.Button("Insert citation")
-                clear_btn = gr.Button("Clear All")
+                clear_btn = gr.Button("Clear All")  # 新增清理按钮
 
     # 引用建议区
     with gr.Row():
@@ -260,9 +242,7 @@ with gr.Blocks(css="""
             citation_checkboxes = gr.CheckboxGroup(
                 choices=[],
                 label="Select citations to insert",
-                interactive=True,
-                elem_classes=["citation-choices"],
-                container=False  # 添加这个参数以减少额外的容器嵌套
+                interactive=True
             )
             insert_citation_btn = gr.Button("Insert selected citations")
 
@@ -275,7 +255,7 @@ with gr.Blocks(css="""
             show_label=False
         )
 
-    # 事件处理部分保持不变
+    # 事件处理
     complete_btn.click(
         fn=stream_complete_3_sentence,
         inputs=[text_input],
@@ -308,10 +288,11 @@ with gr.Blocks(css="""
         outputs=[gr.File()]
     )
 
+    # 新增清理按钮事件处理
     clear_btn.click(
         fn=clear_cache,
         inputs=[],
-        outputs=[text_input, citation_checkboxes]
+        outputs=[text_input, citation_checkboxes]  # 清空文本框和引用选项
     )
 
 if __name__ == "__main__":

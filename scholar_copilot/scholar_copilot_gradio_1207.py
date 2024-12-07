@@ -216,140 +216,139 @@ def clear_cache():
     return "", []
 
 
-with gr.Blocks(theme=gr.themes.Soft(
-    primary_hue=gr.themes.Color(
-        c50="#EBF5FF",
-        c100="#D6EBFF",
-        c200="#A6D5FF",
-        c300="#7AC1FF",
-        c400="#47A3FF",
-        c500="#2189FF",  # 主色调，更柔和的蓝色
-        c600="#1272E8",
-        c700="#0D5BCC",
-        c800="#0849B0",
-        c900="#043594",
-        c950="#02297A",
-    ),
-    secondary_hue=gr.themes.Color(
-        c50="#F8F9FA",
-        c100="#F1F3F5",
-        c200="#E9ECEF",
-        c300="#DEE2E6",
-        c400="#CED4DA",
-        c500="#ADB5BD",  # 更深的灰色
-        c600="#868E96",
-        c700="#495057",
-        c800="#343A40",
-        c900="#212529",
-        c950="#1A1D1F",
-    ),
-    neutral_hue=gr.themes.Color(
-        c50="#F9FAFB",
-        c100="#F3F4F6",
-        c200="#E5E7EB",
-        c300="#D1D5DB",
-        c400="#9CA3AF",
-        c500="#6B7280",
-        c600="#4B5563",
-        c700="#374151",
-        c800="#1F2937",
-        c900="#111827",
-        c950="#030712",
-    ),
-)) as app:
-    # Logo和标题区
-    with gr.Row(elem_classes="header-container"):
-        with gr.Column(scale=1):
-            gr.Image(value="https://cdn-avatars.huggingface.co/v1/production/uploads/6313a86154e6e5d9f0f94e04/Noi3Qq3RYz8Jdq6BaFteq.png",  # 这里使用emoji作为临时logo，您可以替换为实际logo图片URL
-                     width=100,
-                     height=100,
-                     show_label=False,
-                     container=False,
-                     interactive=False,
-                     elem_classes="logo-image")
-        with gr.Column(scale=4):
-            gr.Markdown(
-                """
-                # Scholar Copilot - Your Academic Writing Assistant
-                ### Elevate Your Academic Writing with AI-Powered Assistance
-                """
-            )
+with gr.Blocks(css="""
+    /* 主题颜色 */
+    :root {
+        --primary-color: #2D5DA1;
+        --secondary-color: #45B7D1;
+        --accent-color: #F15B40;
+        --neutral-color: #4A5568;
+        --bg-light: #F7FAFC;
+    }
 
-    # 介绍文本
-    gr.Markdown(
-        """
-        <div style='background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;'>
-        <h4>Welcome to Scholar Copilot! 📚</h4>
-        <p>Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).</p>
-        <p>The current version of Scholar Copilot leverages a state-of-the-art 7-billion-parameter language model (LLM) trained on the complete Arxiv full paper corpus. This unified model for retrieval and generation is adept at making context-sensitive decisions about when to cite, what to cite, and how to generate coherent content based on reference papers.</p>
-        <p>The demo supports three core features tailored to the academic workflow:</p>
-        <ul>
-            <li>📝 Next-3-Sentence Suggestions: Facilitates writing by predicting the next sentences with automatic retrieval and citation of relevant reference papers.</li>
-            <li>🔍 Citation Suggestions on Demand: Provides precise, contextually appropriate paper citations whenever needed.</li>
-            <li>✨ Full Section Auto-Completion: Assists in brainstorming and drafting comprehensive paper content and structure.</li>
-            <li> Enhance your writing quality</li>
-        </ul>
-        <p>Start writing in the editor below, and let Scholar Copilot assist you in creating outstanding academic papers.</p>
-        </div>
-        """
-    )
+    /* 整体样式 */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* 按钮样式 */
+    .primary-btn {
+        background: var(--primary-color) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+    .primary-btn:hover {
+        background: #1D4ED8 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .secondary-btn {
+        background: var(--secondary-color) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+    .secondary-btn:hover {
+        background: #3AA1BD !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .accent-btn {
+        background: var(--accent-color) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+    .accent-btn:hover {
+        background: #E74C3C !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* 引用选项样式 */
+    .citation-choices .gr-checkbox-row {
+        display: block !important;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+    .citation-choices .gr-checkbox-row:hover {
+        background-color: var(--bg-light);
+    }
+    .citation-choices .gr-form {
+        gap: 0 !important;
+    }
+    .citation-choices .gr-container {
+        gap: 0 !important;
+    }
+    .citation-choices .gr-checkbox-row label {
+        display: block !important;
+        width: 100% !important;
+    }
+    .citation-choices .gr-checkbox-row input[type='checkbox'] {
+        margin-right: 8px;
+    }
+
+    /* 介绍文本样式 */
+    .introduction {
+        background: var(--bg-light);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        color: var(--neutral-color);
+        line-height: 1.6;
+    }
+""") as app:
+    gr.Markdown("# Scholar Copilot - Your Academic Writing Assistant")
+
+    with gr.Box(elem_classes="introduction"):
+        gr.Markdown("""
+        Scholar Copilot improves the academic writing process by seamlessly integrating automatic text completion and intelligent citation suggestions into a cohesive, human-in-the-loop AI-driven pipeline. Designed to enhance productivity and creativity, it provides researchers with high-quality text generation and precise citation recommendations powered by iterative and context-aware Retrieval-Augmented Generation (RAG).
+
+        The current version of Scholar Copilot leverages a state-of-the-art 7-billion-parameter language model (LLM) trained on the complete Arxiv full paper corpus. This unified model for retrieval and generation is adept at making context-sensitive decisions about when to cite, what to cite, and how to generate coherent content based on reference papers.
+
+        The demo supports three core features tailored to the academic workflow:
+
+        - **Next-3-Sentence Suggestions**: Facilitates writing by predicting the next sentences with automatic retrieval and citation of relevant reference papers.
+        - **Citation Suggestions on Demand**: Provides precise, contextually appropriate paper citations whenever needed.
+        - **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
+        """)
 
     with gr.Row():
-        # 主编辑区
         with gr.Column(scale=2):
             text_input = gr.Textbox(
                 lines=30,
                 label="Write your paper here",
-                placeholder="Start writing your academic paper...",
-                container=True,
-                elem_classes="main-textarea"
+                placeholder="Start writing your academic paper..."
             )
 
             with gr.Row():
-                complete_btn = gr.Button(
-                    "Complete 3 sentences",
-                    elem_classes="custom-button",
-                    variant="primary"
-                )
-                generate_btn = gr.Button(
-                    "Generate to the end",
-                    elem_classes="custom-button",
-                    variant="primary"
-                )
-                citation_btn = gr.Button(
-                    "Insert citation",
-                    elem_classes="custom-button",
-                    variant="secondary"
-                )
-                clear_btn = gr.Button(
-                    "Clear All",
-                    elem_classes="custom-button",
-                    variant="stop"
-                )
+                complete_btn = gr.Button("Complete 3 sentences", elem_classes="primary-btn")
+                generate_btn = gr.Button("Generate to the end", elem_classes="primary-btn")
+                citation_btn = gr.Button("Insert citation", elem_classes="secondary-btn")
+                clear_btn = gr.Button("Clear All", elem_classes="accent-btn")
 
-    # 引用建议区
     with gr.Row():
         citation_box = gr.Group(visible=True)
         with citation_box:
-            gr.Markdown("### 📑 Citation Suggestions")
+            gr.Markdown("### Citation Suggestions")
             citation_checkboxes = gr.CheckboxGroup(
                 choices=[],
                 label="Select citations to insert",
                 interactive=True,
-                elem_classes="citation-checkboxes"
+                elem_classes=["citation-choices"],
+                container=False
             )
-            insert_citation_btn = gr.Button(
-                "Insert selected citations",
-                elem_classes="custom-button",
-                variant="secondary"
-            )
+            insert_citation_btn = gr.Button("Insert selected citations", elem_classes="secondary-btn")
 
     with gr.Row():
-        download_history_btn = gr.Button(
-            "📥 Download Citation History",
-            elem_classes="custom-button",
-            variant="secondary"
-        )
+        download_history_btn = gr.Button("Download Citation History", elem_classes="secondary-btn")
         copy_status = gr.Textbox(
             value="",
             label="",
@@ -357,135 +356,7 @@ with gr.Blocks(theme=gr.themes.Soft(
             show_label=False
         )
 
-    # CSS样式部分更新
-    gr.HTML(
-        """
-        <style>
-        /* 设置全局字体 */
-        * {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
-        }
-        
-        .header-container {
-            background: linear-gradient(90deg, #2189FF, #47A3FF);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            color: white;
-            display: flex;
-            align-items: center;
-        }
-
-        /* 标题样式 */
-        .header-container h1 {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-weight: 600;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .header-container h3 {
-            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-weight: 400;
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        /* 介绍文本样式 */
-        .introduction h4 {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-weight: 500;
-            font-size: 20px;
-            margin-bottom: 16px;
-        }
-
-        .introduction p, .introduction li {
-            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #2c3e50;
-        }
-
-        .logo-image {
-            width: 100px !important;
-            height: 100px !important;
-            object-fit: contain;
-            background-color: transparent;
-        }
-
-        .logo-image > div {
-            border: none !important;
-        }
-
-        .logo-image img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain;
-            pointer-events: none;
-        }
-
-        .logo-image .controls {
-            display: none !important;
-        }
-
-        .logo-image img:hover {
-            transform: none !important;
-        }
-
-        .main-textarea {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #ffffff;
-            font-family: 'SF Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
-            font-size: 14px;
-        }
-
-        .custom-button {
-            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            padding: 8px 16px;
-            margin: 5px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .custom-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .citation-checkboxes {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 14px;
-        }
-
-        /* Citation标题样式 */
-        .citation-box h3 {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-weight: 500;
-            font-size: 18px;
-            margin-bottom: 12px;
-        }
-
-        :root {
-            --primary-color: #1a237e;
-            --secondary-color: #283593;
-            --background-color: #f5f7fa;
-        }
-
-        body {
-            background-color: var(--background-color);
-        }
-        </style>
-        """
-    )
-
-    # 事件处理保持不变
+    # 事件处理部分保持不变
     complete_btn.click(
         fn=stream_complete_3_sentence,
         inputs=[text_input],
@@ -523,6 +394,7 @@ with gr.Blocks(theme=gr.themes.Soft(
         inputs=[],
         outputs=[text_input, citation_checkboxes]
     )
+
 
 if __name__ == "__main__":
     model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
