@@ -348,7 +348,7 @@ with gr.Blocks(css="""
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         max-width: 1000px; 
-        margin-left: 0; 
+        margin-left: auto; 
         margin-right: auto;
     }
     .citation-section button {
@@ -450,12 +450,9 @@ with gr.Blocks(css="""
                     """<h1 style='font-size: 2.5em; margin: 0; padding: 0;'>Scholar Copilot</h1>""",
                     elem_classes="title"
                 )
-            #     with gr.Row(elem_classes="logos-container"):
-            #         gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
-            #         gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
-            # # gr.Markdown(
-            #     """<h3 class='subtitle'> Your Academic Writing Assistant -- By TIGER-Lab</h3>"""
-            # )
+                with gr.Row(elem_classes="logos-container"):
+                    gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
+                    gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
             gr.Markdown(
                 """<h3 class='subtitle'> Your Academic Writing Assistant -- By <a href="https://huggingface.co/TIGER-Lab" target="_blank">TIGER-Lab</a></h3>"""
             )
