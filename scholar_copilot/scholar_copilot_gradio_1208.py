@@ -241,16 +241,15 @@ def download_citation_history():
         temp_file_path = temp_file.name
 
     # return temp_file_path
-    return [
-        temp_file_path,
+    js_scroll = """
+            <script>
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            </script>
         """
-        <script>
-        window.scrollBy({
-            top: 300,
-            behavior: 'smooth'
-        });
-        </script>
-        """]
+    return temp_file_path, js_scroll
 
 
 def clear_cache():
@@ -534,10 +533,18 @@ with gr.Blocks(css="""
             inputs=[],
             outputs=[text_input, citation_checkboxes]
         )
+        # download_history_btn.click(
+        #     fn=download_citation_history,
+        #     inputs=[],
+        #     outputs=[gr.File()]
+        # )
+        js_output = gr.HTML()
+
+        # 修改download按钮的点击事件
         download_history_btn.click(
             fn=download_citation_history,
             inputs=[],
-            outputs=[gr.File(), gr.HTML()]
+            outputs=[gr.File(), js_output]  # 添加js_output作为输出
         )
 
 
