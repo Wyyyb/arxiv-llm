@@ -466,12 +466,6 @@ with gr.Blocks(css="""
                 show_label=False
             )
 
-        file_output = gr.File(
-            label="Download Citations",
-            visible=False,
-            interactive=True
-        )
-
         # Event handlers
         complete_btn.click(
             fn=stream_complete_3_sentence,

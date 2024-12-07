@@ -161,21 +161,6 @@ def stream_generate(text, progress=gr.Progress()):
     time.sleep(0.1)
 
 
-# def search_and_show_citations(input_text):
-#     global citations_data
-#     curr_citations_data = generate_citation(input_text)
-#     citations_data += curr_citations_data
-#     choices = []
-#     for cit in curr_citations_data:
-#         paper_id = cit["id"]
-#         item = cit["citation_key"] + ": " + cit["title"] + f" (https://arxiv.org/abs/{paper_id})"
-#         choices.append(item)
-#     return {
-#         citation_box: gr.Group(visible=True),
-#         citation_checkboxes: gr.CheckboxGroup(choices=choices, value=[])
-#     }
-
-
 def search_and_show_citations(input_text):
     global citations_data
     curr_citations_data = generate_citation(input_text)
