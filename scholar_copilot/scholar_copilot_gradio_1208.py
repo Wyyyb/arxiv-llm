@@ -186,7 +186,7 @@ def format_citation(citation_key, url):
     citation_length = len(citation_key)
     url_length = len(url)
     if citation_length > 120:
-        citation_key = citation_key[:120]
+        citation_key = citation_key[:117] + "..."
         citation_length = 120
     return citation_key + " " * (total_length - citation_length - url_length) + url
 
@@ -199,7 +199,10 @@ def search_and_show_citations(input_text):
     for cit in curr_citations_data:
         paper_id = cit["id"]
         # 使用HTML格式创建带超链接的文本
-        item = f'{cit["citation_key"]}: {cit["title"]} (https://arxiv.org/abs/{paper_id})'
+        citation_key = cit["citation_key"]
+        title = cit["title"]
+        url = f" (https://arxiv.org/abs/{paper_id})"
+        item = format_citation(citation_key + ": " + title, url)
         choices.append(item)
     return {
         citation_box: gr.Group(visible=True),
@@ -385,33 +388,18 @@ with gr.Blocks(css="""
     }
 """) as app:
     with gr.Column(elem_classes="container"):
-        # Header section with logos
+        # Header section with title and logo
         with gr.Column(elem_classes="header"):
             gr.Markdown("""
+                <div style='display: flex; align-items: center; justify-content: center; gap: 20px;'>
+                    <h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
+                    <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
+                    <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
+                </div>
                 <div style='text-align: center;'>
-                    <h1 style='font-size: 2.5em; margin-bottom: 10px;'>Scholar Copilot</h1>
                     <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
                 </div>
             """)
-
-            # Logos section
-            with gr.Row(elem_classes="logos"):
-                # App logo (using ASCII art as placeholder)
-                gr.Markdown("""
-                    <div class='logo'>
-                        <pre style='font-size: 24px; color: #2193b0;'>
-                        SC
-                        </pre>
-                    </div>
-                """)
-                # Organization logo (using ASCII art as placeholder)
-                gr.Markdown("""
-                    <div class='logo'>
-                        <pre style='font-size: 24px; color: #2193b0;'>
-                        ORG
-                        </pre>
-                    </div>
-                """)
 
         # Introduction section
         with gr.Column(elem_classes="intro-section"):
