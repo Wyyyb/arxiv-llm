@@ -176,7 +176,7 @@ def format_citation(citation_key, url):
     if citation_length > 80:
         citation_key = citation_key[:77] + "..."
         citation_length = 80
-    return citation_key + " " * (total_length - citation_length - url_length) + url
+    return citation_key + "-" * (total_length - citation_length - url_length) + url
 
 
 def search_and_show_citations(input_text):
@@ -260,18 +260,6 @@ def clear_cache():
         value=[],
     )
     return "", citations_checkbox
-
-
-def scroll_page():
-    # 返回一段 JavaScript 代码来实现滚动
-    return """
-    <script>
-    window.scrollBy({
-        top: 300,  // 滚动的像素距离
-        behavior: 'smooth'  // 平滑滚动效果
-    });
-    </script>
-    """
 
 
 example_text = ""
