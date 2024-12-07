@@ -174,9 +174,9 @@ def format_citation(citation_key, url):
     citation_length = len(citation_key)
     url_length = len(url)
     if citation_length > 80:
-        citation_key = citation_key[:77] + "..."
+        citation_key = citation_key[:75] + "...  "
         citation_length = 80
-    return citation_key + "-" * (total_length - citation_length - url_length) + url
+    return citation_key + " " * (total_length - citation_length - url_length) + "\n" + url
 
 
 def search_and_show_citations(input_text):
