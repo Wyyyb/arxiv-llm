@@ -272,7 +272,7 @@ def load_corpus_base(corpus_dir="../embedded_corpus/1128_shards/"):
 def load_faiss_index(index_dir):
     index = faiss.read_index(os.path.join(index_dir, 'index'))
     with open(os.path.join(index_dir, 'lookup_indices.npy'), 'rb') as f:
-        lookup_indices = np.load(f)
+        lookup_indices = np.load(f, allow_pickle=True)
     return index, lookup_indices
 
 

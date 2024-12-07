@@ -158,7 +158,7 @@ download_hf_to_jsonl(repo_id="ubowang/bibtex_info_1202",
 
 # os.makedirs("../corpus_data", exist_ok=True)
 # download_hf_to_jsonl(repo_id="ubowang/corpus_data_arxiv_1129.jsonl",
-#                      output_path="../corpus_data/corpus_data_arxiv_1129.json",
+#                      output_path="../corpus_data/corpus_data_arxiv_1129.jsonl",
 #                      token=hf_token)
 
 
