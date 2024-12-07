@@ -184,7 +184,7 @@ def stream_generate(text, progress=gr.Progress()):
 def search_and_show_citations(input_text):
     global citations_data, curr_search_candidates
     curr_citations_data = generate_citation(input_text)
-    curr_search_candidates += curr_citations_data
+    curr_search_candidates.append(curr_citations_data)
     choices = []
     for cit in curr_citations_data:
         paper_id = cit["id"]
