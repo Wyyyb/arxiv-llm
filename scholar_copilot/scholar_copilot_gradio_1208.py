@@ -63,6 +63,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
     citations_data += citation_data_list
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
+    print("curr_yield_text, yield_list", curr_yield_text, yield_list)
     for each in yield_list:
         if "." in each and (each.endswith(".") or ".\n" in each):
             sentence_num += 1
@@ -88,6 +89,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
         citations_data += citation_data_list
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
+        print("curr_yield_text, yield_list", curr_yield_text, yield_list)
         for each in yield_list:
             if "." in each and (each.endswith(".") or ".\n" in each):
                 sentence_num += 1
