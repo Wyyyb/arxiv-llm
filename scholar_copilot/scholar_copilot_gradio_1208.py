@@ -170,11 +170,11 @@ def stream_generate(text, progress=gr.Progress()):
 
 
 def format_citation(citation_key, url):
-    total_length = 160
+    total_length = 120
     citation_length = len(citation_key)
     url_length = len(url)
-    if citation_length > 120:
-        citation_key = citation_key[:115] + "...  "
+    if citation_length > 80:
+        citation_key = citation_key[:75] + "...  "
         citation_length = 120
     return citation_key + " " * (total_length - citation_length - url_length) + url
 
@@ -453,8 +453,11 @@ with gr.Blocks(css="""
                 with gr.Row(elem_classes="logos-container"):
                     gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
                     gr.Image("src/tiger-lab.png", show_label=False, height=80, width=80, container=False)
+            # gr.Markdown(
+            #     """<h3 class='subtitle'> Your Academic Writing Assistant -- By TIGER-Lab</h3>"""
+            # )
             gr.Markdown(
-                """<h3 class='subtitle'> Your Academic Writing Assistant</h3>"""
+                """<h3 class='subtitle'> Your Academic Writing Assistant -- By <a href="https://huggingface.co/TIGER-Lab" target="_blank">TIGER-Lab</a></h3>"""
             )
 
         # Introduction section
