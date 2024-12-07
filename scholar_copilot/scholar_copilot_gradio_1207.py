@@ -234,7 +234,7 @@ def download_citation_history():
     header = f"% Citation history generated at {timestamp}\n% Total citations: {len(bibtex_entries)}\n\n"
 
     # 创建临时文件
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".bib") as temp_file:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".txt") as temp_file:
         temp_file.write(header + content)
         temp_file_path = temp_file.name
 
@@ -442,7 +442,8 @@ if __name__ == "__main__":
     meta_data = load_meta_data()
     citation_map_data_path = "../local_bibtex_info/bibtex_info_1202.jsonl"
     citation_map_data = load_citation_map_data(citation_map_data_path)
-    index_dir = "/data/xueguang/scholar-hnsw-single"
+    # index_dir = "/data/xueguang/scholar-hnsw-single"
+    index_dir = "../embedded_corpus/scholar-hnsw-1207/"
     index, lookup_indices = load_faiss_index(index_dir)
     print("index building finished")
     citations_data = []
