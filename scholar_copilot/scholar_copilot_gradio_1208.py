@@ -387,20 +387,28 @@ with gr.Blocks(css="""
         border-radius: 8px;
         margin: 10px 0;
     }
-""", examples_dir="src") as app:
+""") as app:
     with gr.Column(elem_classes="container"):
         # Header section with title and logo
         with gr.Column(elem_classes="header"):
-            gr.Markdown("""
-                <div style='display: flex; align-items: center; justify-content: center; gap: 20px;'>
-                    <h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
-                    <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
-                    <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
-                </div>
-                <div style='text-align: center;'>
-                    <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
-                </div>
-            """)
+            # gr.Markdown("""
+            #     <div style='display: flex; align-items: center; justify-content: center; gap: 20px;'>
+            #         <h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
+            #         <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
+            #         <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
+            #     </div>
+            #     <div style='text-align: center;'>
+            #         <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
+            #     </div>
+            # """)
+            gr.Markdown("""<h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
+                            """)
+            gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40)
+            gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40)
+            gr.Markdown("""<div style='text-align: center;'>
+                           <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
+                           </div>
+                        """)
 
         # Introduction section
         with gr.Column(elem_classes="intro-section"):
