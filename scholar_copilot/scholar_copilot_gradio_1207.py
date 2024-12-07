@@ -424,6 +424,11 @@ with gr.Blocks(css="""
 
 
 if __name__ == "__main__":
+    temp_dir = "./gradio_tmp"
+    os.makedirs(temp_dir, exist_ok=True)
+
+    # 设置环境变量
+    os.environ['GRADIO_TEMP_DIR'] = temp_dir
     # model_path = "/gpfs/public/research/xy/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     # model_path = "/data/yubowang/arxiv-llm/model_output/v1127_multi_cite/checkpoint-2000/"
     model_path = "../model_output/v1127_multi_cite/checkpoint-2000/"
