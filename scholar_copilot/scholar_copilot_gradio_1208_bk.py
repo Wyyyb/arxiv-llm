@@ -78,6 +78,10 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         time.sleep(0.1)
     curr_prefix_length = len(curr_yield_text)
     while cite_start_hidden_state is not None and not enough:
+        # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
+        # if enough_sentences:
+        #     current_text = res_text
+        #     break
         retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
@@ -99,8 +103,13 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
                 break
             time.sleep(0.1)
         curr_prefix_length = len(curr_yield_text)
+    # print("11 current_text", current_text)
+    # display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
+    print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
+    print("33 display_text", display_text)
     citations_data += citation_data_list
+    # print("global citations_data", citations_data)
     yield display_text
     time.sleep(0.1)
 
@@ -122,6 +131,10 @@ def stream_generate(text, progress=gr.Progress()):
         time.sleep(0.1)
     curr_prefix_length = len(current_text) - len("<|paper_start|> ")
     while cite_start_hidden_state is not None:
+        # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
+        # if enough_sentences:
+        #     current_text = res_text
+        #     break
         retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state,
                                                  top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
@@ -138,6 +151,9 @@ def stream_generate(text, progress=gr.Progress()):
                 sentence_num += 1
             curr_yield_text += " " + each
             yield curr_yield_text
+            # if sentence_num == 3:
+            #     enough = True
+            #     break
             time.sleep(0.1)
         if enough:
             break
@@ -243,23 +259,13 @@ def clear_cache():
         choices=[],
         value=[],
     )
-    return "", citations_checkbox, ""
+    return "", citations_checkbox
 
 
 example_text = ""
 with open("src/examples.txt", "r") as fi:
     for line in fi.readlines():
         example_text += line
-
-
-def update_bibtex():
-    bibtex_entries = []
-    global citations_data
-    for cit in citations_data:
-        if cit["bibtex"] not in bibtex_entries:
-            bibtex_entries.append(cit["bibtex"])
-    content = "\n\n".join(bibtex_entries)
-    return content
 
 
 with gr.Blocks(css="""
@@ -382,47 +388,6 @@ with gr.Blocks(css="""
         border-radius: 8px;
         margin: 10px 0;
     }
-    .bibtex-display {
-    margin-top: 20px;
-    border-top: 2px solid var(--color-3);
-    padding-top: 20px;
-    }
-    .bibtex-box {
-        background: #f5f5f5;
-        border: 1px solid var(--color-3);
-        border-radius: 8px;
-        padding: 15px;
-        font-family: monospace;
-        white-space: pre-wrap;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    .copy-button {
-        background: var(--color-1);
-        border: none;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 14px;
-        cursor: pointer;
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .copy-button:hover {
-        background: var(--color-3);
-    }
-    .copy-success {
-        color: #4CAF50;
-        font-size: 14px;
-        margin-left: 10px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    .copy-success.show {
-        opacity: 1;
-    }
 """) as app:
     with gr.Column(elem_classes="container"):
         with gr.Column(elem_classes="header"):
@@ -518,14 +483,16 @@ with gr.Blocks(css="""
                 elem_classes="textbox",
                 value=example_text
             )
+            # file_output = gr.File(visible=False)
             with gr.Row(elem_classes="button-row"):
                 complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
                 citation_btn = gr.Button("📚 Search citations", size="md")
+                # download_btn = gr.Button("📥 Download Citation History", size="md")
+                download_history_btn = gr.Button("📥 Download Citation History", size="md")
                 clear_btn = gr.Button("🗑️ Clear All", size="md")
 
         # Citation section
-
         with gr.Column(elem_classes="citation-section"):
             citation_box = gr.Group(visible=True)
             with citation_box:
@@ -537,37 +504,6 @@ with gr.Blocks(css="""
                 )
                 insert_citation_btn = gr.Button("📎 Insert selected citations", size="lg")
 
-                with gr.Column(elem_classes="bibtex-display"):
-                    gr.Markdown("### 📄 BibTeX Entries")
-                    bibtex_output = gr.Code(
-                        label="BibTeX",
-                        language="bibtex",
-                        value="",
-                        lines=30,
-                        elem_classes="bibtex-box",
-                        every=1  # 每1秒更新一次
-                    )
-                    copy_btn = gr.Button("📋 Copy BibTeX", elem_classes="copy-button")
-
-                gr.HTML("""
-                    <script>
-                    function copyBibtex() {
-                        const bibtexElement = document.querySelector('.bibtex-box');
-                        const text = bibtexElement.textContent;
-
-                        navigator.clipboard.writeText(text).then(() => {
-                            const button = document.querySelector('.copy-button');
-                            button.innerHTML = '✓ Copied!';
-                            setTimeout(() => {
-                                button.innerHTML = '📋 Copy BibTeX';
-                            }, 2000);
-                        }).catch(err => {
-                            console.error('Failed to copy:', err);
-                        });
-                    }
-                    </script>
-                """)
-
         # Event handlers
         complete_btn.click(
             fn=stream_complete_3_sentence,
@@ -575,28 +511,44 @@ with gr.Blocks(css="""
             outputs=[text_input],
             queue=True
         )
+
         generate_btn.click(
             fn=stream_generate,
             inputs=[text_input],
             outputs=[text_input],
             queue=True
         )
+
         citation_btn.click(
             fn=search_and_show_citations,
             inputs=[text_input],
             outputs=[citation_box, citation_checkboxes]
         )
+
         insert_citation_btn.click(
             fn=insert_selected_citations,
             inputs=[text_input, citation_checkboxes],
             outputs=[text_input]
         )
+
         clear_btn.click(
             fn=clear_cache,
             inputs=[],
             outputs=[text_input, citation_checkboxes]
         )
-        copy_btn.click(fn=None, _js="copyBibtex")
+        # download_history_btn.click(
+        #     fn=download_citation_history,
+        #     inputs=[],
+        #     outputs=[gr.File()]
+        # )
+        js_output = gr.HTML()
+
+        # 修改download按钮的点击事件
+        download_history_btn.click(
+            fn=download_citation_history,
+            inputs=[],
+            outputs=[gr.File(), js_output]
+        )
 
 
 if __name__ == "__main__":
