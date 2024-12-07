@@ -248,18 +248,26 @@ def clear_cache():
 
 
 with gr.Blocks(css="""
+    :root {
+        --color-1: #B2A59B;
+        --color-2: #DED0B6; 
+        --color-3: #FAEED1;
+        --color-4: #607274;
+    }
+
     .container {
         max-width: 1200px;
         margin: auto;
         padding: 20px;
+        background-color: var(--color-3);
     }
     .header {
         text-align: center;
         margin-bottom: 40px;
-        background: linear-gradient(to right, #2193b0, #6dd5ed);
+        background: linear-gradient(135deg, var(--color-1), var(--color-2));
         padding: 30px;
         border-radius: 15px;
-        color: white;
+        color: var(--color-4);
     }
     .logos {
         display: flex;
@@ -277,16 +285,21 @@ with gr.Blocks(css="""
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .logo:hover {
+        transform: scale(1.05);
     }
     .intro-section {
-        background: #f8f9fa;
+        background: white;
         padding: 30px;
         border-radius: 15px;
         margin-bottom: 30px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .feature-list {
-        background: white;
+        background: var(--color-2);
         padding: 20px;
         border-radius: 10px;
         margin-top: 20px;
@@ -301,6 +314,23 @@ with gr.Blocks(css="""
         display: flex;
         gap: 10px;
         margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    .button-row button {
+        flex: 1;
+        min-width: 200px;
+        background: var(--color-1);
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .button-row button:hover {
+        background: var(--color-4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .citation-section {
         background: white;
@@ -308,6 +338,36 @@ with gr.Blocks(css="""
         border-radius: 15px;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .citation-section button {
+        background: var(--color-2);
+        border: none;
+        color: var(--color-4);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .citation-section button:hover {
+        background: var(--color-1);
+        color: white;
+    }
+    .textbox textarea {
+        border: 2px solid var(--color-2);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+    .textbox textarea:focus {
+        border-color: var(--color-1);
+        outline: none;
+    }
+    .checkbox-group {
+        background: var(--color-3);
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
     }
 """) as app:
     with gr.Column(elem_classes="container"):
