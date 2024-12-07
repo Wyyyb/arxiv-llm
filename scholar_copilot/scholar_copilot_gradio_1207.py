@@ -225,9 +225,11 @@ with gr.Blocks(theme=gr.themes.Soft(
     with gr.Row(elem_classes="header-container"):
         with gr.Column(scale=1):
             gr.Image(value="https://cdn-avatars.huggingface.co/v1/production/uploads/6313a86154e6e5d9f0f94e04/Noi3Qq3RYz8Jdq6BaFteq.png",  # 这里使用emoji作为临时logo，您可以替换为实际logo图片URL
-                     shape=(100, 100),
+                     width=100,
+                     height=100,
                      show_label=False,
-                     container=False)
+                     container=False,
+                     elem_classes="logo-image")
         with gr.Column(scale=4):
             gr.Markdown(
                 """
