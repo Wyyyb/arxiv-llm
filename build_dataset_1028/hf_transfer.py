@@ -139,14 +139,14 @@ hf_token = "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"
 #                      output_path="../local_1128_14B_10k/train_data_1128_14B_10k.jsonl",
 #                      token=hf_token)
 
-upload_jsonl_to_hf(
-    jsonl_path="../local_bibtex_info/bibtex_info_1202.jsonl",
-    repo_id="ubowang/bibtex_info_1202",
-    token=hf_token
-)
+# upload_jsonl_to_hf(
+#     jsonl_path="../local_bibtex_info/bibtex_info_1202.jsonl",
+#     repo_id="ubowang/bibtex_info_1202",
+#     token=hf_token
+# )
 
-# os.makedirs("../local_bibtex_info", exist_ok=True)
-# download_hf_to_jsonl(repo_id="ubowang/bibtex_info_1202",
-#                      output_path="../local_bibtex_info/bibtex_info_1202.jsonl",
-#                      token=hf_token)
+os.makedirs("../local_bibtex_info", exist_ok=True)
+download_hf_to_jsonl(repo_id="ubowang/bibtex_info_1202",
+                     output_path="../local_bibtex_info/bibtex_info_1202.jsonl",
+                     token=hf_token)
 
