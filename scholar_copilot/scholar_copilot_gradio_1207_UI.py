@@ -249,22 +249,22 @@ def clear_cache():
 
 with gr.Blocks(css="""
     :root {
-        --color-1: #6482AD;
-        --color-2: #7FA1C3; 
-        --color-3: #E2DAD6;
-        --color-4: #F5EDED;
+        --color-1: #89A8B2;
+        --color-2: #F1F0E8; 
+        --color-3: #B3C8CF;
+        --color-4: #E5E1DA;
     }
 
     .container {
         max-width: 1200px;
         margin: auto;
         padding: 20px;
-        background-color: black;
+        background-color: var(--color-2);
     }
     .header {
         text-align: center;
         margin-bottom: 40px;
-        background: linear-gradient(135deg, var(--color-1), var(--color-2));
+        background: linear-gradient(135deg, var(--color-1), var(--color-3));
         padding: 30px;
         border-radius: 15px;
         color: var(--color-4);
@@ -292,24 +292,25 @@ with gr.Blocks(css="""
         transform: scale(1.05);
     }
     .intro-section {
-        background: #FAEED1;
+        background: var(--color-4);
         padding: 30px;
         border-radius: 15px;
         margin-bottom: 30px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .feature-list {
-        background: var(--color-2);
+        background: var(--color-4);
         padding: 20px;
         border-radius: 10px;
         margin-top: 20px;
     }
     .main-editor {
-        background: #FAEED1;
-        padding: 20px;
+        background: var(--color-4);
+        padding: 0px;
         border-radius: 15px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     .button-row {
         display: flex;
         gap: 10px;
@@ -333,24 +334,25 @@ with gr.Blocks(css="""
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .citation-section {
-        background: #FAEED1;
+        background: var(--color-4);
         padding: 20px;
         border-radius: 15px;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .citation-section button {
-        background: var(--color-2);
+        background: var(--color-1);
         border: none;
-        color: var(--color-4);
+        color: white;
         padding: 12px 20px;
         border-radius: 8px;
         font-weight: 500;
         transition: all 0.3s ease;
     }
     .citation-section button:hover {
-        background: var(--color-1);
-        color: white;
+        background: var(--color-4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .textbox textarea {
         border: 2px solid var(--color-2);
@@ -419,9 +421,10 @@ with gr.Blocks(css="""
         # Main editor section
         with gr.Column(elem_classes="main-editor"):
             text_input = gr.Textbox(
-                lines=30,
+                lines=20,
                 label="Write your paper here",
                 placeholder="Start writing your academic paper...",
+                elem_classes="textbox"
             )
 
             with gr.Row(elem_classes="button-row"):
@@ -523,7 +526,7 @@ if __name__ == "__main__":
     curr_search_candidates = []
 
     app.queue()  # 启用整个应用的队列功能
-    app.launch(share=True)
+    app.launch()
 
 
 
