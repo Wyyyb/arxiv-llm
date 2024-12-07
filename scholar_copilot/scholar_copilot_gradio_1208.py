@@ -57,7 +57,8 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     current_text = text
     current_text = preprocess_input_text(current_text)
     input_text_length = len(current_text)
-    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
+    display_text = current_text.replace("<|paper_start|> ", "")
+    curr_prefix_length = len(display_text)
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
     display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
@@ -75,7 +76,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
             display_text = curr_yield_text
             break
         time.sleep(0.1)
-    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
+    curr_prefix_length = len(curr_yield_text)
     while cite_start_hidden_state is not None and not enough:
         # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
         # if enough_sentences:
@@ -101,7 +102,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
                 display_text = curr_yield_text
                 break
             time.sleep(0.1)
-        curr_prefix_length = len(current_text) - len("<|paper_start|> ")
+        curr_prefix_length = len(curr_yield_text)
     # print("11 current_text", current_text)
     # display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
     print("22 display_text", display_text)
