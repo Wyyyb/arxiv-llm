@@ -227,30 +227,20 @@ def insert_selected_citations(text, selected_citations):
 
 
 def download_citation_history():
-    """生成并下载包含所有历史引用的BibTeX文件"""
-    global citations_data
-    print("in download_citation_history： citations_data", citations_data)
     if not citations_data:
-        return None
+        return None, "No citations to download"
 
     bibtex_entries = []
     for cit in citations_data:
         if cit["bibtex"] not in bibtex_entries:
             bibtex_entries.append(cit["bibtex"])
+
     content = "\n\n".join(bibtex_entries)
-
-    # 添加时间戳注释
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     header = f"% Citation history generated at {timestamp}\n% Total citations: {len(bibtex_entries)}\n\n"
-
     file_content = header + content
 
-    # 返回文件内容和建议的文件名
-    return gr.File.update(
-        value=file_content.encode('utf-8'),
-        visible=True,
-        filename=f"citations_{timestamp.replace(' ', '_')}.txt"
-    )
+    return (file_content, f"citations_{timestamp}.txt"), "Citation file ready for download"
 
 
 def clear_cache():
@@ -445,7 +435,17 @@ with gr.Blocks(css="""
                 complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
                 citation_btn = gr.Button("📚 Insert citation", size="md")
-                download_btn = gr.Button("📥 Download Citation History", size="md")
+                # download_btn = gr.Button("📥 Download Citation History", size="md")
+                download_btn = gr.DownloadButton(
+                    label="📥 Download Citation History",
+                    size="md",
+                    elem_classes="download-button"
+                )
+                download_status = gr.Textbox(
+                    label="Download Status",
+                    interactive=False,
+                    visible=True
+                )
                 clear_btn = gr.Button("🗑️ Clear All", size="md")
 
         # Citation section
@@ -508,7 +508,7 @@ with gr.Blocks(css="""
         download_btn.click(
             fn=download_citation_history,
             inputs=[],
-            outputs=[file_output]
+            outputs=[download_btn, download_status]
         )
 
 
