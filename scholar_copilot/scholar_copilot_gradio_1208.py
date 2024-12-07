@@ -386,7 +386,7 @@ with gr.Blocks(css="""
         border-radius: 8px;
         margin: 10px 0;
     }
-""") as app:
+""", examples_dir="src") as app:
     with gr.Column(elem_classes="container"):
         # Header section with title and logo
         with gr.Column(elem_classes="header"):
