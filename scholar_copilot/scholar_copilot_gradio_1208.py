@@ -200,7 +200,7 @@ def search_and_show_citations(input_text):
         paper_id = cit["id"]
         # 使用HTML格式创建带超链接的文本
         citation_key = cit["citation_key"]
-        title = cit["title"]
+        title = cit["title"].replace("\n", " ").replace("  ", " ")
         url = f" (https://arxiv.org/abs/{paper_id})"
         item = format_citation(citation_key + ": " + title, url)
         print("item", item)
@@ -389,26 +389,43 @@ with gr.Blocks(css="""
     }
 """) as app:
     with gr.Column(elem_classes="container"):
-        # Header section with title and logo
         with gr.Column(elem_classes="header"):
-            # gr.Markdown("""
-            #     <div style='display: flex; align-items: center; justify-content: center; gap: 20px;'>
-            #         <h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
-            #         <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
-            #         <img src='src/tiger-lab.png' style='height: 40px; width: auto;'>
-            #     </div>
-            #     <div style='text-align: center;'>
-            #         <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
-            #     </div>
-            # """)
-            gr.Markdown("""<h1 style='font-size: 2.5em; margin-bottom: 0;'>Scholar Copilot</h1>
-                            """)
-            gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40)
-            gr.Image("src/tiger-lab.png", show_label=False, height=40, width=40)
-            gr.Markdown("""<div style='text-align: center;'>
-                           <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
-                           </div>
-                        """)
+            gr.Markdown("""
+                <style>
+                .header-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 20px;
+                    margin-bottom: 10px;
+                }
+                .header-title {
+                    font-size: 2.5em;
+                    margin: 0;
+                    padding: 0;
+                }
+                .logo-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .logo {
+                    height: 40px;
+                    width: auto;
+                    object-fit: contain;
+                }
+                </style>
+                <div class='header-container'>
+                    <h1 class='header-title'>Scholar Copilot</h1>
+                    <div class='logo-container'>
+                        <img src='src/tiger-lab.png' class='logo'>
+                        <img src='src/tiger-lab.png' class='logo'>
+                    </div>
+                </div>
+                <div style='text-align: center;'>
+                    <h3 style='font-weight: normal;'>Your Academic Writing Assistant</h3>
+                </div>
+            """)
 
         # Introduction section
         with gr.Column(elem_classes="intro-section"):
@@ -521,7 +538,7 @@ if __name__ == "__main__":
     curr_search_candidates = []
 
     app.queue()  # 启用整个应用的队列功能
-    app.launch(share=True)
+    app.launch(share=True, allowed_paths=["src"])
 
 
 
