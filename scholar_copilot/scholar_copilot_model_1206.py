@@ -201,19 +201,14 @@ def post_process_output_text(res_text, reference_id_list, citation_map):
 
 
 def merge_consecutive_citations(text):
-    # 首先匹配连续的citations（之间只允许有空白字符）
     pattern = r'\\cite\{[^}]+\}(\s*\\cite\{[^}]+\})*'
 
     def merge_group(match):
-        # 对每组连续的citations进行处理
         group_text = match.group(0)
-        # 提取这组中的所有citation keys
         cite_pattern = r'\\cite\{([^}]+)\}'
         keys = re.findall(cite_pattern, group_text)
-        # 合并为单个citation
         return "\\cite{" + ", ".join(keys) + "}"
 
-    # 替换所有连续的citation组
     result = re.sub(pattern, merge_group, text)
 
     return result

@@ -4,13 +4,12 @@ from scholar_copilot_model_1206 import *
 import torch
 import faiss
 import time
-
-temp_dir = "./gradio_tmp"
-os.makedirs(temp_dir, exist_ok=True)
-# 设置环境变量
-os.environ['GRADIO_TEMP_DIR'] = temp_dir
-tempfile.tempdir = temp_dir
 import gradio as gr
+# temp_dir = "./gradio_tmp"
+# os.makedirs(temp_dir, exist_ok=True)
+# # 设置环境变量
+# os.environ['GRADIO_TEMP_DIR'] = temp_dir
+# tempfile.tempdir = temp_dir
 
 
 def generate_citation(input_text):
@@ -51,6 +50,13 @@ def split_yield_list(input_text, prefix_length):
     return prefix_text, text_list
 
 
+def check_3_sentence(display_text):
+    if display_text.endswith('.'):
+        return display_text
+    end_index = display_text.rfind('.\n')
+    return display_text[: end_index + 1]
+
+
 def stream_complete_3_sentence(text, progress=gr.Progress()):
     global citations_data
     sentence_num = 0
@@ -75,6 +81,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         if sentence_num == 3:
             enough = True
             display_text = curr_yield_text
+            display_text = check_3_sentence(display_text)
             break
         time.sleep(0.1)
     curr_prefix_length = len(curr_yield_text)
@@ -101,6 +108,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
             if sentence_num == 3:
                 enough = True
                 display_text = curr_yield_text
+                display_text = check_3_sentence(display_text)
                 break
             time.sleep(0.1)
         curr_prefix_length = len(curr_yield_text)
@@ -266,7 +274,7 @@ def clear_cache():
         choices=[],
         value=[],
     )
-    return "", citations_checkbox
+    return "", citations_checkbox, ""
 
 
 example_text = ""
@@ -471,8 +479,6 @@ with gr.Blocks(css="""
                 complete_btn = gr.Button("🔄 Complete 3 sentences", size="md")
                 generate_btn = gr.Button("✨ Generate to the end", size="md")
                 citation_btn = gr.Button("📚 Search citations", size="md")
-                # download_btn = gr.Button("📥 Download Citation History", size="md")
-                # download_history_btn = gr.Button("📥 Download Citation History", size="md")
                 update_bibtex_btn = gr.Button("📝 Update BibTeX", size="md")
                 clear_btn = gr.Button("🗑️ Clear All", size="md")
 
@@ -525,7 +531,7 @@ with gr.Blocks(css="""
         clear_btn.click(
             fn=clear_cache,
             inputs=[],
-            outputs=[text_input, citation_checkboxes]
+            outputs=[text_input, citation_checkboxes, bibtex_display]
         )
         update_bibtex_btn.click(
             fn=update_bibtex,
