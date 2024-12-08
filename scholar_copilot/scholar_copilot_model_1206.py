@@ -39,6 +39,7 @@ def retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=5):
 
 
 def single_complete_step(model, tokenizer, device, input_text):
+    print("completing sentence ...\n")
     inputs = tokenizer(input_text, return_tensors="pt").to(device)
     if len(inputs.input_ids[0]) > 15000:
         return input_text, None
@@ -154,6 +155,7 @@ def llm_rerank(retrieved_k_results, meta_data):
 
 
 def replace_citations(input_text, reference_id_list, citation_map):
+    print("IN replace_citations\n")
     # Find all citations with pattern <|cite_start|>XXX<|cite_end|>
     pattern = r'<\|cite_start\|>(.*?)<\|cite_end\|>'
     # Keep track of current citation index
