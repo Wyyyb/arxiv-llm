@@ -444,7 +444,7 @@ with gr.Blocks(css="""
                     * ✨ **Full Section Auto-Completion**: Assists in brainstorming and drafting comprehensive paper content and structure.
                 """)
 
-            gr.Markdown("""The current version of ScholarCopilot primarily focuses on the introduction and related work sections of academic papers. We will support full paper writing in future release.""")
+            gr.Markdown("""The current version of ScholarCopilot primarily focuses on the introduction and related work sections of academic papers. We will support full-paper writing in future releases.""")
 
         # Main editor section
         with gr.Column(elem_classes="main-editor"):
