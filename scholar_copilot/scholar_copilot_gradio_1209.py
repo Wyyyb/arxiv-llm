@@ -41,11 +41,8 @@ def generate_citation(input_text):
 
 
 def split_yield_list(input_text, prefix_length):
-    # print("split_yield_list input_text", input_text)
-    # print("split_yield_list prefix_length", prefix_length)
     prefix_text = input_text[:prefix_length]
     text = input_text[prefix_length:]
-    # print("split_yield_list text", text)
     text_list = text.split(" ")
     return prefix_text, text_list
 
@@ -63,7 +60,6 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
     enough = False
     current_text = text
     current_text = preprocess_input_text(current_text)
-    input_text_length = len(current_text)
     display_text = current_text.replace("<|paper_start|> ", "")
     curr_prefix_length = len(display_text)
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
@@ -86,10 +82,6 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         time.sleep(0.1)
     curr_prefix_length = len(curr_yield_text)
     while cite_start_hidden_state is not None and not enough:
-        # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
-        # if enough_sentences:
-        #     current_text = res_text
-        #     break
         retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
@@ -114,9 +106,7 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
         curr_prefix_length = len(curr_yield_text)
     # print("11 current_text", current_text)
     # display_text, _ = replace_citations(current_text, reference_id_list, citation_map_data)
-    print("22 display_text", display_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
-    print("33 display_text", display_text)
     citations_data += citation_data_list
     # print("global citations_data", citations_data)
     yield display_text
@@ -125,27 +115,28 @@ def stream_complete_3_sentence(text, progress=gr.Progress()):
 
 def stream_generate(text, progress=gr.Progress()):
     global citations_data
+    sentence_num = 0
+    enough = False
     current_text = text
     current_text = preprocess_input_text(current_text)
-    input_text_length = len(current_text)
-    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
+    display_text = current_text.replace("<|paper_start|> ", "")
+    curr_prefix_length = len(display_text)
     current_text, cite_start_hidden_state = single_complete_step(model, tokenizer, device, current_text)
     reference_id_list = []
     display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
     citations_data += citation_data_list
     curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
+    print("curr_yield_text, yield_list", curr_yield_text, yield_list)
     for each in yield_list:
+        if "." in each and (each.endswith(".") or ".\n" in each):
+            sentence_num += 1
+            print("sentence_num: ", sentence_num, "each", each)
         curr_yield_text += " " + each
         yield curr_yield_text
         time.sleep(0.1)
-    curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    while cite_start_hidden_state is not None:
-        # enough_sentences, res_text = cut_after_third_sentence(current_text[input_text_length:], 3)
-        # if enough_sentences:
-        #     current_text = res_text
-        #     break
-        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state,
-                                                 top_k=1)
+    curr_prefix_length = len(curr_yield_text)
+    while cite_start_hidden_state is not None and not enough:
+        retrieved_k_results = retrieve_reference(index, lookup_indices, cite_start_hidden_state, top_k=1)
         reference, curr_index = llm_rerank(retrieved_k_results, meta_data)
         reference_id_list.append(curr_index)
         current_text = current_text + reference
@@ -153,26 +144,16 @@ def stream_generate(text, progress=gr.Progress()):
         display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
         citations_data += citation_data_list
         curr_yield_text, yield_list = split_yield_list(display_text, curr_prefix_length)
-        sentence_num = 0
-        enough = False
+        print("curr_yield_text, yield_list", curr_yield_text, yield_list)
         for each in yield_list:
-            if "." in each and each.endswith("."):
+            if "." in each and (each.endswith(".") or ".\n" in each):
                 sentence_num += 1
+                print("sentence_num: ", sentence_num, "each", each)
             curr_yield_text += " " + each
             yield curr_yield_text
-            # if sentence_num == 3:
-            #     enough = True
-            #     break
             time.sleep(0.1)
-        if enough:
-            break
-        curr_prefix_length = len(current_text) - len("<|paper_start|> ")
-    # print("11 current_text", current_text)
-    display_text, citation_data_list = replace_citations(current_text, reference_id_list, citation_map_data)
-    citations_data += citation_data_list
-    # print("22 display_text", display_text)
+        curr_prefix_length = len(curr_yield_text)
     display_text, citation_data_list = post_process_output_text(display_text, reference_id_list, citation_map_data)
-    # print("33 display_text", display_text)
     citations_data += citation_data_list
     yield display_text
     time.sleep(0.1)
