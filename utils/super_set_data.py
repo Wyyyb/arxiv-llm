@@ -22,8 +22,8 @@ with open("../scholar_copilot_data_1215/corpus_data_arxiv_1129.jsonl", "r") as f
         citation_key = bibtex_info[paper_id]["citation_key"]
         curr["bibtex"] = bibtex
         curr["citation_key"] = citation_key
+        corpus_data.append(curr)
     print("len(corpus_data)", len(corpus_data))
-    corpus_data.append(curr)
 
 with open("../scholar_copilot_data_1215/corpus_data_arxiv_1215.jsonl", "w") as fo:
     for each in tqdm(corpus_data):
