@@ -1,14 +1,14 @@
 import json
 
 
-with open("../scholar_copilot_data/bibtex_info_1202.jsonl", "r") as fi:
+with open("../scholar_copilot_data_1215/bibtex_info_1202.jsonl", "r") as fi:
     bibtex_info = {}
     for line in fi:
         curr = json.loads(line)
         paper_id = curr['id']
         bibtex_info[paper_id] = curr
 
-with open("../scholar_copilot_data/corpus_data_arxiv_1129.jsonl", "r") as fi:
+with open("../scholar_copilot_data_1215/corpus_data_arxiv_1129.jsonl", "r") as fi:
     corpus_data = []
     for line in fi:
         curr = json.loads(line)
@@ -23,7 +23,7 @@ with open("../scholar_copilot_data/corpus_data_arxiv_1129.jsonl", "r") as fi:
         curr["citation_key"] = citation_key
     corpus_data.append(curr)
 
-with open("../scholar_copilot_data/corpus_data_arxiv_1215.jsonl", "w") as fo:
+with open("../scholar_copilot_data_1215/corpus_data_arxiv_1215.jsonl", "w") as fo:
     for each in corpus_data:
         fo.write(json.dumps(each) + "\n")
 
