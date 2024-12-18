@@ -38,8 +38,8 @@ def write_html_files(json_path, output_folder):
 
 
 # 使用示例
-json_file_path = "/gpfs/public/research/public/htmls_json/htmls_upload.json"
-output_html_dir = "/gpfs/public/research/public/htmls_output"
+json_file_path = "/data/yubowang/htmls_json_1218/htmls_upload.json"
+output_html_dir = "/data/yubowang/htmls_1218/"
 
 write_html_files(json_file_path, output_html_dir)
 
