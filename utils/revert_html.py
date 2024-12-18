@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import json
 from tqdm import tqdm
+import base64
 
 
 def write_html_files(json_path, output_folder):
@@ -28,8 +29,10 @@ def write_html_files(json_path, output_folder):
     for filename, content in tqdm(html_contents.items()):
         try:
             file_path = output_path / filename
+            # 将base64编码的内容解码回二进制
+            binary_content = base64.b64decode(content)
             with open(file_path, 'wb') as f:
-                f.write(content)
+                f.write(binary_content)
         except Exception as e:
             print(f"Error writing {filename}: {str(e)}")
 
