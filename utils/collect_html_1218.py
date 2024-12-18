@@ -20,7 +20,7 @@ def read_html_files_raw(folder_path):
 
     for html_file in tqdm(folder.rglob('*.html')):
         try:
-            with open(html_file, 'r', encoding='utf-8') as f:
+            with open(html_file, 'rb') as f:
                 html_contents[html_file.name] = f.read()
 
         except Exception as e:
