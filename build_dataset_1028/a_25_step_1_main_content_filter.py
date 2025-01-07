@@ -65,7 +65,7 @@ def extract_main_content(latex_text):
     ack_patterns = [
         r'\\section\*?{acknowledge?ments?}',  # matches Acknowledgment(s), Acknowledgement(s)
         r'\\section\*?{acknowledge?ment\s+and',  # matches "Acknowledgement and..."
-        r'\\paragraph\*?{[acknowledge?ments?}',
+        r'\\paragraph\*?{acknowledge?ments?}',
         r'\\paragraph\*?{acknowledge?ment\s+and',
         r'\\subsection\*?{acknowledge?ments?}',
         r'\\subsection\*?{acknowledge?ment\s+and',
