@@ -116,8 +116,8 @@ def extract_main_content(latex_text):
 
 def single_process(full_tex_path, paper_dir_path):
     main_tex_file_path = os.path.join(paper_dir_path, "main_tex.tex")
-    if os.path.exists(main_tex_file_path):
-        return
+    # if os.path.exists(main_tex_file_path):
+    #     return
     with open(full_tex_path, "r") as fi:
         full_tex = fi.read()
         main_tex = extract_main_content(full_tex)
