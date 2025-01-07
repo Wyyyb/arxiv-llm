@@ -6,17 +6,17 @@ from tqdm import tqdm
 def extract_main_content(latex_text):
     # 1. Try to match conclusion section - include conclusion section but exclude everything after
     conclusion_patterns = [
-        r'\\section\*?{[Cc]onclusion',
-        r'\\section\*?{[Cc]onclusions',
-        r'\\section\*?{[Ss]ummary',
-        r'\\section\*?{[Cc]oncluding\s+[Rr]emarks',
-        r'\\section\*?{[Cc]oncluding\s+[Dd]iscussion',
-        r'\\section\*?{[Ff]inal\s+[Rr]emarks',
-        r'\\section\*?{[Cc]oncluding\s+[Ss]ection',
-        r'\\section\*?{[Dd]iscussion\s+and\s+[Cc]onclusion',
-        r'\\section\*?{[Cc]onclusion\s+and\s+[Dd]iscussion',
-        r'\\section\*?{[Cc]onclusions\s+and\s+[Ff]uture\s+[Ww]ork',
-        r'\\section\*?{[Ss]ummary\s+and\s+[Cc]onclusions'
+        r'\\section\*?{conclusion',
+        r'\\section\*?{conclusions',
+        r'\\section\*?{summary',
+        r'\\section\*?{concluding\s+remarks',
+        r'\\section\*?{concluding\s+discussion',
+        r'\\section\*?{final\s+remarks',
+        r'\\section\*?{concluding\s+section',
+        r'\\section\*?{discussion\s+and\s+conclusion',
+        r'\\section\*?{conclusion\s+and\s+discussion',
+        r'\\section\*?{conclusions\s+and\s+future\s+work',
+        r'\\section\*?{summary\s+and\s+conclusions'
     ]
 
     for pattern in conclusion_patterns:
@@ -35,21 +35,21 @@ def extract_main_content(latex_text):
                     r'\\begin{thebibliography}',
                     r'\\bibliographystyle{',
                     r'\\bibliography{',
-                    r'\\section\*?{[Rr]eferences}',
-                    r'\\section\*?{[Bb]ibliography}',
+                    r'\\section\*?{references}',
+                    r'\\section\*?{bibliography}',
                     r'\\section\*?{acknowledge?ments?}',  # matches Acknowledgment(s), Acknowledgement(s)
                     r'\\section\*?{acknowledge?ment\s+and',  # matches "Acknowledgement and..."
-                    r'\\paragraph\*?{[acknowledge?ments?}',
+                    r'\\paragraph\*?{acknowledge?ments?}',
                     r'\\paragraph\*?{acknowledge?ment\s+and',
                     r'\\subsection\*?{acknowledge?ments?}',
                     r'\\subsection\*?{acknowledge?ment\s+and',
                     r'\\textbf{acknowledgement}'
                     r'\\appendix',
                     r'\\appendices',
-                    r'\\section\*?{[Aa]ppendix',
-                    r'\\section\*?{[Aa]ppendices',
-                    r'\\chapter\*?{[Aa]ppendix',
-                    r'\\chapter\*?{[Aa]ppendices',
+                    r'\\section\*?{appendix',
+                    r'\\section\*?{appendices',
+                    r'\\chapter\*?{appendix',
+                    r'\\chapter\*?{appendices',
                     r'\\begin{appendix}',
                     r'\\begin{appendices}'
                 ]
@@ -81,8 +81,8 @@ def extract_main_content(latex_text):
         r'\\begin{thebibliography}',
         r'\\bibliographystyle{',
         r'\\bibliography{',
-        r'\\section\*?{[Rr]eferences}',
-        r'\\section\*?{[Bb]ibliography}'
+        r'\\section\*?{references}',
+        r'\\section\*?{bibliography}'
     ]
 
     for pattern in bib_patterns:
@@ -97,16 +97,16 @@ def extract_main_content(latex_text):
     appendix_patterns = [
         r'\\appendix',
         r'\\appendices',
-        r'\\section\*?{[Aa]ppendix',
-        r'\\section\*?{[Aa]ppendices',
-        r'\\chapter\*?{[Aa]ppendix',
-        r'\\chapter\*?{[Aa]ppendices',
+        r'\\section\*?{appendix',
+        r'\\section\*?{appendices',
+        r'\\chapter\*?{appendix',
+        r'\\chapter\*?{appendices',
         r'\\begin{appendix}',
         r'\\begin{appendices}'
     ]
 
     for pattern in appendix_patterns:
-        match = re.search(pattern, temp_text)
+        match = re.search(pattern, temp_text, re.IGNORECASE)
         if match:
             temp_text = temp_text[:match.start()]
             break
