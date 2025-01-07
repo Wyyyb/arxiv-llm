@@ -1,0 +1,535 @@
+\documentclass[11pt, journal, final]{IEEEtran}
+\onecolumn
+
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{graphics}
+\usepackage{enumerate}
+\usepackage{setspace}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\interdisplaylinepenalty=2500
+\usepackage{graphicx,amsfonts,amscd,amssymb,bm,epsfig,epsf,url,color}
+\usepackage{subfigure}
+\usepackage{bbm}
+\usepackage{microtype}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+\usepackage{verbatim}
+\usepackage{tablefootnote}
+
+\numberwithin{equation}{section}
+
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[subsection]{Example}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\N}{\mathcal{N}}
+
+\newcommand{\Prob}{\mathcal{P}}
+
+\newcommand{\reals}{\bb R}
+\newcommand{\mb}{\mathbf}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\md}{\mathds}
+\newcommand{\mbb}{\mathbb}
+\newcommand{\bb}{\mathbb}
+
+\newcommand{\vtrz}{\mathrm{vec}}
+\newcommand{\rank}{\mathrm{rank}}
+\newcommand{\trace}{\mathrm{trace}}
+\newcommand{\sign}{\mathrm{sgn}}
+\newcommand{\Proj}{\mathcal{P}}
+\newcommand{\indicator}[1]{\mathbbm 1_{#1}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\ol}{\overline}
+
+\newcommand{ \abs }[1]{\left| #1 \right|}
+\newcommand{ \Brac }[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{ \brac }[1]{\left[ #1 \right]}
+\newcommand{ \paren }[1]{ \left( #1 \right) }
+\newcommand{\innerprod}[2]{\left\langle #1,  #2 \right\rangle}
+\newcommand{\prob}[1]{\bb P\left[ #1 \right]}
+\newcommand{\expect}[1]{\bb E\left[ #1 \right]}
+\newcommand{\function}[2]{#1 \left(#2\right)}
+\newcommand{\integral}[4]{\int_{#1}^{#2}\; #3\; #4}
+\newcommand{\st}{\mathrm{subject\; to}}
+\newcommand{\td}[1]{{\color{magenta}{\bf TODO: #1}}}
+
+\newcommand{\event}{\mc E}
+\newcommand{\wt}{\widetilde}
+
+\newcommand{\jw}[1]{{\color{blue}{\bf John: #1}}}
+\newcommand{\js}[1]{{\color{magenta}{\bf Ju: #1}}}
+\newcommand{\qq}[1]{{\color{blue}{\bf #1}}}
+
+\begin{document}
+
+{
+
+\title{Finding a sparse vector in a subspace: linear sparsity using alternating directions}
+
+\author{Qing~Qu, ~\IEEEmembership{Student Member,~IEEE,}
+				Ju~Sun, ~\IEEEmembership{Student Member,~IEEE,}
+				and~John~Wright,~\IEEEmembership{Member,~IEEE}
+        \thanks{This work was partially supported by grants ONR N00014-13-1-0492, NSF 1343282, NSF 1527809, and funding from the Moore and Sloan Foundations. Q. Qu, J. Sun and J. Wright are all with the Electrical Engineering Department, Columbia University, New York, NY, 10027, USA (e-mail: \{qq2105, js4038, jw2966\}@columbia.edu). This paper is an extension of our previous conference version \cite{qu2014finding}.
+}
+}
+
+\markboth{IEEE Transaction on Information Theory,~Vol.~xx, No.~xx, xxxx~2015}
+{Qu \MakeLowercase{\textit{et al.}}: Finding a sparse vector in a subspace}
+
+\maketitle
+
+\begin{abstract}
+
+Is it possible to find the sparsest vector (direction) in a generic subspace $\mathcal{S} \subseteq \R^p$ with $\text{dim}\paren{\mathcal{S}}=n < p$? This problem can be considered a homogeneous variant of the sparse recovery problem, and finds connections to sparse dictionary learning, sparse PCA, and many other problems in signal processing and machine learning. In this paper, we focus on a \emph{planted sparse model} for the subspace: the target sparse vector is embedded in an otherwise random subspace. Simple convex heuristics for this planted recovery problem provably break down when the fraction of nonzero entries in the target sparse vector substantially exceeds $O(1/\sqrt{n})$. In contrast, we exhibit a relatively simple nonconvex approach based on alternating directions, which provably succeeds even when the fraction of nonzero entries is $\Omega(1)$. To the best of our knowledge, this is the first practical algorithm to achieve linear scaling under the planted sparse model. Empirically, our proposed algorithm also succeeds in more challenging data models, e.g., sparse dictionary learning.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Sparse vector, Subspace modeling, Sparse recovery, Homogeneous recovery, Dictionary learning, Nonconvex optimization, Alternating direction method
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Suppose that a linear subspace $\mc S$ embedded in $\R^p$ contains a sparse vector $\mb x_0 \ne \mb 0$. Given an arbitrary basis of $\mc S$, can we efficiently recover $\mb x_0$ (up to scaling)? Equivalently, provided a matrix $\mb A \in \R^{\left(p - n\right) \times p}$ with $\text{Null}(\mb A) = \mc S$, \footnote{ $\text{Null}(\mb A) \doteq \Brac{\mb x\in \bb R^p \mid \mb A \mb x = \mb 0 } $ denotes the null space of $\mb A$.} can we efficiently find a nonzero sparse vector $\mb x$ such that $\mb A \mb x = \mb 0$? In the language of sparse recovery, can we solve
+\begin{equation}\label{eqn:sparse-null}
+\min_{\mb x} \; \norm{\mb x}_0 \quad \text{s.t.} \quad \mb A \mb x = \mb 0, \; \mb x \ne \mb 0 \qquad {\text ?}
+\end{equation}
+In contrast to the standard sparse recovery problem ($\mb A \mb x = \mb b$, $\mb b \ne \mb 0$), for which convex relaxations perform nearly optimally for broad classes of designs $\mb A$~\cite{candes2005decoding, donoho2006most}, the computational properties of problem \eqref{eqn:sparse-null} are not nearly as well understood. It has been known for several decades that the basic formulation
+\begin{equation} \label{eqn:L0}
+\min_{\bf x}\; \norm{\bf x}_0, \quad \text{s.t.} \quad {\bf x}\in \mathcal{S} \setminus \{{\bf 0}\},
+\end{equation}
+is NP-hard for an arbitrary subspace~\cite{mccormick1983combinatorial, coleman1986null}. In this paper, we assume a specific random \emph{planted sparse model} for the subspace $\mc S$: a target sparse vector is embedded in an otherwise random subspace. We will show that under the specific random model, problem~\eqref{eqn:L0} is tractable by an efficient algorithm based on nonconvex optimization.
+
+\subsection{Motivation}
+The general version of Problem \eqref{eqn:L0}, in which $\mathcal{S}$ can be an arbitrary subspace, takes several forms in numerical computation and computer science, and underlies several important problems in modern signal processing and machine learning. Below we provide a sample of these applications.
+\par\smallskip
+\noindent\textbf{Sparse Null Space and Matrix Sparsification:} The \emph{sparse null space} problem is finding the sparsest matrix $\mb N$ whose columns span the null space of a given matrix $\mb A$. The problem arises in the context of solving linear equality problems in constrained optimization~\cite{coleman1986null}, null space methods for quadratic programming \cite{berry85algorithm}, and solving underdetermined linear equations~\cite{gilbert86computing}. The \emph{matrix sparsification} problem is of similar flavor, the task is finding the sparsest matrix $\mb B$ which is equivalent to a given full rank matrix $\mb A$ under elementary column operations. Sparsity helps simplify many fundamental matrix operations (see~\cite{duff86direct}), and the problem has applications in areas such as machine learning~\cite{Smola00sparsegreedy} and in discovering cycle bases of graphs~\cite{Kavitha04afaster}. \cite{gottlieb2010matrix} discusses connections between the two problems and also to other problems in complexity theory.
+\par\smallskip
+\noindent\textbf{Sparse (Complete) Dictionary Learning:} In dictionary learning, given a data matrix $\mb Y$, one seeks an approximation $\mb Y \approx \mb A \mb X$, such that $\mb A$ is a representation dictionary with certain desired structure and $\mb X$ collects the representation coefficients with maximal sparsity. Such compact representation naturally allows signal compression, and also facilitates efficient signal acquisition and classification (see relevant discussion in~\cite{mairal2014sparse}). When $\mb A$ is required to be complete (i.e., square and invertible), by linear algebra, we have\footnote{Here, $\mathrm{row}(\cdot)$ denotes the row space.} $\mathrm{row}(\mb Y) = \mathrm{row}(\mb X)$~\cite{spielman2013exact}. Then the problem reduces to finding sparsest vectors (directions) in the known subspace $\mathrm{row}(\mb Y)$, i.e.~\eqref{eqn:L0}. Insights into this problem have led to new theoretical developments on complete dictionary learning~\cite{spielman2013exact, hand2013recovering, sun2015complete}.
+\par\smallskip
+\noindent\textbf{Sparse Principal Component Analysis (Sparse PCA):} In geometric terms, Sparse PCA (see, e.g.,~\cite{zou2006sparse,johnstone2009consistency,d2007direct} for early developments and~\cite{krauthgamer2015semidefinite, ma2015sum} for discussion of recent results) concerns stable estimation of a linear subspace spanned by a sparse basis, in the data-poor regime, i.e., when the available data are not numerous enough to allow one to decouple the subspace estimation and sparsification tasks. Formally, given a data matrix $\mb Z = \mb U_0 \mb X_0 + \mb E$,\footnote{Variants of multiple-component formulations often add an additional orthonormality constraint on $\mb U_0$ but involve a different notation of sparsity; see, e.g.,~\cite{zou2006sparse, vu2013fantope, lei2015sparsistency, wang2014nonconvex}. } where $\mb Z \in \R^{p \times n}$ collects column-wise $n$ data points, $\mb U_0 \in \R^{p \times r}$ is the sparse basis, and $\mb E$ is a noise matrix, one is asked to estimate $\mb U_0$ (up to sign, scale, and permutation). Such a factorization finds applications in gene expression, financial data analysis and pattern recognition~\cite{Aspremont07sparse}. When the subspace is known (say by the PCA estimator with enough data samples), the problem again reduces to instances of~\eqref{eqn:L0} and is already nontrivial\footnote{\cite{hand2013recovering} has also discussed this data-rich sparse PCA setting. }. The full geometric sparse PCA can be treated as finding sparse vectors in a subspace that is subject to perturbation.
+\par\smallskip
+
+In addition, variants and generalizations of the problem \eqref{eqn:L0} have also been studied in applications regarding control and optimization~\cite{zhao2013rank}, nonrigid structure from motion~\cite{dai2012simple}, spectral estimation and Prony's problem~\cite{beylkin2005approximation}, outlier rejection in PCA~\cite{manolis2015dualPCA}, blind source separation~\cite{zibulevsky2001blind}, graphical model learning~\cite{anandkumar2013overcomplete}, and sparse coding on manifolds~\cite{ho2013nonlinear}; see also~\cite{nakatsukasa15finding} and the references therein.
+
+\subsection{Prior Arts}
+Despite these potential applications of problem \eqref{eqn:L0}, it is only very recently that efficient computational surrogates with nontrivial recovery guarantees have been discovered for some cases of practical interest. In the context of sparse dictionary learning, Spielman et al.\ \cite{spielman2013exact} introduced a convex relaxation which replaces the nonconvex problem \eqref{eqn:L0} with a sequence of linear programs:
+\begin{equation}
+\ell^1/\ell^\infty \text{ Relaxation:}\qquad  \min_{\bf x} \norm{\bf x}_1,\quad \text{s.t.} \quad x(i)=1,~{\bf x}\in \mathcal{S},~1\le i \le p. \label{l1inf}
+\end{equation}
+They proved that when $\mc S$ is generated as a span of $n$ random sparse vectors, with high probability (w.h.p.), the relaxation recovers these vectors, provided the probability of an entry being nonzero is at most $\theta \in O\paren{ 1/\sqrt{n}}$. In the {\em planted sparse model}, in which $\mathcal{S}$ is formed as direct sum of a single sparse vector $\mb x_0$ and a ``generic'' subspace, Hand and Demanet proved that \eqref{l1inf} also correctly recovers $\mb x_0$, provided the fraction of nonzeros in $\mb x_0$ scales as $\theta \in O\paren{1/ \sqrt{n}}$ \cite{hand2013recovering}. One might imagine improving these results by tightening the analyses. Unfortunately, the results of~\cite{spielman2013exact,hand2013recovering} are essentially sharp: {\em when $\theta$ substantially exceeds $\Omega(1/\sqrt{n})$, in both models the relaxation \eqref{l1inf} provably breaks down.} Moreover, the most natural semidefinite programming (SDP) relaxation of \eqref{eqn:sparse-null},
+\begin{equation} \label{eqn:SDP-relax}
+\min_{\mb X} \norm{\mb X}_1, \quad \text{s.t.} \quad \left\langle \mb A^\top \mb A, \mb X \right\rangle = 0, \; \mathrm{trace}[\mb X] = 1, \; \mb X \succeq \mb 0.
+\end{equation}
+also breaks down at exactly the same threshold of $\theta \sim O(1/\sqrt{n})$.\footnote{This breakdown behavior is again in sharp contrast to the standard sparse approximation problem (with $\mb b \ne \mb 0$), in which it is possible to handle very large fractions of nonzeros (say, $\theta = \Omega(1/\log n)$, or even $\theta = \Omega(1)$) using a very simple $\ell^1$ relaxation~\cite{candes2005decoding, donoho2006most}}
+
+One might naturally conjecture that this $1/\sqrt{n}$ threshold is simply an intrinsic price we must pay for having an efficient algorithm, even in these random models. Some evidence towards this conjecture might be borrowed from the superficial similarity of \eqref{eqn:L0}-\eqref{eqn:SDP-relax} and {\em sparse PCA}~\cite{zou2006sparse}. In sparse PCA, there is a substantial gap between what can be achieved with currently available efficient algorithms and the information theoretic optimum~\cite{berthet2013complexity, krauthgamer2015semidefinite}. Is this also the case for recovering a sparse vector in a subspace? {\em Is $\theta \in O\paren{1/\sqrt{n}}$ simply the best we can do with efficient, guaranteed algorithms?}
+
+\begin{table}
+\center
+\caption{Comparison of existing methods for recovering a planted sparse vector in a subspace}
+\label{table:comparison}
+\begin{tabular}{c|c|c}
+\hline
+Method & Recovery Condition & Time Complexity\tablefootnote{All estimates here are based on the standard interior point methods for solving linear and semidefinite programs. Customized solvers may result in order-wise speedup for specific problems. $\eps$ is the desired numerical accuracy. } \\
+\hline
+$\ell^1/\ell^\infty$ Relaxation \cite{hand2013recovering} & $\theta \in O(1/\sqrt{n})$ & $O(n^3 p \log(1/\eps))$ \\
+SDP Relaxation & $\theta \in O(1/\sqrt{n})$ & $O\paren{p^{3.5}\log\paren{1/\eps} }$ \\
+SOS Relaxation \cite{barak2013rounding} & $p\geq \Omega(n^2), \theta\in O(1)$  & $\sim O(p^7 \log(1/\eps))$ \tablefootnote{Here our estimation is based on the degree-4 SOS hierarchy used in~\cite{barak2013rounding} to obtain an initial approximate recovery. }  \\
+Spectral Method \cite{hopkins2015speeding} & $p \geq \Omega(n^2 \text{poly} \log(n)), \theta \in O(1) $ & $O\paren{np \log(1/\epsilon) }$ \\
+This work & $p \geq \Omega(n^4\log n),~\theta\in O(1)$  & $O(n^5p^2\log n+n^3 p \log(1/\eps))$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Remarkably, this is not the case. Recently, Barak et al.\ introduced a new rounding technique for sum-of-squares relaxations, and showed that the sparse vector $\mb x_0$ in the planted sparse model can be recovered when $p \ge \Omega\paren{ n^2}$ and $\theta = \Omega(1)$ \cite{barak2013rounding}. It is perhaps surprising that this is possible at all with a polynomial time algorithm. Unfortunately, the runtime of this approach is a high-degree polynomial in $p$ (see Table \ref{table:comparison}); for machine learning problems in which $p$ is often either the feature dimension or the sample size, this algorithm is mostly of theoretical interest only. However, it raises an interesting algorithmic question:
+ {\em Is there a practical algorithm that provably recovers a sparse vector with $\theta \gg 1/ \sqrt{n}$ portion of nonzeros from a generic subspace $\mc S$?}
+
+\subsection{Contributions and Recent Developments}
+In this paper, we address the above problem under the planted sparse model. We allow $\mb x_0$ to have up to $\theta_0 p$ nonzero entries, where $\theta_0 \in \paren{0, 1}$ is a constant. We provide a relatively simple algorithm which, w.h.p., exactly recovers $\mb x_0$, provided that $p \ge \Omega\paren{ n^4 \log n}$. A comparison of our results with existing methods is shown in Table \ref{table:comparison}. After initial submission of our paper, Hopkins et al. \cite{hopkins2015speeding} proposed a different simple algorithm based on the spectral method. This algorithm guarantees recovery of the planted sparse vector also up to linear sparsity, whenever $p \ge \Omega(n^2 \mathrm{polylog} (n))$, and comes with better time complexity.\footnote{Despite these improved guarantees in the planted sparse model, our method still produces more appealing results on real imagery data -- see Section~\ref{sec:face_exp} for examples. }
+
+Our algorithm is based on alternating directions, with two special twists. First, we introduce a special data driven initialization, which seems to be important for achieving $\theta = \Omega(1)$. Second, our theoretical results require a second, linear programming based rounding phase, which is similar to \cite{spielman2013exact}.  Our core algorithm has very simple iterations, of linear complexity in the size of the data, and hence should be scalable to moderate-to-large scale problems.
+
+Besides enjoying the $\theta \sim \Omega(1)$ guarantee that is out of the reach of previous practical algorithms, our algorithm performs well in simulations -- empirically succeeding  with $p \geq \Omega\paren{n \; \mathrm{polylog}(n)}$. It also performs well empirically on more challenging data models, such as the complete dictionary learning model, in which the subspace of interest contains not one, but $n$ random target sparse vectors. This is encouraging, as breaking the $O(1/\sqrt{n})$ sparsity barrier with a practical algorithm and optimal guarantee is an important problem in theoretical dictionary learning~\cite{arora2013new,agarwal2013exact, agarwal2013learning,arora2014more,arora2015simple}. In this regard, our recent work~\cite{sun2015complete} presents an efficient algorithm based on Riemannian optimization that guarantees recovery up to linear sparsity. However, the result is based on different ideas: a different nonconvex formulation, optimization algorithm, and analysis methodology.
+
+\subsection{Paper Organization, Notations and Reproducible Research}
+The rest of the paper is organized as follows. In Section~\ref{sec:optimality}, we provide a nonconvex formulation and show its capability of recovering the sparse vector. Section~\ref{sec:algorithm} introduces the alternating direction algorithm. In Section~\ref{sec:analysis}, we present our main results and sketch the proof ideas. Experimental evaluation of our method is provided in Section~\ref{sec:exp}. We conclude the paper by drawing connections to related work and discussing potential improvements in Section~\ref{sec:discussion}. Full proofs are all deferred to the appendix sections.
+
+For a matrix $\mb X$, we use $\mb x_i$ and $\mb x^j$ to denote its $i$-th column and $j$-th row, respectively, all in column vector form. Moreover, we use $x(i)$ to denote the $i$-th component of a vector $\mb x$. We use the compact notation $[k] \doteq \left\{1, \dots, k\right\}$ for any positive integer $k$, and use $c$ or $C$, and their indexed versions to denote absolute numerical constants. The scope of these constants are always local, namely within a particular lemma, proposition, or proof, such that the apparently same constant in different contexts may carry different values. For probability events, sometimes we will just say the event holds ``with high probability'' (w.h.p.) if the probability of failure is dominated by $p^{-\kappa}$ for some $\kappa > 0$.
+
+The codes to reproduce all the figures and experimental results can be found online at:
+\begin{quote}
+\centering
+\url{https://github.com/sunju/psv}.
+\end{quote}
+
+\section{Problem Formulation and Global Optimality}\label{sec:optimality}
+
+We study the problem of recovering a sparse vector $\mb x_0 \ne \mb 0$ (up to scale), which is an element of a known subspace $\mc S \subset \R^p$ of dimension $n$, provided an arbitrary orthonormal basis $\mb Y \in \R^{p \times n}$ for $\mc S$.
+Our starting point is the nonconvex formulation \eqref{eqn:L0}. Both the objective and the constraint set are nonconvex, and hence it is not easy to optimize over. We relax \eqref{eqn:L0} by replacing the $\ell^0$ norm with the $\ell^1$ norm. For the constraint $\mb x \ne \mb 0$, since in most applications we only care about the solution up to scaling, it is natural to force $\mb x$ to live on the unit sphere $\bb S^{n-1}$, giving
+\begin{equation} \label{eqn:l1-l2}
+\min_{\mb x} \; \norm{\mb x }_1, \quad \text{s.t.} \quad \mb x \in \mc S, \; \norm{\mb x}_{2} = 1.
+\end{equation}
+This formulation is still nonconvex, and for general nonconvex problems it is known to be NP-hard to find even a local minimizer~\cite{murty1987some}. Nevertheless, the geometry of the sphere is benign enough, such that for well-structured inputs it actually {\em will} be possible to give algorithms that find the global optimizer.
+
+The formulation \eqref{eqn:l1-l2} can be contrasted with \eqref{l1inf}, in which effectively we optimize the $\ell^1$ norm subject to the constraint $\norm{\mb x}_\infty = 1$: because the set $\{\mb x: \norm{\mb x}_\infty = 1\}$ is polyhedral, the $\ell^\infty$-constrained problem immediately yields a sequence of linear programs. This is very convenient for computation and analysis. However, it suffers from the aforementioned breakdown behavior around $\norm{\mb x_0}_0 \sim p / \sqrt{n}$. In contrast, though the sphere $\norm{\mb x}_{2} = 1$ is a more complicated geometric constraint, it will allow much larger number of nonzeros in $\mb x_0$. Indeed, if we consider the global optimizer of a reformulation of \eqref{eqn:l1-l2}:
+\begin{align} \label{eqn:syn_l1_l2}
+\min_{\mb q \in \R^n} \; \norm{\mb Y \mb q }_1, \quad \text{s.t.} \quad \norm{\mb q}_{2} = 1,
+\end{align}
+where $\mb Y$ is any orthonormal basis for $\mc S$, the sufficient condition that guarantees exact recovery under the planted sparse model for the subspace is as follows:
+\begin{theorem}[$\ell^1/\ell^2$ recovery, planted sparse model] \label{thm:global}
+There exists a constant $\theta_0 > 0$, such that if the subspace $\mc S$ follows the planted sparse model
+\begin{equation*}
+\mc S = \mathrm{span}\left( \mb x_0, \mb g_1, \dots, \mb g_{n-1} \right) \;\subset\; \R^p,
+\end{equation*}
+where $\mb g_i \sim_{\text{i.i.d.}} \mc N(\mb 0,\frac{1}{p} \mb I)$, and $\mb x_0 \sim_{\text{i.i.d.}} \tfrac{1}{\sqrt{\theta p}} \mathrm{Ber}(\theta)$ are all jointly independent and $1/\sqrt{n} < \theta < \theta_0$, then the unique (up to sign) optimizer $\mb q^\star$ to~\eqref{eqn:syn_l1_l2}, for any orthonormal basis $\mb Y$ of $\mc S$, produces $\mb Y \mb q^\star = \xi \mb x_0$ for some $\xi \neq 0$ with probability at least $1- cp^{-2}$, provided $p \geq Cn$. Here $c$ and $C$ are positive constants.
+\end{theorem}
+
+Hence, {\em if} we could find the global optimizer of \eqref{eqn:syn_l1_l2}, we would be able to recover $\mb x_0$ whose number of nonzero entries is quite large -- even linear in the dimension $p$ ($\theta = \Omega(1)$). On the other hand, it is not obvious that this should be possible: \eqref{eqn:syn_l1_l2} is nonconvex. In the next section, we will describe a simple heuristic algorithm for approximately solving a relaxed version of the $\ell^1/\ell^2$ problem \eqref{eqn:syn_l1_l2}. More surprisingly, we will then prove that for a class of random problem instances, this algorithm, plus an auxiliary rounding technique, actually recovers the global optimizer -- the target sparse vector $\mb x_0$. The proof requires a detailed probabilistic analysis, which is sketched in Section~\ref{sec:analysis_sketch}.
+
+Before continuing, it is worth noting that the formulation \eqref{eqn:l1-l2} is in no way novel -- see, e.g., the work of~\cite{zibulevsky2001blind} in blind source separation for precedent. However, our algorithms and subsequent analysis are novel.
+
+\section{Algorithm based on Alternating Direction Method (ADM)}\label{sec:algorithm}
+To develop an algorithm for solving \eqref{eqn:syn_l1_l2}, it is useful to consider a slight relaxation of \eqref{eqn:syn_l1_l2}, in which we introduce an auxiliary variable $\mb x \approx \mb Y \mb q$:
+\begin{equation} \label{eqn:huber-l2}
+\min_{ {\bf q}, {\bf x} } f(\mb q,\mb x) \doteq \frac{1}{2}\norm{{\bf Yq} - {\bf x}}_2^2+\lambda \norm{\bf x}_1,\quad\text{s.t.}\quad \norm{\bf q}_2=1.
+\end{equation}
+Here, $\lambda > 0$ is a penalty parameter. It is not difficult to see that this problem is equivalent to minimizing the {\em Huber} M-estimator over $\mb Y \mb q$. This relaxation makes it possible to apply the alternating direction method to this problem. This method starts from some initial point $\mb q^{(0)}$, alternates between optimizing with respect to (w.r.t.) $\mb x$ and optimizing w.r.t. $\mb q$:
+\begin{eqnarray}
+{\bf x}^{(k+1)} &=& \mathop{\arg\min}_{\mb x} \frac{1}{2}\norm{{\bf Yq}^{(k)}-{\bf x}}_2^2 + \lambda\norm{\bf x}_1, \label{update_x_k}\\
+{\bf q}^{(k+1)} &=& \mathop{\arg\min}_{\mb q} \frac{1}{2}\norm{{\bf Yq} - {\bf x}^{(k+1)}}_2^2 \; \text{s.t.} \; \norm{\mb q}_2 = 1,  \label{update_q_l}
+\end{eqnarray}
+where ${\bf x}^{(k)}$ and ${\bf q}^{(k)}$ denote the values of ${\bf x}$ and ${\bf q}$ in the $k$-th iteration.
+Both \eqref{update_x_k} and \eqref{update_q_l} have simple closed form solutions:
+\begin{eqnarray}
+{\bf x}^{(k+1)} = S_{\lambda}[{\bf Yq}^{(k)}],\qquad {\bf q}^{(k+1)} = \frac{{\bf Y}^\top{\bf x}^{(k+1)}}{\norm{{\bf Y}^\top{\bf x}^{(k+1)}}_2},\label{eqn:closed-form}
+\end{eqnarray}
+where $S_{\lambda}\brac{x} = \mathrm{sign}(x)\max\left\{\abs{x} - \lambda,0\right\} $ is the soft-thresholding operator. The proposed ADM algorithm is summarized in Algorithm \ref{ADM}.
+
+\begin{algorithm}
+\caption{Nonconvex ADM for solving~\eqref{eqn:huber-l2}}
+\label{ADM}
+\begin{algorithmic}[1]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\REQUIRE~~\
+A matrix ${\bf Y}\in\mathbb{R}^{p\times n}$ with $\mb Y^\top \mb Y = \mb I$, initialization ${\bf q}^{(0)}$, threshold parameter $\lambda > 0$.
+\ENSURE~~\
+The recovered sparse vector $\hat{\bf x}_0= {\bf Yq}^{(k)}$
+\FOR{$k = 0, \dots, O\paren{n^4 \log n}$}
+\STATE ${\bf x}^{(k+1)} = S_{\lambda}[{\bf Yq}^{(k)}]$,
+\STATE ${\bf q}^{(k+1)} = \frac{{\bf Y}^\top{\bf x}^{(k+1)}}{\norm{{\bf Y}^\top{\bf x}^{(k+1)}}_2}$,
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+The algorithm is simple to state and easy to implement. However, if our goal is to recover the {\em sparsest} vector $\mb x_0$, some additional tricks are needed.
+\par\smallskip
+
+\noindent\textbf{Initialization.} Because the problem \eqref{eqn:syn_l1_l2} is nonconvex, an arbitrary or random initialization may not produce a global minimizer.\footnote{More precisely, in our models, random initialization {\em does} work, but only when the subspace dimension $n$ is \emph{extremely} low compared to the ambient dimension $p$.} In fact, good initializations are critical for the proposed ADM algorithm to succeed in the linear sparsity regime. For this purpose, we suggest using every normalized row of ${\bf Y}$ as initializations for ${\bf q}$, and solving a sequence of $p$ nonconvex programs \eqref{eqn:syn_l1_l2} by the ADM algorithm.
+
+To get an intuition of why our initialization works, recall the planted sparse model
+$\mc S = \mathrm{span}( \mb x_0, \mb g_1, \dots, \mb g_{n-1} )$ and suppose
+\begin{align}\label{eqn:Y-bar}
+	\overline{\mb Y}\;= \;\brac{ \mb x_0 \mid \mb g_1 \mid \dots \mid \mb g_{n-1} } \;\in\; \R^{p \times n}.
+\end{align}
+If we take a row $\overline{\mb y}^i$ of $\overline{\mb Y}$, in which $x_0(i)$ is nonzero, then $x_0(i) = \Theta\left(1/\sqrt{\theta p}\right)$. Meanwhile, the entries of $\mb g_1(i), \dots \mb g_{n-1}(i)$ are all $\mc N(0,1/p)$, and so their magnitude have size about $1/\sqrt{p}$. Hence, when $\theta$ is not too large, $x_0(i)$ will be somewhat bigger than most of the other entries in $\overline{\mb y}^i$. Put another way, {\em $\overline{\mb y}^i$ is biased towards the first standard basis vector $\mb e_1$.} Now, under our probabilistic model assumptions, $\overline{\mb Y}$ is very well conditioned: $\overline{\mb Y}^\top \overline{\mb Y} \approx \mb I$.\footnote{This is the common heuristic that ``tall random matrices are well conditioned'' {\cite{veryshynin2011matrix}}.} Using the Gram-Schmidt process\footnote{...QR decomposition in general with restriction that $R_{11} = 1$.}, we can find an orthonormal basis $\mb Y$ for $\mc S$ via:
+\begin{eqnarray} \label{eqn:Y-Z-R}
+\overline{\mb Y} &=& \mb Y \mb R,
+\end{eqnarray}
+where $\mb R$ is upper triangular, and $\mb R$ is itself well-conditioned: $\mb R \approx \mb I$. Since the $i$-th row $\overline{\mb y}^i$ of $\overline{\mb Y}$ is biased in the direction of $\mb e_1$ and $\mb R$ is well-conditioned, the $i$-th row $\mb y^i$ of $\mb Y$ is also biased in the direction of $\mb e_1$. In other words, with this canonical orthobasis $\mb Y$ for the subspace, {\em the $i$-th row of $\mb Y$ is biased in the direction of the global optimizer}. The heuristic arguments are made rigorous in Appendix~\ref{sec:app_bases} and Appendix~\ref{app:initialization}.
+
+What if we are handed some other basis $\widehat{\mb Y} = \mb Y \mb U$, where $\mb U$ is an arbitary orthogonal matrix? Suppose $\mb q_\star$ is a global optimizer to \eqref{eqn:syn_l1_l2} with the input matrix $\mb Y$, then it is easy to check that, $\mb U^\top \mb q_\star$ is a global optimizer to \eqref{eqn:syn_l1_l2} with the input matrix $\widehat{\mb Y}$. Because
+\begin{align*}
+\innerprod{(\mb Y \mb U)^\top \mb e_i}{\mb U^\top \mb q_\star} = \innerprod{\mb Y^\top \mb e_i}{\mb q_\star},
+\end{align*}
+our initialization is {\em invariant} to any rotation of the orthobasis. Hence, {\em even if we are handed an arbitrary orthobasis for $\mc S$, the $i$-th row is still biased in the direction of the global optimizer}.
+\par\smallskip
+
+\noindent\textbf{Rounding by linear programming (LP). }Let $\overline{\mb q}$ denote the output of Algorithm \ref{ADM}. As illustrated in Fig. \ref{fig:proof_sketch}, we will prove that with our particular initialization and an appropriate choice of $\lambda$, ADM algorithm uniformly moves towards the optimal over a large portion of the sphere, and its solution falls within a certain small radius of the globally optimal solution $\mb q_\star$ to \eqref{eqn:syn_l1_l2}. To exactly recover $\mb q_\star$, or equivalently to recover the exact sparse vector $\mb x_0 = \gamma \mb Y \mb q_\star$ for some $\gamma \neq 0$, we solve the linear program
+\begin{equation} \label{eqn:rounding}
+\min_{\mb q} \norm{\mb Y \mb q}_1 \quad \text{s.t.} \quad \left\langle \mb r, \mb q \right\rangle = 1
+\end{equation}
+with $\mb r = \overline{\mb q}$. Since the feasible set $\{\mb q \mid \left\langle \overline{\mb q}, \mb q \right\rangle = 1\}$ is essentially the tangent space of the sphere $\bb S^{n-1}$ at $\overline{\mb q}$, whenever $\overline{\mb q}$ is close enough to $\mb q_\star$, one should expect that the optimizer of \eqref{eqn:rounding} exactly recovers $\mb q_\star$ and hence $\mb x_0$ up to scale. We will prove that this is indeed true under appropriate conditions.
+
+\section{Main Results and Sketch of Analysis}\label{sec:analysis}
+\subsection{Main Results}
+
+In this section, we describe our main theoretical result, which shows that w.h.p. the algorithm described in the previous section succeeds.
+
+\begin{theorem} \label{thm:recovery}
+Suppose that $\mc S$ obeys the planted sparse model, and let the columns of $\mb Y$ form an arbitrary orthonormal basis for the subspace $\mc S$. Let $\mb y^1, \dots, \mb y^p \in \R^n$ denote the (transposes of) the rows of $\mb Y$. Apply Algorithm \ref{ADM} with $\lambda = 1/\sqrt{p}$, using initializations $\mb q^{(0)} = \mb y^1/\norm{\mb y^1}_2 , \dots, \mb y^p / \norm{\mb y^p}_2$, to produce outputs $\overline{\mb q}_1, \dots, \overline{\mb q}_p$. Solve the linear program \eqref{eqn:rounding} with $\mb r = \overline{\mb q}_1, \dots, \overline{\mb q}_p$, to produce $\widehat{\mb q}_1, \dots, \widehat{\mb q}_p$. Set $i^\star \in \arg \min_i \norm{\mb Y \widehat{\mb q}_i}_1$. Then
+\begin{equation}
+\mb Y \widehat{\mb q}_{i^\star} = \gamma \mb x_0,
+\end{equation}
+for some $\gamma \ne 0$ with probability at least $1- cp^{-2}$, provided
+\begin{equation}
+p \ge Cn^4\log n, \qquad\text{and} \qquad  \frac{1}{\sqrt{n}} \le \theta\le \theta_0.
+\end{equation}
+Here $C, c$ and $\theta_0$ are positive constants.
+\end{theorem}
+
+\begin{remark}
+We can see that the result in Theorem~\ref{thm:recovery} is suboptimal in sample complexity compared to the global optimality result in Theorem~\ref{thm:global} and Barak et al.'s result \cite{barak2013rounding} (and the subsequent work~\cite{hopkins2015speeding}). For successful recovery, we require $p \ge \Omega\paren{n^4 \log n}$, while the global optimality and Barak et al. demand $p \geq \Omega\paren{n}$ and $p \ge \Omega\paren{n^2}$, respectively. Aside from possible deficiencies in our current analysis, compared to Barak et al., we believe this is still the first practical and efficient method which is guaranteed to achieve $\theta\sim \Omega(1)$ rate. The lower bound on $\theta$ in Theorem~\ref{thm:recovery} is mostly for convenience in the proof; in fact, the LP rounding stage of our algorithm already succeeds w.h.p. when $\theta \in O\paren{ 1/\sqrt{n}}$.
+\end{remark}
+
+\subsection{A Sketch of Analysis} \label{sec:analysis_sketch}
+In this section, we briefly sketch the main ideas of proving our main result in Theorem~\ref{thm:recovery}, to show that the ``initialization + ADM + LP rounding'' pipeline recovers $\mb x_0$ under the stated technical conditions, as illustrated in Fig. \ref{fig:proof_sketch}. The proof of our main result requires rather detailed technical analysis of the iteration-by-iteration properties of Algorithm \ref{ADM}, most of which is deferred to the appendices.
+
+\begin{figure}[!htbp]
+\begin{center}
+\includegraphics[width=0.8\linewidth]{figs/proof_sketch.pdf}
+\end{center}
+\caption{An illustration of the proof sketch for our ADM algorithm.}
+\label{fig:proof_sketch}
+\end{figure}
+
+As noted in Section~\ref{sec:algorithm}, the ADM algorithm is invariant to change of basis. So w.l.o.g., let us assume
+$\overline{\mb Y} = \brac{\mb x_0\mid \mb g_1\mid \dots \mid \mb g_{n-1} }$ and let $\mb Y$ to be its orthogonalization, i.e., \footnote{Note that with probability one, the inverse matrix square-root in $\mb Y$ is well defined. So $\mb Y$ is well defined w.h.p. (i.e., except for $\mb x_0 = 0$). See more quantitative characterization of $\mb Y$ in Appendix~\ref{sec:app_bases}. }
+\begin{align} \label{eqn:Y_orth}
+\mb Y = \brac{\frac{\mb x_0}{\norm{\mb x_0}_2} \mid \mc P_{\mb x_0^\perp} \mb G\paren{\mb G^\top \mc P_{\mb x_0^{\perp}} \mb G}^{-1/2} }.
+\end{align}
+When $p$ is large, $\overline{\mb Y}$ is nearly orthogonal, and hence $\ol{\mb Y}$ is very close to $\mb Y$. Thus, in our proofs, whenever convenient, we make the arguments on $\ol{\mb Y}$ first and then ``propagate'' the quantitative results onto $\mb Y$ by perturbation arguments. With that noted, let $\mb y^1,\cdots,\mb y^p$ be the transpose of the rows of $\mb Y$, and note that these are all independent random vectors. To prove the result of Theorem \ref{thm:recovery}, we need the following results. First, given the specified $\mb Y$, we show that our initialization is biased towards the global optimum:
+
+\begin{proposition}[Good initialization]\label{prop:initialization}
+Suppose $\theta > 1/\sqrt{n}$ and $ p \ge Cn$. It holds with probability at least $1 -cp^{-2}$ that at least one of our $p$ initialization vectors suggested in Section \ref{sec:algorithm}, say $\mb q_i^{(0)} = \mb y^i /\norm{\mb y^i}_2$, obeys
+\begin{align}
+\abs{\innerprod{\frac{\mb y^i}{\norm{\mb y^i}_2}}{\mb e_1}} \ge \frac{1}{10\sqrt{\theta n}}.
+\end{align}
+Here $C, c$ are positive constants.
+\end{proposition}
+\begin{proof}
+	See Appendix \ref{app:initialization}.
+\end{proof}
+Second, we define a vector-valued random process $\mb Q(\mb q)$ on $\mb q\in \bb S^{n-1}$, via
+\begin{align}\label{eqn:Q-process}
+	\mb Q(\mb q) = \frac{1}{p} \sum_{i=1}^p {\mb y}^i S_\lambda\brac{  \mb q^\top {\mb y}^i  },
+\end{align}
+so that based on \eqref{eqn:closed-form}, one step of the ADM algorithm takes the form:
+\begin{align}\label{eqn:adm-one-step}
+	\mb q^{(k+1)} = \frac{\mb Q\paren{\mb q^{(k)} }}{ \norm{\mb Q\paren{\mb q^{(k)} } }_2}
+\end{align}
+This is a very favorable form for analysis: the term in the numerator $\mb Q\paren{\mb q^{(k)} }$ is a sum of $p$ independent random vectors with $\mb q^{(k)}$ viewed as fixed. We study the behavior of the iteration \eqref{eqn:adm-one-step} through the random process $\mb Q\paren{\mb q^{(k)} }$. We want to show that w.h.p. the ADM iterate sequence $\mb q^{(k)}$ converges to some small neighborhood of $\pm \mb e_1$, so that the ADM algorithm plus the LP rounding (described in Section~\ref{sec:algorithm}) successfully retrieves the sparse vector $\mb x_0/\|\mb x_0\| = \mb Y \mb e_1$. Thus, we hope that in general, $\mb Q(\mb q)$ is more concentrated on the first coordinate than $\mb q\in \bb S^{n-1}$. Let us partition the vector $\mb q$ as $\mb q = [q_1; \mb q_2]$, with $q_1 \in \reals$ and $\mb q_2 \in \reals^{n-1}$; and correspondingly $\mb Q(\mb q) = [Q_1(\mb q); \mb Q_2(\mb q)]$. The inner product of $\mb Q(\mb q) / \norm{\mb Q(\mb q)}_2$ and $\mb e_1$ is strictly larger than the inner product of $\mb q$ and $\mb e_1$ if and only if
+\begin{equation*}
+\frac{ \abs{ Q_1(\mb q) }}{ \abs{q_1} } > \frac{ \norm{\mb Q_2(\mb q) }_{2} }{ \norm{\mb q_2}_{2} }.
+\end{equation*}
+In the following proposition, we show that w.h.p., this inequality holds uniformly over a significant portion of the sphere
+\begin{align}\label{eqn:Gamma-set}
+	\Gamma \doteq \Brac{\mb q\in \bb S^{n-1} \mid \frac{1}{10\sqrt{n \theta}} \le \abs{q_1} \le 3\sqrt{\theta}, \norm{\mb q_2}_2 \geq \frac{1}{10}},
+\end{align}
+so the algorithm moves in the correct direction. Let us define the gap $G(\mb q)$ between the two quantities $\abs{Q_1(\mb q)}/\abs{q_1}$ and $\norm{\mb Q_2(\mb q)}_2/ \norm{\mb q_2}_2$ as
+\begin{align}\label{eqn:gap-G}
+	G(\mb q) \doteq \frac{\abs{Q_1(\mb q)}}{\abs{q_1}} - \frac{\norm{\mb Q_2(\mb q) }_2}{\norm{\mb q_2}_2},
+\end{align}
+and we show that the following result is true:
+
+\begin{proposition}[Uniform lower bound for finite sample gap]\label{prop:gap-bound-Y'}
+There exists a constant $\theta_0 \in (0, 1)$, such that when $p \ge Cn^4 \log n$, the estimate
+\begin{align*}
+\inf_{\mb q \in \Gamma} G(\mb q) \;&\geq \;\frac{1}{10^4\theta^2 np }
+\end{align*}
+holds with probability at least $1 -cp^{-2}$, provided $\theta\in \paren{1/\sqrt{n},\theta_0}$. Here $C, c$ are positive constants.
+\end{proposition}
+\begin{proof}
+	See Appendix~\ref{app:gap-finite}.
+\end{proof}
+
+Next, we show that whenever $\abs{q_1}\geq 3\sqrt{\theta}$, w.h.p. the iterates stay in a ``safe region'' with $\abs{q_1}\geq 2\sqrt{\theta}$ which is enough for LP rounding \eqref{eqn:rounding} to succeed.
+
+\begin{proposition}[Safe region for rounding] \label{lem:safe}
+There exists a constant $\theta_0 \in (0, 1)$, such that when $p \ge Cn^4 \log n$, it holds with probability at least $1 - cp^{-2}$ that
+\begin{align*}
+\frac{\abs{Q_1(\mb q)}}{\norm{\mb Q(\mb q)}_2} \; \geq \; 2\sqrt{\theta}
+\end{align*}
+for all $\mb q\in \bb S^{n-1}$ satisfying $\abs{q_1} > 3 \sqrt{\theta}$, provided $\theta\in \paren{1/\sqrt{n},\theta_0}$. Here $C, c$ are positive constants.
+\end{proposition}
+\begin{proof}
+	See Appendix \ref{app:safe-region}.
+\end{proof}
+In addition, the following result shows that the number of iterations for the ADM algorithm to reach the safe region can be bounded grossly by $O(n^4\log n)$ w.h.p..
+\begin{proposition}[Iteration complexity of reaching the safe region]\label{prop:iter-complexity}
+There is a constant $\theta_0 \in (0, 1)$, such that when $p \ge Cn^4 \log n$, it holds with probability at least $1 -cp^{-2}$ that the ADM algorithm in Algorithm \ref{ADM}, with any initialization $\mb q^{(0)}\in \bb S^{n-1}$ satisfying $\abs{q_1^{(0)}}\geq \frac{1}{10\sqrt{\theta n}}$, will produce some iterate $\overline{\mb q}$ with $\abs{\bar{q}_1}> 3\sqrt{\theta} $ at least once in at most $O(n^4 \log n)$ iterations, provided $\theta \in \paren{1/\sqrt{n}, \theta_0 }$. Here $C, c$ are positive constants.
+\end{proposition}
+\begin{proof}
+	See Appendix \ref{app:iter_cplx}.
+\end{proof}
+Moreover, we show that the LP rounding \eqref{eqn:rounding} with input $\mb r = \ol{\mb q}$ exactly recovers the optimal solution w.h.p., whenever the ADM algorithm returns a solution $\ol{\mb q}$ with first coordinate $\abs{\ol{q}_1}>2\sqrt{\theta}$.
+
+\begin{proposition}[Success of rounding] \label{lem:rounding}
+There is a constant $\theta_0 \in (0, 1)$, such that when $p \geq C n$, the following holds with probability at least $1 - cp^{-2}$ provided $\theta \in (1/\sqrt{n}, \theta_0)$: Suppose the input basis is $\mb Y$ defined in~\eqref{eqn:Y_orth} and the ADM algorithm produces an output $\ol{\mb q}\in \bb S^{n-1}$ with $|\overline{q}_1|>2\sqrt{\theta}$. Then the rounding procedure with $\mb r= \overline{\mb q}$ returns the desired solution $\pm \mb e_1$. Here $C, c$ are positive constants.
+\end{proposition}
+\begin{proof}
+	See Appendix~\ref{app:rounding}.
+\end{proof}
+
+Finally, given $p \ge Cn^4 \log n$ for a sufficiently large constant $C$, we combine all the results above to complete the proof of Theorem \ref{thm:recovery}.
+
+\begin{proof}[Proof of Theorem \ref{thm:recovery}]
+
+W.l.o.g., let us again first consider $\ol{\mb Y}$ as defined in~\eqref{eqn:Y-bar} and its orthogonalization $\mb Y$ in a ``natural/canonical'' form \eqref{eqn:Y_orth}. We show that w.h.p. our algorithmic pipeline described in Section \ref{sec:algorithm} exactly recovers the optimal solution up to scale, via the following argument:
+\begin{enumerate}
+\item \textbf{Good initializers}. Proposition \ref{prop:initialization} shows that w.h.p., at least one of the $p$ initialization vectors, say $\mb q_i^{(0)} = \mb y^i/\norm{\mb y^i}_2 $, obeys
+\begin{align*}
+\abs{\innerprod{ \mb q_i^{(0)} }{\mb e_1}} \ge \frac{1}{10\sqrt{\theta n}},
+\end{align*}
+which implies that $\mb q_i^{(0)}$ is biased towards the global optimal solution.
+
+\item \textbf{Uniform progress away from the equator}. By Proposition \ref{prop:gap-bound-Y'}, for any $\theta \in (1/\sqrt{n}, \theta_0)$  with a constant $\theta_0 \in (0, 1)$,
+\begin{align}\label{eqn:gap-main}
+G(\mb q) = \frac{\abs{Q_1(\mb q)}}{\abs{q_1}} - \frac{\norm{\mb Q_2(\mb q)}_2}{\norm{\mb q}_2}\;&\geq \;\frac{1}{10^4\theta^2 np }
+\end{align}
+holds uniformly for all $\mb q\in \bb S^{n-1}$ in the region $\frac{1}{10\sqrt{\theta n}} \leq \abs{q_1} \leq 3 \sqrt{\theta}$ w.h.p.. This implies that with an input $\mb q^{(0)}$ such that $\abs{q_1^{(0)} }\geq \frac{1}{10 \sqrt{\theta n} } $, the ADM algorithm will eventually obtain a point $\mb q^{(k)}$ for which $\abs{q^{(k)} } \geq 3\sqrt{\theta}$, if sufficiently many iterations are allowed.
+
+\item \textbf{No jumps away from the caps}. Proposition \ref{lem:safe} shows that for any $\theta \in (1/\sqrt{n}, \theta_0)$ with a  constant $\theta_0 \in (0, 1)$, w.h.p.,
+\begin{align*}
+\frac{Q_1(\mb q)}{\norm{\mb Q(\mb q)}_2}\;\geq \; 2\sqrt{\theta}
+\end{align*}
+holds for all $\mb q\in \bb S^{n-1}$ with $\abs{q_1}\geq 3 \sqrt{\theta}$. This implies that once $|q_1^{(k)}| \geq 3\sqrt{\theta}$ for some iterate $k$, all the future iterates produced by the ADM algorithm stay in a ``spherical cap'' region around the optimum with $\abs{q_1} \geq 2 \sqrt{\theta} $.
+\item \textbf{Location of stopping points}. As shown in Proposition \ref{prop:iter-complexity}, w.h.p., the strictly positive gap $G(\mb q)$ in \eqref{eqn:gap-main} ensures that one needs to run at most $O\paren{n^4 \log n}$ iterations to first encounter an iterate $\mb q^{(k)}$ such that $|q^{(k)}_1| \ge 3\sqrt{\theta}$. Hence, the steps above imply that, w.h.p., Algorithm~\ref{ADM} fed with the proposed initialization scheme successively produces iterates $\ol{\mb q}\in \bb S^{n-1}$ with its first coordinate $\abs{\ol{q}_1} \ge 2\sqrt{\theta}$ after $O\paren{n^4 \log n}$ steps.
+\item \textbf{Rounding succeeds when $|r_1| \geq 2 \sqrt{\theta}$}. Proposition \ref{lem:rounding} proves that w.h.p., the LP rounding \eqref{eqn:rounding} with an input $\mb r = \ol{\mb q}$ produces the solution $\pm \mb x_0$ up to scale.
+\end{enumerate}
+
+Taken together, these claims imply that from at least one of the initializers $\mb q^{(0)}$, the ADM algorithm will produce an output $\ol{\mb q}$ which is accurate enough for LP rounding to exactly return $\mb x_0/\|\mb x_0\|_2$. On the other hand, our $\ell^1/\ell^2$ optimality theorem (Theorem~\ref{thm:global}) implies that $\pm \mb x_0$ are the unique vectors with the smallest $\ell^1$ norm among all unit vectors in the subspace. Since w.h.p. $\mb x_0/\|\mb x_0\|_2$ is among the $p$ unit vectors $\widehat{\mb q}_1, \dots, \widehat{\mb q}_p$ our $p$ row initializers finally produce, our minimal $\ell^1$ norm selector will successfully locate $\mb x_0/\|\mb x_0\|_2$ vector.
+
+For the general case when the input is an arbitrary orthonormal basis $\widehat{\mb Y} = \mb Y \mb U$ for some orthogonal matrix $\mb U$, the target solution is $\mb U^\top \mb e_1$. The following technical pieces are perfectly parallel to the argument above for $\mb Y$.
+\begin{enumerate}
+\item Discussion at the end of Appendix~\ref{app:initialization} implies that w.h.p., at least one row of $\widehat{\mb Y}$ provides an initial point $\mb q^{(0)}$ such that $\abs{\innerprod{\mb q^{(0)}}{\mb U^\top \mb e_1}} \ge \frac{1}{10\sqrt{\theta n}}$.
+\item Discussion following Proposition~\ref{prop:gap-bound-Y'} in Appendix~\ref{app:gap-finite} indicates that for all $\mb q$ such that $\frac{1}{10\sqrt{\theta n}} \le \abs{\innerprod{\mb q}{\mb U^\top \mb e_1}} \le 3\sqrt{\theta}$, there is a strictly positive gap, indicating steady progress towards a point $\mb q^{(k)}$ such that $\abs{\innerprod{\mb q^{(k)}}{\mb U^\top \mb e_1}} \ge 3\sqrt{\theta}$.
+\item Discussion at the end of Appendix~\ref{app:safe-region} implies that once $\mb q$ satisfies $\abs{\innerprod{\mb q}{\mb U^\top \mb e_1}}$, the next iterate will not move far away from the target:
+\begin{align*}
+\abs{\innerprod{\mb Q\paren{\mb q; \widehat{\mb Y}}/\norm{\mb Q\paren{\mb q; \widehat{\mb Y}}}_2 }{\mb U^\top \mb e_1}} \;\geq\; 2\sqrt{\theta}.
+\end{align*}
+\item Repeating the argument in Appendix~\ref{app:iter_cplx} for general input $\widehat{\mb Y}$ shows it is enough to run the ADM algorithm $O\paren{n^4 \log n}$ iterations to cross the range $\frac{1}{10\sqrt{\theta n}} \le \abs{\innerprod{\mb q}{\mb U^\top \mb e_1}} \le 3\sqrt{\theta}$. So the argument above together dictates that with the proposed initialization, w.h.p., the ADM algorithm produces an output $\ol{\mb q}$ that satisfies $\abs{\innerprod{\ol{\mb q}}{\mb U^\top \mb e_1}} \ge 2\sqrt{\theta}$, if we run at least $O\paren{n^4 \log n}$ iterations.
+\item Since the ADM returns $\ol{\mb q}$ satisfying $\abs{\innerprod{\overline{\mb q}}{\mb R^\top \mb e_1}} \ge 2\sqrt{\theta}$, discussion at the end of Appendix~\ref{app:rounding} implies that we will obtain a solution $\mb q_\star = \pm \mb U^\top \mb e_1$ up to scale as the optimizer of the rounding program, exactly the target solution.
+\end{enumerate}
+Hence, we complete the proof.
+\end{proof}
+
+\begin{remark}
+Under the planted sparse model, in practice the ADM algorithm with the proposed initialization converges to a global optimizer of~\eqref{eqn:huber-l2} that correctly recovers $\mb x_0$. In fact, simple calculation shows such desired point for successful recovery is indeed the only critical point of~\eqref{eqn:huber-l2} near the pole in Fig.~\ref{fig:proof_sketch}.  Unfortunately, using the current analytical framework, we did not succeed in proving such convergence in theory. Proposition~\ref{lem:safe} and~\ref{prop:iter-complexity} imply that after $O(n^4 \log n)$ iterations, however, the ADM sequence will stay in a small neighborhood of the target. Hence, we proposed to stop after $O(n^4 \log n)$ steps, and then round the output using the LP that provable recover the target, as implied by Proposition~\ref{lem:safe} and~\ref{lem:rounding}. So the LP rounding procedure is for the purpose of completing the theory, and seems not necessary in practice. We suspect alternative analytical strategies, such as the geometrical analysis that we will discuss in Section~\ref{sec:discussion}, can likely get around the artifact.
+\end{remark}
+
+\section{Experimental Results}\label{sec:exp}
+
+In this section, we show the performance of the proposed ADM algorithm on both synthetic and real datasets. On the synthetic dataset, we show the phase transition of our algorithm on both the planted sparse and the dictionary learning models; for the real dataset, we demonstrate how seeking sparse vectors can help discover interesting patterns on face images.
+
+\subsection{Phase Transition on Synthetic Data}
+For the planted sparse model, for each pair of $(k,p)$, we generate the $n$ dimensional subspace $\mathcal{S}\subset \mathbb{R}^p$ by direct sum of $\mb x_0$ and $\mb G$: $\mb x_0 \in \R^p$ is a $k$-sparse vector with uniformly random support and all nonzero entries equal to $1$, and $\mb G \in \R^{p \times (n-1)}$ is an i.i.d. Gaussian matrix distributed by $\mc N(0, 1/p)$. So one basis $\mb Y$ of the subspace $\mc S$ can be constructed by
+$
+{\mb Y} = \mathtt{GS}\paren{\brac{{\mb x}_0,{\mb G}}}{\mb U},
+$
+where $\mathtt{GS}\paren{\cdot}$ denotes the Gram-Schmidt orthonormalization operator and ${\mb U}\in \R^{n\times n}$ is an arbitrary orthogonal matrix. For each $p$, we set the regularization parameter in \eqref{eqn:huber-l2} as $\lambda = 1/\sqrt{p}$, use all the normalized rows of ${\mb Y}$ as initializations of ${\mb q}$ for the proposed ADM algorithm, and run the alternating steps for $10^4$ iterations. We determine the recovery to be successful whenever $\norm{\mb x_0/\norm{\mb x_0}_2- \mb Y \mb q}_2 \le 10^{-2}$ for at least one of the $p$ trials (we set the tolerance relatively large as we have shown that LP rounding exactly recovers the solutions with approximate input). To determine the empirical recovery performance of our ADM algorithm, first we fix the relationship between $n$ and $p$ as $p=5n \log n$, and plot out the phase transition between $k$ and $p$. Next, we fix the sparsity level $\theta = 0.2$ (or $k = 0.2p$), and plot out the phase transition between $p$ and $n$. For each pair of $(p,k)$ or $(n,p)$, we repeat the simulation for $10$ times. Fig.~\ref{phase_transition:psv} shows both phase transition plots.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width = 0.45\linewidth]{figs/psv-p-k.png}
+\includegraphics[width = 0.45\linewidth]{figs/psv-n-p.png}
+\caption{Phase transition for the planted sparse model using the ADM algorithm: (a) with fixed relationship between $p$ and $n$: $p = 5n\log n$; (b) with fixed relationship between $p$ and $k$: $k = 0.2 p$. White indicates success and black indicates failure.}
+\label{phase_transition:psv}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width = 0.45\linewidth]{figs/dl-p-k.png}
+\includegraphics[width = 0.45\linewidth]{figs/dl-n-p.png}
+\caption{Phase transition for the dictionary learning model using the ADM algorithm: (a) with fixed relationship between $p$ and $n$: $p = 5n\log n$; (b) with fixed relationship between $p$ and $k$: $k = 0.2 p$. White indicates success and black indicates failure.}
+\label{phase_transition:dl}
+\end{figure}
+
+We also experiment with the complete dictionary learning model as in~\cite{spielman2013exact} (see also~\cite{sun2015complete}). Specifically, the observation is assumed to be $\mb Y = \mb A_0 \mb X_0$, where $\mb A_0$ is a square, invertible matrix, and $\mb X_0$ a $n \times p$ sparse matrix. Since $\mb A_0$ is invertible, the row space of $\mb Y$ is the same as that of $\mb X_0$. For each pair of $(k,n)$, we generate ${\mb X}_0 = \brac{{\mb x}_1,\cdots,{\mb x}_n}^\top$, where each vector ${\mb x}_i\in \bb R^p$ is $k$-sparse with every nonzero entry following i.i.d. Gaussian distribution, and construct the observation by
+$
+{\mb Y}^\top = \mathtt{GS}\paren{{\mb X}_0^\top}{\mb U}^\top.
+$
+We repeat the same experiment as for the planted sparse model described above. The only difference is that here we determine the recovery to be successful as long as one sparse row of $\mb X_0$ is recovered by one of those $p$ programs. Fig.~\ref{phase_transition:dl} shows both phase transition plots.
+
+Fig.~\ref{phase_transition:psv}(a) and Fig.~\ref{phase_transition:dl}(a) suggest our ADM algorithm could work into the linear sparsity regime for both models, provided $p \ge \Omega(n \log n)$. Moreover, for both models, the $\log  n$ factor seems necessary for working into the linear sparsity regime, as suggested by Fig.~\ref{phase_transition:psv}(b) and Fig.~\ref{phase_transition:dl}(b): there are clear nonlinear transition boundaries between success and failure regions. For both models, $O(n \log n)$ sample requirement is near optimal: for the planted sparse model, obviously $p \ge \Omega(n)$ is necessary; for the complete dictionary learning model, \cite{spielman2013exact} proved that $p\geq \Omega(n\log n)$ is required for exact recovery. For the planted sparse model, our result $p \ge \Omega(n^4 \log n)$ is far from this much lower empirical requirement. Fig~\ref{phase_transition:psv}(b) further suggests that alternative reformulation and algorithm are needed to solve~\eqref{eqn:l1-l2} so that the optimal recovery guarantee as depicted in Theorem~\ref{thm:global} can be obtained.
+
+\subsection{Exploratory Experiments on Faces} \label{sec:face_exp}
+It is well known in computer vision that the collection of images of a convex object only subject to illumination changes can be well approximated by a low-dimensional subspaces in raw-pixel space~\cite{basri2003lambertian}. We will play with face subspaces here. First, we extract face images of one person ($65$ images) under different illumination conditions. Then we apply \emph{robust principal component analysis} \cite{Candes2011-JACM} to the data and get a low dimensional subspace of dimension $10$, i.e., the basis $\mb Y \in \R^{32256\times 10}$. We apply the ADM + LP algorithm to find the sparsest elements in such a subspace, by randomly selecting $10\%$ rows of $\mb Y$ as initializations for ${\mb q}$. We judge the sparsity in the $\ell^1/\ell^2$ sense, that is, the sparsest vector $\widehat{\mb x}_0={\mb Y\mb q}^\star$ should produce the smallest $\norm{\mb Y \mb q}_1/\norm{\mb Y \mb q}_2$ among all results. Once some sparse vectors are found, we project the subspace onto orthogonal complement of the sparse vectors already found\footnote{The idea is to build a sparse, orthonormal basis for the subspace in a greedy manner. }, and continue the seeking process in the projected subspace. Fig.~\ref{face_exp_1}(Top) shows the first four sparse vectors we get from the data. We can see they correspond well to different extreme illumination conditions. We also implemented the spectral method (with the LP post-processing) proposed in~\cite{hopkins2015speeding} for comparison under the same protocol. The result is presented as Fig.~\ref{face_exp_1}(Bottom): the ratios $\norm{\cdot}_{\ell^1}/\norm{\cdot}_{\ell^2}$ are significantly higher, and the ratios $\norm{\cdot}_{\ell^4}/\norm{\cdot}_{\ell^2}$ (this is the metric to be maximized in~\cite{hopkins2015speeding} to promote sparsity) are significantly lower. By these two criteria the spectral method with LP rounding consistently produces vectors with higher sparsity levels under our evaluation protocol. Moreover, the resulting images are harder to interpret physically.
+
+\begin{figure}[!htbp]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{figs/illumination.png}\\
+\end{center}
+\caption{The first four sparse vectors extracted for one person in the Yale B database under different illuminations. (Top) by our ADM algorithm; (Bottom) by the speeding-up SOS algorithm proposed in~\cite{hopkins2015speeding}. }
+\label{face_exp_1}
+\end{figure}
+
+Second, we manually select ten different persons' faces under the normal lighting condition. Again, the dimension of the subspace is $10$ and ${\mb Y}\in\R^{32256\times 10}$. We repeat the same experiment as stated above. Fig.~\ref{face_exp_2} shows four sparse vectors we get from the data. Interestingly, the sparse vectors roughly correspond to differences of face images concentrated around facial parts that different people tend to differ from each other, e.g., eye brows, forehead hair, nose, etc. By comparison, the vectors returned by the spectral method~\cite{hopkins2015speeding} are relatively denser and the sparsity patterns in the images are less structured physically.
+
+\begin{figure}[!htbp]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{figs/persons.png}
+\end{center}
+\caption{The first four sparse vectors extracted for $10$ persons in the Yale B database under normal illuminations. (Top) by our ADM algorithm; (Bottom) by the speeding-up SOS algorithm proposed in~\cite{hopkins2015speeding}. }
+\label{face_exp_2}
+\end{figure}
+In sum, our algorithm seems to find useful sparse vectors for potential applications, such as peculiarity discovery in first setting, and locating differences in second setting. Nevertheless, the main goal of this experiment is to invite readers to think about similar pattern discovery problems that might be cast as the problem of seeking sparse vectors in a subspace. The experiment also demonstrates in a concrete way the practicality of our algorithm, both in handling data sets of realistic size and in producing meaningful results even beyond the (idealized) planted sparse model that we adopted for analysis.
+
+\section{Connections and Discussion}\label{sec:discussion}
+For the planted sparse model, there is a substantial performance gap in terms of $p$-$n$ relationship between the our optimality theorem (Theorem~\ref{thm:global}), empirical simulations, and guarantees we have obtained via efficient algorithm (Theorem~\ref{thm:recovery}). More careful and tighter analysis based on decoupling~\cite{de1999decoupling} and chaining~\cite{talagrand2014upper, luh15dictionary} and geometrical analysis described below can probably help bridge the gap between our theoretical and empirical results. Matching the theoretical limit depicted in Theorem~\ref{thm:global} seems to require novel algorithmic ideas. The random models we assume for the subspace can be extended to other random models, particularly for dictionary learning where all the bases are sparse (e.g., Bernoulli-Gaussian random model).
+
+This work is part of a recent surge of research efforts on deriving provable and practical nonconvex algorithms to central problems in modern signal processing and machine learning. These problems include low-rank matrix recovery/completion \cite{jain2013low,hardt2013provable,hardt2014fast,hardt2014understanding,jain2014fast,netrapalli2014non,zheng2015convergent,tu2015low,chen2015fast}, tensor recovery/decomposition \cite{jain2014provable,anandkumar2014guaranteed,anandkumar2014analyzing,anandkumar2015tensor,ge2015escaping}, phase retrieval \cite{netrapalli2013phase,candes2014wirtinger,chen2015solving,sun2016geometric}, dictionary learning \cite{arora2013new,agarwal2013learning,agarwal2013exact,arora2014more,arora2015simple,sun2015complete}, and so on.\footnote{The webpage \url{http://sunju.org/research/nonconvex/} maintained by the second author contains pointers to the growing list of work in this direction. } Our approach, like the others, is to start with a carefully chosen, problem-specific initialization, and then perform a local analysis of the subsequent iterates to guarantee convergence to a good solution. In comparison, our subsequent work on complete dictionary learning~\cite{sun2015complete} and generalized phase retrieval~\cite{sun2016geometric} has taken a geometrical approach by characterizing the function landscape and designing efficient algorithm accordingly. The geometric approach has allowed provable recovery via efficient algorithms, with an \emph{arbitrary initialization}. The article~\cite{sun2015nonconvex} summarizes the geometric approach and its applicability to several other problems of interest.
+
+A hybrid of the initialization and the geometric approach discussed above is likely to be a powerful computational framework. To see it in action for the current planted sparse vector problem, in Fig.~\ref{fig:landscape}
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}
+    \centering
+    	\includegraphics[width = 0.45\linewidth]{figs/func_landscape-Huber-sphere.png}
+\end{subfigure}
+\begin{subfigure}
+    \centering
+    	\includegraphics[width = 0.45\linewidth]{figs/func_landscape-Huber.png}
+\end{subfigure}
+\caption{Function landscape of $f(\mb q)$ with $\theta =0.4$ for $n = 3$. (Left) $f(\mb q)$ over the sphere $\bb S^2$. Note that near the spherical caps around the north and south poles, there are no critical points and the gradients are always nonzero; (Right) Projected function landscape by projecting the upper hemisphere onto the equatorial plane. Mathematically the function $g(\mb w) : \mb e_3^\perp \mapsto \bb R$ obtained via the reparameterization $\mb q(\mb w) =  [\mb w; \sqrt{1 - \|\mb w\|^2 }]$. Corresponding to the left, there is no undesired critical point around $\mb 0$ within a large radius. }
+\label{fig:landscape}
+\end{figure}
+we provide the asymptotic function landscape (i.e., $p \to \infty$) of the Huber loss on the sphere $\bb S^{2}$ (aka the relaxed formulation we tried to solve~\eqref{eqn:huber-l2}). It is clear that with an initialization that is biased towards either the north or the south pole, we are situated in a region where the gradients are always nonzero and points to the favorable directions such that many reasonable optimization algorithms can take the gradient information and make steady progress towards the target. This will probably ease the algorithm development and analysis, and help yield tight performance guarantees.
+
+We provide a very efficient algorithm for finding a sparse vector in a subspace, with strong guarantee. Our algorithm is practical for handling large datasets---in the experiment on the face dataset, we successfully extracted some meaningful features from the human face images. However, the potential of seeking sparse/structured element in a subspace seems largely unexplored, despite the cases we mentioned at the start. We hope this work could inspire more application ideas.
+
+\section*{Acknowledgement}
+JS thanks the Wei Family Private Foundation for their generous support. We thank Cun Mu, IEOR Department of Columbia University, for helpful discussion and input regarding this work. We thank the anonymous reviewers for their constructive comments that helped improve the manuscript. This work was partially supported by grants ONR N00014-13-1-0492, NSF 1343282, NSF 1527809, and funding from the Moore and Sloan Foundations.
+
+\appendices
+\section{Technical Tools and Preliminaries}
+\input{appendix/Proof_Tools}
+\section{The Random Basis vs. Its Orthonormalized Version} \label{sec:app_bases}
+\input{appendix/Proof_Bases}
+\section{Proof of $\ell^1/ \ell^2$ Global Optimality}
+\input{appendix/Proof_Optimality}
+
+\section{Good Initialization}\label{app:initialization}
+\input{appendix/Proof_Initialization}
+\section{Lower Bounding Finite Sample Gap $G(\mb q)$}\label{app:gap-finite}
+\input{appendix/Proof_Bound_Gap_Finite}
+\section{Large $\abs{q_1}$ Iterates Staying in Safe Region for Rounding}\label{app:safe-region}
+\input{appendix/Proof_Safe_Region}
+\section{Bounding Iteration Complexity}
+ \label{app:iter_cplx}
+ \input{appendix/Proof_Iter_Complexity}
+\section{Rounding to the Desired Solution}\label{app:rounding}
+\input{appendix/Proof_Rounding}
+
+{
+\bibliographystyle{ieeetr}
+\bibliography{IT,ncvx}
+}
+
+\end{document}

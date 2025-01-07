@@ -37,11 +37,24 @@ def extract_main_content(latex_text):
                     r'\\bibliography{',
                     r'\\section\*?{[Rr]eferences}',
                     r'\\section\*?{[Bb]ibliography}',
-                    r'\\section\*?{[Aa]cknowledg[me]ent',
-                    r'\\section\*?{[Aa]cknowledg[me]ents'
+                    r'\\section\*?{acknowledge?ments?}',  # matches Acknowledgment(s), Acknowledgement(s)
+                    r'\\section\*?{acknowledge?ment\s+and',  # matches "Acknowledgement and..."
+                    r'\\paragraph\*?{[acknowledge?ments?}',
+                    r'\\paragraph\*?{acknowledge?ment\s+and',
+                    r'\\subsection\*?{acknowledge?ments?}',
+                    r'\\subsection\*?{acknowledge?ment\s+and',
+                    r'\\textbf{acknowledgement}'
+                    r'\\appendix',
+                    r'\\appendices',
+                    r'\\section\*?{[Aa]ppendix',
+                    r'\\section\*?{[Aa]ppendices',
+                    r'\\chapter\*?{[Aa]ppendix',
+                    r'\\chapter\*?{[Aa]ppendices',
+                    r'\\begin{appendix}',
+                    r'\\begin{appendices}'
                 ]
                 for end_pattern in end_patterns:
-                    end_match = re.search(end_pattern, temp_text[match.end():])
+                    end_match = re.search(end_pattern, temp_text[match.end():], re.IGNORECASE)
                     if end_match:
                         return latex_text[:match.end() + end_match.start()]
 
@@ -50,15 +63,16 @@ def extract_main_content(latex_text):
 
     # 2. Try to match acknowledgment section
     ack_patterns = [
-        r'\\section\*?{[Aa]cknowledg[me]ent',
-        r'\\section\*?{[Aa]cknowledg[me]ents',
-        r'\\section\*?{[Aa]cknowledg[me]ent[s]?}',
-        r'\\section\*?{[Aa]cknowledg[me]ent[s]?\s+and',
-        r'\\paragraph\*?{[Aa]cknowledg[me]ent'
+        r'\\section\*?{acknowledge?ments?}',  # matches Acknowledgment(s), Acknowledgement(s)
+        r'\\section\*?{acknowledge?ment\s+and',  # matches "Acknowledgement and..."
+        r'\\paragraph\*?{[acknowledge?ments?}',
+        r'\\paragraph\*?{acknowledge?ment\s+and',
+        r'\\subsection\*?{acknowledge?ments?}',
+        r'\\subsection\*?{acknowledge?ment\s+and',
     ]
 
     for pattern in ack_patterns:
-        match = re.search(pattern, latex_text)
+        match = re.search(pattern, latex_text, re.IGNORECASE)
         if match:
             return latex_text[:match.start()]
 
@@ -72,7 +86,7 @@ def extract_main_content(latex_text):
     ]
 
     for pattern in bib_patterns:
-        match = re.search(pattern, latex_text)
+        match = re.search(pattern, latex_text, re.IGNORECASE)
         if match:
             temp_text = latex_text[:match.start()]
             break
@@ -133,4 +147,5 @@ def run_on_darth_server(input_dir):
     return
 
 
-run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028")
+if __name__ == "__main__":
+    run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028")
