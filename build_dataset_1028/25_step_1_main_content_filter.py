@@ -111,7 +111,7 @@ def single_process(full_tex_path, paper_dir_path):
         fo.write(main_tex)
 
 
-def run_on_darth_server(input_dir, output_log_path):
+def run_on_darth_server(input_dir):
     total = 0
     full_tex_file_not_exist_count = 0
     for sub_dir in os.listdir(input_dir):
@@ -133,4 +133,4 @@ def run_on_darth_server(input_dir, output_log_path):
     return
 
 
-
+run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028")
