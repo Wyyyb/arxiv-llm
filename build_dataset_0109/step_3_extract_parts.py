@@ -495,8 +495,9 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
     arxiv_id = paper_dir_path.split("/")[-1]
     if not os.path.exists(os.path.join(paper_dir_path, "main_tex_25_step_2_result_0109.tex")):
         message["no_main_tex_file"].append(arxiv_id)
-    if not os.path.exists(os.path.join(paper_dir_path, "full.tex")):
-        message["no_full_tex_file"].append(arxiv_id)
+        if not os.path.exists(os.path.join(paper_dir_path, "full.tex")):
+            message["no_full_tex_file"].append(arxiv_id)
+            return None
     with open(os.path.join(paper_dir_path, "main_tex_25_step_2_result_0109.tex"), "r") as fi:
         content = fi.read()
     content = remove_preamble(content)
