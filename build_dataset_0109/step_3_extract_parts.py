@@ -432,23 +432,18 @@ def extract_abstract(tex_content):
 
 
 def get_other_tex(content, intro, related_work):
-    """
-    从论文中提取introduction和related work之间的内容，以及related work之后的内容
-    当关键片段在文中重复出现时，使用更大的匹配长度以提高准确性
-
-    Args:
-        content (str): 论文的完整内容
-        intro (str): 已提取的introduction部分
-        related_work (str): 已提取的related work部分
-
-    Returns:
-        str: 提取的其他内容
-    """
     match_length = 100  # 初始匹配长度
 
     # 检查片段是否重复出现
     def count_occurrences(text, pattern):
         return text.count(pattern)
+
+    if not intro or len(intro) < 100:
+        return content
+
+    if not related_work or len(related_work) < 100:
+        intro_end_index = content.find(intro[-match_length:]) + match_length
+        return content[intro_end_index:]
 
     # 检查所有关键片段
     patterns_to_check = [
