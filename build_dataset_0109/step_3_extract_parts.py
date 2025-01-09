@@ -396,7 +396,7 @@ def extract_abstract(tex_content):
 
     for start_pattern, end_pattern in abstract_patterns:
         # 查找起始位置
-        print("start_pattern, end_pattern", start_pattern, end_pattern)
+        # print("start_pattern, end_pattern", start_pattern, end_pattern)
         start_pos = tex_content.find(start_pattern)
         if start_pos == -1:
             continue
