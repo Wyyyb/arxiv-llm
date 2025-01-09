@@ -1,7 +1,7 @@
 #!/bin/bash
 
-input_dir="/data/yubowang/2411_arxiv/2411"
-output_dir="/data/yubowang/2411_arxiv_latex"
+input_dir="/data/yubowang/2412_arxiv/2412"
+output_dir="/data/yubowang/2412_arxiv_latex"
 
 # 创建输出目录（如果不存在）
 mkdir -p "$output_dir"

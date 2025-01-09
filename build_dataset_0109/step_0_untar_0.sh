@@ -1,7 +1,7 @@
 #!/bin/bash
 
 input_dir="/data/xueguang/arxiv-latex"
-output_dir="/data/yubowang/2411_arxiv"
+output_dir="/data/yubowang/2412_arxiv"
 
 # 检查输入目录是否存在
 if [ ! -d "$input_dir" ]; then
@@ -26,7 +26,7 @@ fail_count=0
 for tar_file in "$input_dir"/arXiv_src_2410*.tar; do
     # 检查是否存在匹配的文件
     if [ ! -e "$tar_file" ]; then
-        echo "No matching arXiv_src_2411*.tar files found in $input_dir"
+        echo "No matching arXiv_src_2412*.tar files found in $input_dir"
         exit 0
     fi
 
