@@ -419,56 +419,59 @@ def extract_abstract(tex_content):
     return None
 
 
-def get_other_tex(content, intro, related_work, arxiv_id):
-    match_length = 100  # 初始匹配长度
+def check_unique_occurrence(content, text):
+    if not text:
+        return False
 
-    # 检查片段是否重复出现
-    def count_occurrences(text, pattern):
-        return text.count(pattern)
+    first_pos = content.find(text)
+    if first_pos == -1:
+        return False
 
+    # 从第一次出现位置之后继续查找
+    second_pos = content.find(text, first_pos + 1)
+    return second_pos == -1  # 如果找不到第二次出现，则为唯一
+
+
+def get_other_tex(content, intro, related_work):
+    # 检查文本片段是否唯一
+    if not check_unique_occurrence(content, intro):
+        print("Warning: Introduction content appears multiple times or not found")
+        return content
+
+    if not check_unique_occurrence(content, related_work):
+        print("Warning: Related work content appears multiple times or not found")
+        intro_end_index = content.find(intro) + len(intro)
+        return content[intro_end_index:]
+
+    # 如果introduction为空或内容太少,返回全部内容
     if not intro or len(intro) < 100:
         return content
 
+    # 如果related work为空或内容太少,返回introduction之后的内容
     if not related_work or len(related_work) < 100:
-        intro_end_index = content.find(intro[-match_length:]) + match_length
+        intro_end_index = content.find(intro) + len(intro)
         return content[intro_end_index:]
 
-    # 检查所有关键片段
-    patterns_to_check = [
-        intro[:100], intro[-100:],
-        related_work[:100], related_work[-100:]
-    ]
-
-    # 如果任何片段重复出现，增加匹配长度
-    for pattern in patterns_to_check:
-        if len(pattern) >= 100 and count_occurrences(content, pattern) >= 2:
-            match_length = 500
-            break
-
-    # 使用当前匹配长度查找位置
-    intro_start_index = content.find(intro[:match_length]) - match_length
-    intro_end_index = content.find(intro[-match_length:]) + match_length
-    related_work_start_index = content.find(related_work[:match_length]) - match_length
-    related_work_end_index = content.find(related_work[-match_length:]) + match_length
-
-    # 如果使用较长的匹配长度后仍然有重复，给出警告
-    if match_length == 500:
-        patterns_to_recheck = [
-            intro[:500], intro[-500:],
-            related_work[:500], related_work[-500:]
-        ]
-        for pattern in patterns_to_recheck:
-            if len(pattern) >= 500 and count_occurrences(content, pattern) >= 2:
-                print("Warning: Duplicate content found even with longer matching length", arxiv_id)
-                print("pattern", pattern)
-
     other_tex = ""
-    # 提取introduction和related work之间的内容（如果间隔足够大）
-    if related_work_start_index - intro_end_index > 2000:
-        other_tex += content[intro_end_index: related_work_start_index]
 
-    # 添加related work之后的内容
-    other_tex += content[related_work_end_index:]
+    # 精确定位introduction的起始和结束位置
+    intro_start_index = content.find(intro)
+    intro_end_index = intro_start_index + len(intro)
+
+    # 精确定位related work的起始和结束位置
+    related_work_start_index = content.find(related_work)
+    related_work_end_index = related_work_start_index + len(related_work)
+
+    # 确保找到了两段文本，且related work在introduction之后
+    if (intro_start_index != -1 and related_work_start_index != -1 and
+            related_work_start_index > intro_start_index):
+
+        # 如果introduction和related work之间间隔足够大，提取中间内容
+        if related_work_start_index - intro_end_index > 2000:
+            other_tex += content[intro_end_index:related_work_start_index]
+
+        # 添加related work之后的内容
+        other_tex += content[related_work_end_index:]
 
     return other_tex
 
