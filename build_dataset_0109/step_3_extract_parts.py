@@ -517,7 +517,8 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
             for each in temp:
                 if each not in bib_items:
                     bib_items.append(each)
-    intro = clean_intro_content(intro)
+    if intro:
+        intro = clean_intro_content(intro)
     step_2_info = {"arxiv_id": arxiv_id, "title": title, "intro": intro,
                    "related_work": related_work, "other_tex": other_tex,
                    "bib_items": bib_items, "bbl_items": bbl_items}
