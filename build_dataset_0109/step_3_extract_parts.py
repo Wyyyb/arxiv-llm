@@ -386,26 +386,17 @@ def extract_bib_citations(bib_content):
 
 
 def extract_abstract(tex_content):
-    """
-    从LaTeX文档中提取abstract部分
-    支持多种可能的abstract环境格式
-
-    Args:
-        tex_content (str): LaTeX文档内容
-
-    Returns:
-        str: 提取的abstract文本。如果未找到abstract，返回None
-    """
     # 定义可能的abstract开始和结束标记
     abstract_patterns = [
-        (r'\\begin{abstract}', r'\\end{abstract}'),
-        (r'\\begin{Abstract}', r'\\end{Abstract}'),
-        (r'\\abstract{', '}'),  # 某些模板使用\abstract{...}格式
-        (r'\\begin{ABSTRACT}', r'\\end{ABSTRACT}')
+        (r'\begin{abstract}', r'\end{abstract}'),
+        (r'\begin{Abstract}', r'\end{Abstract}'),
+        (r'\abstract{', '}'),  # 某些模板使用\abstract{...}格式
+        (r'\begin{ABSTRACT}', r'\end{ABSTRACT}')
     ]
 
     for start_pattern, end_pattern in abstract_patterns:
         # 查找起始位置
+        print("start_pattern, end_pattern", start_pattern, end_pattern)
         start_pos = tex_content.find(start_pattern)
         if start_pos == -1:
             continue
@@ -418,8 +409,6 @@ def extract_abstract(tex_content):
             # 提取abstract内容
             abstract_text = tex_content[content_start:end_pos].strip()
 
-            # 清理提取的文本
-            # 移除多余的空白字符和换行
             abstract_text = ' '.join(abstract_text.split())
 
             # 移除可能的LaTeX注释
@@ -427,11 +416,10 @@ def extract_abstract(tex_content):
 
             return abstract_text
 
-    # 如果没有找到任何abstract，返回None
     return None
 
 
-def get_other_tex(content, intro, related_work):
+def get_other_tex(content, intro, related_work, arxiv_id):
     match_length = 100  # 初始匹配长度
 
     # 检查片段是否重复出现
@@ -471,7 +459,8 @@ def get_other_tex(content, intro, related_work):
         ]
         for pattern in patterns_to_recheck:
             if len(pattern) >= 500 and count_occurrences(content, pattern) >= 2:
-                print("Warning: Duplicate content found even with longer matching length")
+                print("Warning: Duplicate content found even with longer matching length", arxiv_id)
+                print("pattern", pattern)
 
     other_tex = ""
     # 提取introduction和related work之间的内容（如果间隔足够大）
@@ -500,7 +489,7 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
     abstract = extract_abstract(content)
     intro = extract_intro(intro_patterns, content)
     related_work = extract_related_work_new(content)
-    other_tex = get_other_tex(content, intro, related_work)
+    other_tex = get_other_tex(content, intro, related_work, arxiv_id)
     bib_items = extract_bib_citations(content)
     bbl_items = extract_bbl_items(content)
     if os.path.exists(os.path.join(paper_dir_path, "reference.bbl")):
@@ -566,8 +555,9 @@ def run_on_darth_server(input_dir, output_log_path):
     return
 
 
-# os.makedirs("../local_1028", exist_ok=True)
-run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028", "step_2_log_0109.json")
+if __name__ == "__main__":
+    # os.makedirs("../local_1028", exist_ok=True)
+    run_on_darth_server("/data/yubowang/arxiv_plain_latex_data_1028", "step_2_log_0109.json")
 
 
 
