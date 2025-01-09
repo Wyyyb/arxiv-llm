@@ -543,7 +543,7 @@ def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
 
 def run_on_darth_server(input_dir, output_log_path):
     output_log = {"no_intro_no_rw": [], "no_intro": [], "no_related_work": [],
-                  "no_bib_citations": [], "no_abstract": []}
+                  "no_bib_citations": [], "no_abstract": [], "no_main_tex_file": [], "no_full_tex_file": []}
     intro_patterns = extract_by_patterns("intro")
     related_work_patterns = extract_by_patterns("related_work")
     total = 0
