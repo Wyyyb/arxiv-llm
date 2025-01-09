@@ -433,6 +433,15 @@ def check_unique_occurrence(content, text):
 
 
 def get_other_tex(content, intro, related_work, arxiv_id):
+    # 如果introduction为空或内容太少,返回全部内容
+    if not intro or len(intro) < 100:
+        return content
+
+    # 如果related work为空或内容太少,返回introduction之后的内容
+    if not related_work or len(related_work) < 100:
+        intro_end_index = content.find(intro) + len(intro)
+        return content[intro_end_index:]
+
     # 检查文本片段是否唯一
     if not check_unique_occurrence(content, intro):
         print("Warning: Introduction content appears multiple times or not found", arxiv_id)
@@ -444,15 +453,6 @@ def get_other_tex(content, intro, related_work, arxiv_id):
         print("related work", related_work)
         intro_end_index = content.find(intro) + len(intro)
         # return content[intro_end_index:]
-
-    # 如果introduction为空或内容太少,返回全部内容
-    if not intro or len(intro) < 100:
-        return content
-
-    # 如果related work为空或内容太少,返回introduction之后的内容
-    if not related_work or len(related_work) < 100:
-        intro_end_index = content.find(intro) + len(intro)
-        return content[intro_end_index:]
 
     other_tex = ""
 
