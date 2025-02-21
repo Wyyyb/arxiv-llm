@@ -23,7 +23,7 @@ success_count=0
 fail_count=0
 
 # 遍历所有符合条件的tar文件并解压
-for tar_file in "$input_dir"/arXiv_src_2412*.tar; do
+for tar_file in "$input_dir"/arXiv_src_2501*.tar; do
     # 检查是否存在匹配的文件
     if [ ! -e "$tar_file" ]; then
         echo "No matching arXiv_src_2501*.tar files found in $input_dir"
