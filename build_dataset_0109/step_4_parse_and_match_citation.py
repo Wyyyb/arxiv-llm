@@ -179,8 +179,8 @@ def collect_bib_info(paper_dir_path):
                    "bib_info": bib_info, "citation_map": citations}
     with open(os.path.join(paper_dir_path, "bib_failed_items_0223.json"), "w") as fo:
         fo.write(json.dumps(bib_failed_items, indent=2))
-    if len(bib_failed_items) > 5:
-        print("add bib failed items: ", paper_dir_path, len(bib_failed_items))
+    # if len(bib_failed_items) > 5:
+    #     print("add bib failed items: ", paper_dir_path, len(bib_failed_items))
     with open(step_3_res_path, "w") as fo:
         fo.write(json.dumps(step_3_info, indent=2))
     return bib_failed_items
