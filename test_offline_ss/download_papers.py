@@ -94,6 +94,6 @@ def download_papers(api_key, output_dir="/data/yubowang/offline_ss_papers"):
 # 使用示例
 if __name__ == "__main__":
     API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
-    download_papers(API_KEY, "/gpfs/public/research/xy/yubowang/offline_ss_paper")
+    download_papers(API_KEY, "/data/yubowang/arxiv-llm/offline_ss_paper")
 
 

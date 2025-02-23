@@ -72,10 +72,10 @@ def load_data(output_path, paper_dir_path, abs_dir_path):
 
 
 def collect():
-    os.makedirs("/gpfs/public/research/xy/yubowang/ss_offline_data", exist_ok=True)
-    output_path = "/gpfs/public/research/xy/yubowang/ss_offline_data/ss_offline_data_1109.jsonl"
-    paper_dir_path = "/gpfs/public/research/xy/yubowang/offline_ss_paper/"
-    abs_dir_path = "/gpfs/public/research/xy/yubowang/offline_ss_abstract/"
+    os.makedirs("/data/yubowang/arxiv-llm/ss_offline_data", exist_ok=True)
+    output_path = "/data/yubowang/arxiv-llm/ss_offline_data/ss_offline_data_1109.jsonl"
+    paper_dir_path = "/data/yubowang/arxiv-llm/offline_ss_paper/"
+    abs_dir_path = "/data/yubowang/arxiv-llm/offline_ss_abstract/"
     # tldr_dir_path = "/data/yubowang/offline_ss_tldrs/"
     load_data(output_path, paper_dir_path, abs_dir_path)
 
