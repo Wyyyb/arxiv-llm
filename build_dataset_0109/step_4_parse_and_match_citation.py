@@ -108,9 +108,12 @@ def extract_bib_item(bib_item):
 def collect_bib_info(paper_dir_path):
     # print("paper_dir_path", paper_dir_path)
     global invalid_step_2_count
+    if os.path.exists(os.path.join(paper_dir_path, "bib_failed_items.json")):
+        with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
+            prev_bib_failed_items = json.load(fi)
     bib_failed_items = []
-    step_2_res_path = os.path.join(paper_dir_path, "step_2_info.json")
-    step_3_res_path = os.path.join(paper_dir_path, "step_3_info.json")
+    step_2_res_path = os.path.join(paper_dir_path, "parsed_parts_25_step_3_result_0109.json")
+    step_3_res_path = os.path.join(paper_dir_path, "collect_bib_info_step_4_info_0223.json")
     if not os.path.exists(step_2_res_path):
         # print("step 2 file not found", step_2_res_path)
         invalid_step_2_count += 1
@@ -129,8 +132,11 @@ def collect_bib_info(paper_dir_path):
         return []
     intro = "Introduction\n" + curr["intro"]
     related_work = curr["related_work"]
+    other_tex = curr["other_tex"]
     if related_work and related_work != "":
         intro = intro + "\nRelated Work\n" + related_work
+    if other_tex and other_tex != "":
+        intro = intro + "\n" + other_tex
     intro, citations = extract_citations(intro)
     cited_keys_in_intro = []
     for k, v in citations.items():
@@ -159,12 +165,13 @@ def collect_bib_info(paper_dir_path):
             continue
         bib_info[citation_key] = [each, 1]
         item = [arxiv_id, citation_key, each]
-        bib_failed_items.append(item)
+        if item not in prev_bib_failed_items:
+            bib_failed_items.append(item)
     if not bib_info:
         return []
 
     step_3_info = {"full_intro": intro, "bib_info": bib_info, "citation_map": citations}
-    with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "w") as fo:
+    with open(os.path.join(paper_dir_path, "bib_failed_items_0223.json"), "w") as fo:
         fo.write(json.dumps(bib_failed_items, indent=2))
     with open(step_3_res_path, "w") as fo:
         fo.write(json.dumps(step_3_info, indent=2))
@@ -184,7 +191,7 @@ def run_on_darth_server(input_dir, output_failed_item_path):
                 curr = collect_bib_info(os.path.join(input_dir, sub_dir, paper_dir))
                 failed_items += curr
     i = 0
-    batch_size = 100000
+    batch_size = 1000000
     print("failed item number: ", len(failed_items))
     print("invalid_step_2_count", invalid_step_2_count)
     while i < len(failed_items):
@@ -200,7 +207,7 @@ def run_on_darth_server(input_dir, output_failed_item_path):
 
 if __name__ == "__main__":
     input_darth_dir = "/data/yubowang/arxiv_plain_latex_data_1028"
-    output_darth_dir = "/data/yubowang/arxiv-llm/qwen_extract_title_data_0221"
+    output_darth_dir = "/data/yubowang/arxiv-llm/qwen_extract_title_data_0223"
     run_on_darth_server(input_darth_dir, output_darth_dir)
 
 
