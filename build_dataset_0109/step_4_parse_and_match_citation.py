@@ -130,13 +130,13 @@ def collect_bib_info(paper_dir_path):
     if curr["intro"] is None or curr["intro"] == "":
         invalid_step_2_count += 1
         return []
-    intro = "Introduction\n" + curr["intro"]
+    intro = "<$begin_of_introduction$>\n" + curr["intro"] + "\n<$end_of_introduction$>\n"
     related_work = curr["related_work"]
     other_tex = curr["other_tex"]
     if related_work and related_work != "":
-        intro = intro + "\nRelated Work\n" + related_work
+        intro = intro + "\n<$begin_of_related_work$>\n" + related_work + "\n<$end_of_related_work$>\n"
     if other_tex and other_tex != "":
-        intro = intro + "\n" + other_tex
+        intro = intro + "\n<$begin_of_other_tex$>\n" + other_tex + "\n<$end_of_other_tex$>\n"
     intro, citations = extract_citations(intro)
     cited_keys_in_intro = []
     for k, v in citations.items():
@@ -170,7 +170,8 @@ def collect_bib_info(paper_dir_path):
     if not bib_info:
         return []
 
-    step_3_info = {"full_intro": intro, "bib_info": bib_info, "citation_map": citations}
+    step_3_info = {"intro": intro,
+                   "bib_info": bib_info, "citation_map": citations}
     with open(os.path.join(paper_dir_path, "bib_failed_items_0223.json"), "w") as fo:
         fo.write(json.dumps(bib_failed_items, indent=2))
     with open(step_3_res_path, "w") as fo:
