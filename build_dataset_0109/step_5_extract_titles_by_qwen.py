@@ -71,7 +71,7 @@ def read_bibitems_from_file(file_path):
     bibitems = []
     with open(file_path, 'r') as fi:
         ori_data = json.load(fi)
-        for each in ori_data:
+        for each in tqdm(ori_data):
             prompt = create_prompt_for_bibitem(each[2])
             bibitems.append(prompt)
     return bibitems, ori_data
