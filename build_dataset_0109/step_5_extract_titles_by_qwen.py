@@ -8,11 +8,13 @@ from tqdm import tqdm
 def extract_titles_from_bibitems(llm, sampling_params, text_list):
     # 构建prompts
     prompts = []
+    print("text_list[0]", text_list[0])
     for text in text_list:
         prompt = create_prompt_for_bibitem(text)
         prompts.append(prompt)
     # 批量生成
     start = time.time()
+    print("prompts[0]", prompts[0])
     outputs = llm.generate(prompts, sampling_params)
     print("costing time:", time.time() - start)
 
