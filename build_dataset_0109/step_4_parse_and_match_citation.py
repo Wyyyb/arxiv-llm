@@ -111,6 +111,8 @@ def collect_bib_info(paper_dir_path):
     if os.path.exists(os.path.join(paper_dir_path, "bib_failed_items.json")):
         with open(os.path.join(paper_dir_path, "bib_failed_items.json"), "r") as fi:
             prev_bib_failed_items = json.load(fi)
+    else:
+        prev_bib_failed_items = []
     bib_failed_items = []
     step_2_res_path = os.path.join(paper_dir_path, "parsed_parts_25_step_3_result_0109.json")
     step_3_res_path = os.path.join(paper_dir_path, "collect_bib_info_step_4_info_0223.json")
