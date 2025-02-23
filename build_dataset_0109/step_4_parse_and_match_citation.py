@@ -81,7 +81,8 @@ def extract_bibitem_key(bibitem):
     if key and title:
         return key
     if not bibitem.startswith("\\bibitem{} "):
-        print("----------Failed to extract bibitem key:", bibitem)
+        pass
+        # print("----------Failed to extract bibitem key:", bibitem)
     return None
 
 
@@ -147,6 +148,8 @@ def collect_bib_info(paper_dir_path):
     bib_info = {}
     for each in curr["bib_items"]:
         citation_key, title = extract_bib_item(each)
+        if not citation_key or not title:
+            print("failed to extract citation key and title from bib_items ", each)
         if citation_key not in cited_keys_in_intro:
             # print("citation_key", citation_key)
             # print("cited_keys_in_intro", cited_keys_in_intro)
