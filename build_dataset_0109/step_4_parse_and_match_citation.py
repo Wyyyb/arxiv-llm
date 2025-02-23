@@ -104,7 +104,8 @@ def extract_bib_item(bib_item):
     title = title_match.group(1).strip() if title_match else None
 
     if "title" in bib_item and (key is None or title is None):
-        print("failed to extract citation key and title from bib_items ", bib_item)
+        # print("failed to extract citation key and title from bib_items ", bib_item)
+        pass
     return key, title
 
 
@@ -150,8 +151,9 @@ def collect_bib_info(paper_dir_path):
     bib_info = {}
     for each in curr["bib_items"]:
         citation_key, title = extract_bib_item(each)
-        # if not citation_key or not title:
-        #     print("failed to extract citation key and title from bib_items ", each)
+        if not citation_key or not title:
+            continue
+            # print("failed to extract citation key and title from bib_items ", each)
         if citation_key not in cited_keys_in_intro:
             # print("citation_key", citation_key)
             # print("cited_keys_in_intro", cited_keys_in_intro)
