@@ -481,6 +481,9 @@ def get_other_tex(content, intro, related_work, arxiv_id):
 def extract_parts(intro_patterns, related_work_patterns, paper_dir_path):
     message = {"no_intro_no_rw": [], "no_intro": [], "no_related_work": [], "no_bib_citations": [],
                "no_abstract": [], "no_main_tex_file": [], "no_full_tex_file": []}
+    if os.path.exists(os.path.join(paper_dir_path, "parsed_parts_25_step_3_result_0109.json")):
+        return message
+    print("extracting parts in ", paper_dir_path)
     arxiv_id = paper_dir_path.split("/")[-1]
     if not os.path.exists(os.path.join(paper_dir_path, "main_tex_25_step_2_result_0109.tex")):
         message["no_main_tex_file"].append(arxiv_id)
