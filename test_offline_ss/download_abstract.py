@@ -93,7 +93,8 @@ def download_abstracts(api_key, output_dir="/data/yubowang/offline_ss_abstract")
 
 # 使用示例
 if __name__ == "__main__":
-    API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
+    # API_KEY = "xPw99ZZQlprx8uLPejCY8SM6H5HM8eA8jhoXaZ82"
+    API_KEY = "vgPRBYMNV9asiaTwN5o5b7mH2f0HnOVM9yN0MWp6"
     download_abstracts(API_KEY, "/data/yubowang/arxiv-llm/offline_ss_abstract")
 
 
