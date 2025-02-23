@@ -195,7 +195,7 @@ def run_on_darth_server(input_dir, output_dir):
 if __name__ == "__main__":
     step_1_log = {"no_tex_file_number": []}
     # input_dir_path = "/data/yubowang/arxiv-latex-filtered_1014"
-    input_dir_path = "/data/yubowang/arxiv-latex-filtered_0109"
+    input_dir_path = "/data/yubowang/arxiv-latex-filtered_0223"
     output_dir_path = "/data/yubowang/arxiv_plain_latex_data_1028"
     run_on_darth_server(input_dir_path, output_dir_path)
     print("no tex file number:", len(step_1_log))
