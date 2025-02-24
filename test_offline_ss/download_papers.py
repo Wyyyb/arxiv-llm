@@ -28,6 +28,7 @@ def download_papers(api_key, output_dir="/data/yubowang/offline_ss_papers"):
         # 获取数据集元数据
         print("正在获取数据集元数据...")
         response = requests.get(dataset_url, headers=headers)
+        # response = requests.get(dataset_url)
         response.raise_for_status()
         dataset_metadata = response.json()
 
