@@ -2,10 +2,11 @@ from datasets import load_dataset
 import json
 
 
-def download_dataset(output_path='multi_cite_train.json'):
+def download_dataset(output_path='multi_cite_eval.json'):
     try:
         # 使用datasets加载数据集
-        dataset = load_dataset("ubowang/cite-llm-multi-cite-train", split="train")
+        # dataset = load_dataset("ubowang/cite-llm-multi-cite-train", split="train")
+        dataset = load_dataset("ubowang/cite-llm-multi-cite-eval", split="train")
         data = []
         for item in dataset:
             data.append(item)
